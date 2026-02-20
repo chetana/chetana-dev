@@ -89,6 +89,10 @@ useSeoMeta({
   title: 'CV Chetana YIN - Engineering Manager',
   robots: 'noindex, nofollow'
 })
+
+defineRouteRules({
+  robots: false
+})
 </script>
 
 <style scoped>
