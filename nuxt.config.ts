@@ -30,6 +30,9 @@ export default defineNuxtConfig({
       ]
     }
   },
+  routeRules: {
+    '/cv': { robots: false }
+  },
   nitro: {
     preset: 'vercel'
   },

@@ -90,9 +90,6 @@ useSeoMeta({
   robots: 'noindex, nofollow'
 })
 
-defineRouteRules({
-  robots: false
-})
 </script>
 
 <style scoped>
