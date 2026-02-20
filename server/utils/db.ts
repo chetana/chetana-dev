@@ -7,7 +7,8 @@ let _db: ReturnType<typeof drizzle> | null = null
 export function getDB() {
   if (!_db) {
     const config = useRuntimeConfig()
-    const sql = neon(config.databaseUrl)
+    const dbUrl = config.databaseUrl || process.env.DATABASE_URL || ''
+    const sql = neon(dbUrl)
     _db = drizzle(sql, { schema })
   }
   return _db
