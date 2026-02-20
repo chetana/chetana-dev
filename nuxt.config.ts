@@ -16,6 +16,9 @@ export default defineNuxtConfig({
   ogImage: {
     enabled: false
   },
+  sitemap: {
+    sources: ['/api/__sitemap__/urls']
+  },
   app: {
     head: {
       meta: [
