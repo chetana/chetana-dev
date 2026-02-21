@@ -11,9 +11,9 @@ const db = drizzle(sql)
 
 const contentFr = `## Introduction
 
-En novembre 2024, j'ai découvert Claude Code. Deux semaines plus tard, je l'avais intégré dans le workflow quotidien de mon équipe de 6 ingénieurs chez DJUST. Trois mois après, notre productivité sur les tâches répétitives avait augmenté de 40%.
+En janvier 2026, au retour de mes vacances, j'ai découvert Claude Code. Quelques semaines plus tard, je commençais à l'intégrer dans le workflow de mon équipe de 6 ingénieurs chez DJUST. On est encore au tout début de l'aventure — c'est frais, c'est récent, et les résultats ne sont pas encore spectaculaires.
 
-Ce n'est pas un article promotionnel. C'est un retour d'expérience brut — avec les succès, les échecs, les résistances humaines, et les leçons apprises — sur ce que ça implique concrètement d'intégrer un outil IA dans une équipe d'engineering qui tourne en production.
+Ce n'est pas un article promotionnel. C'est un retour d'expérience honnête — avec les premiers succès, les résistances humaines, les ajustements, et ce qu'on commence à comprendre — sur ce que ça implique concrètement de demander à une équipe d'engineering en production de changer ses habitudes pour intégrer un outil IA.
 
 ---
 
@@ -137,30 +137,36 @@ Concrètement, quand un développeur finit une PR, il tape \`/review-pr 1234\` e
 
 Le tout en 30 secondes au lieu de 45 minutes.
 
-## Chapitre 4 : Les résultats mesurés
+## Chapitre 4 : Les premiers résultats (honnêtes)
 
-### Méthodologie
+### Ce qu'on observe après quelques semaines
 
-On a mesuré la productivité sur 3 mois (décembre 2024 - février 2025) en comparant avec les 3 mois précédents :
+Soyons clairs : on n'a pas encore 3 mois de recul. On est en février 2026, l'intégration a commencé en janvier. Les chiffres qu'on peut donner sont des **premières tendances**, pas des métriques consolidées.
 
-| Métrique | Avant | Après | Delta |
-|----------|-------|-------|-------|
-| Temps moyen de code review | 45 min | 15 min | -67% |
-| Temps d'écriture de tests | 2h/feature | 45 min/feature | -63% |
-| Temps de briefing MEP | 1h30 | 20 min | -78% |
-| Bugs détectés en review | 3.2/PR | 5.1/PR | +59% |
-| Temps d'analyse d'incident | 2h | 40 min | -67% |
-| Velocity sprint (story points) | 42 | 58 | +38% |
+Ce qu'on observe concrètement :
 
-### Le chiffre clé : +40% de productivité
+| Tâche | Avant | Maintenant | Ressenti |
+|-------|-------|------------|----------|
+| Code review (première passe) | 45 min | ~20 min | Gain réel, Claude pré-mâche le travail |
+| Tests boilerplate | 2h/feature | ~1h | Gain variable selon la complexité |
+| Briefing MEP | 1h30 | ~30 min | Bon gain, le template est fiable |
+| Analyse de bug | Variable | Variable | Parfois bluffant, parfois à côté |
 
-Sur les **tâches répétitives** spécifiquement, la productivité a augmenté de 40%. Ce chiffre exclut les tâches créatives (conception, architecture, discussions produit) où l'IA n'a pas d'impact mesurable.
+### Ce qui marche vraiment
 
-### Ce que les chiffres ne montrent pas
+- **Les code reviews assistées** : le gain est le plus clair. Claude détecte des choses que la fatigue cognitive nous fait rater
+- **La génération de tests** : pour les CRUDs et le boilerplate, c'est un vrai time-saver
+- **Les briefings de MEP** : le skill produit un document structuré en 30 secondes
 
-- **La qualité des reviews a augmenté** : Claude trouve des edge cases que les humains manquent par fatigue cognitive
-- **Le moral de l'équipe a monté** : personne n'aime écrire des tests boilerplate. Automatiser ça, c'est libérer du temps pour le travail intéressant
-- **L'onboarding est plus rapide** : un nouveau développeur peut utiliser les skills dès le jour 1 pour comprendre le codebase
+### Ce qui ne marche pas encore
+
+- **L'analyse de bugs complexes** : Claude est bon sur les NPE évidentes, mais sur les bugs de logique métier, il tâtonne autant que nous
+- **La vélocité globale** : on ne peut pas honnêtement dire "+40% de productivité". C'est plus nuancé — certaines tâches sont 3x plus rapides, d'autres ne changent pas
+- **L'adoption n'est pas uniforme** : sur 6 ingénieurs, 3 utilisent Claude quotidiennement, 2 occasionnellement, 1 reste sceptique
+
+### Le vrai impact : le temps libéré
+
+Le gain le plus concret n'est pas un pourcentage. C'est que **je passe moins de temps sur les reviews mécaniques et plus sur l'architecture et le mentoring**. Et ça, c'est précieux pour un Engineering Manager.
 
 ## Chapitre 5 : Les résistances et les échecs
 
@@ -216,13 +222,13 @@ L'IA est aussi bonne que le prompt qu'on lui donne. On a organisé des sessions 
 - **Tests de non-régression intelligents** : Claude identifie quels tests doivent tourner en fonction des fichiers modifiés
 - **Assistant d'architecture** : un skill qui connaît l'historique des ADR et peut suggérer des décisions cohérentes avec le passé
 
-### Ma conviction
+### Ma conviction (humble)
 
-On est au tout début de la révolution IA dans l'engineering. Dans 2 ans, ne pas utiliser d'IA dans son workflow de développement sera aussi anachronique que ne pas utiliser de linter.
+On est au tout début. C'est excitant et frustrant à la fois. L'IA n'est pas magique — elle ne transforme pas une équipe du jour au lendemain. Il faut investir du temps, convaincre, itérer, et accepter que certains collègues ne seront pas convaincus tout de suite.
 
-Les équipes qui adoptent ces outils maintenant auront un avantage compétitif massif — pas parce que l'IA est magique, mais parce qu'elle libère les humains pour faire ce qu'ils font de mieux : penser, concevoir, innover.
+Mais je suis convaincu que les équipes qui expérimentent maintenant, même imparfaitement, auront une longueur d'avance. Pas parce que l'IA remplace les développeurs, mais parce qu'elle **libère du temps pour le travail qui compte** : penser, concevoir, mentorer.
 
-L'IA n'est pas un gadget. C'est un **multiplicateur de force concret**. Et le meilleur moment pour l'intégrer, c'est maintenant.
+C'est encore le début. On verra dans 6 mois si les promesses se confirment. En attendant, on continue à itérer — une skill à la fois.
 
 ---
 
@@ -231,9 +237,9 @@ L'IA n'est pas un gadget. C'est un **multiplicateur de force concret**. Et le me
 
 const contentEn = `## Introduction
 
-In November 2024, I discovered Claude Code. Two weeks later, I had integrated it into my team's daily workflow of 6 engineers at DJUST. Three months later, our productivity on repetitive tasks had increased by 40%.
+In January 2026, right after coming back from vacation, I discovered Claude Code. A few weeks later, I started integrating it into my team's workflow of 6 engineers at DJUST. We're still at the very beginning of this journey — it's fresh, it's recent, and the results aren't spectacular yet.
 
-This isn't a promotional article. It's a raw experience report — with successes, failures, human resistance, and lessons learned — about what it concretely means to integrate an AI tool into an engineering team running in production.
+This isn't a promotional article. It's an honest experience report — with early wins, human resistance, adjustments, and what we're starting to understand — about what it concretely means to ask an engineering team in production to change their habits and integrate an AI tool.
 
 ---
 
@@ -357,30 +363,36 @@ Concretely, when a developer finishes a PR, they type \`/review-pr 1234\` and Cl
 
 All in 30 seconds instead of 45 minutes.
 
-## Chapter 4: Measured Results
+## Chapter 4: Early Results (Honest)
 
-### Methodology
+### What We're Seeing After a Few Weeks
 
-We measured productivity over 3 months (December 2024 - February 2025) comparing with the previous 3 months:
+Let's be clear: we don't have 3 months of data yet. It's February 2026, integration started in January. The numbers we can share are **early trends**, not consolidated metrics.
 
-| Metric | Before | After | Delta |
-|--------|--------|-------|-------|
-| Average code review time | 45 min | 15 min | -67% |
-| Test writing time | 2h/feature | 45 min/feature | -63% |
-| Deployment briefing time | 1h30 | 20 min | -78% |
-| Bugs detected in review | 3.2/PR | 5.1/PR | +59% |
-| Incident analysis time | 2h | 40 min | -67% |
-| Sprint velocity (story points) | 42 | 58 | +38% |
+What we're concretely observing:
 
-### The Key Number: +40% Productivity
+| Task | Before | Now | Feeling |
+|------|--------|-----|---------|
+| Code review (first pass) | 45 min | ~20 min | Real gain, Claude pre-chews the work |
+| Boilerplate tests | 2h/feature | ~1h | Variable gain depending on complexity |
+| Deployment briefing | 1h30 | ~30 min | Good gain, template is reliable |
+| Bug analysis | Variable | Variable | Sometimes amazing, sometimes off |
 
-On **repetitive tasks** specifically, productivity increased by 40%. This number excludes creative tasks (design, architecture, product discussions) where AI has no measurable impact.
+### What's Actually Working
 
-### What the Numbers Don't Show
+- **Assisted code reviews**: the clearest gain. Claude catches things that cognitive fatigue makes us miss
+- **Test generation**: for CRUDs and boilerplate, it's a real time-saver
+- **Deployment briefings**: the skill produces a structured document in 30 seconds
 
-- **Review quality increased**: Claude finds edge cases that humans miss due to cognitive fatigue
-- **Team morale improved**: nobody likes writing boilerplate tests. Automating that frees up time for interesting work
-- **Onboarding is faster**: a new developer can use skills from day 1 to understand the codebase
+### What's Not Working Yet
+
+- **Complex bug analysis**: Claude is good on obvious NPEs, but on business logic bugs, it fumbles as much as we do
+- **Overall velocity**: we can't honestly claim "+40% productivity." It's more nuanced — some tasks are 3x faster, others don't change
+- **Adoption isn't uniform**: out of 6 engineers, 3 use Claude daily, 2 occasionally, 1 remains skeptical
+
+### The Real Impact: Freed Time
+
+The most concrete gain isn't a percentage. It's that **I spend less time on mechanical reviews and more on architecture and mentoring**. And that's invaluable for an Engineering Manager.
 
 ## Chapter 5: Resistance and Failures
 
@@ -436,13 +448,13 @@ AI is only as good as the prompt you give it. We organized internal "prompt engi
 - **Intelligent regression testing**: Claude identifies which tests should run based on modified files
 - **Architecture assistant**: a skill that knows the ADR history and can suggest decisions consistent with the past
 
-### My Conviction
+### My Conviction (Humble)
 
-We're at the very beginning of the AI revolution in engineering. In 2 years, not using AI in your development workflow will be as anachronistic as not using a linter.
+We're at the very beginning. It's exciting and frustrating at the same time. AI isn't magic — it doesn't transform a team overnight. You need to invest time, convince people, iterate, and accept that some colleagues won't be convinced right away.
 
-Teams adopting these tools now will have a massive competitive advantage — not because AI is magic, but because it frees humans to do what they do best: think, design, innovate.
+But I'm convinced that teams experimenting now, even imperfectly, will have a head start. Not because AI replaces developers, but because it **frees time for the work that matters**: thinking, designing, mentoring.
 
-AI is not a gimmick. It's a **concrete force multiplier**. And the best time to integrate it is now.
+It's still early days. We'll see in 6 months if the promises hold up. In the meantime, we keep iterating — one skill at a time.
 
 ---
 
@@ -451,7 +463,7 @@ AI is not a gimmick. It's a **concrete force multiplier**. And the best time to 
 
 const contentKm = `## សេចក្តីផ្តើម
 
-ក្នុងខែវិច្ឆិកា ២០២៤ ខ្ញុំបានរកឃើញ Claude Code។ ពីរសប្តាហ៍ក្រោយមក ខ្ញុំបានរួមបញ្ចូលវាក្នុង workflow ប្រចាំថ្ងៃរបស់ក្រុមវិស្វករ ៦ នាក់របស់ខ្ញុំនៅ DJUST។ បីខែក្រោយមក ផលិតភាពរបស់យើងលើកិច្ចការដដែលៗបានកើនឡើង ៤០%។
+ក្នុងខែមករា ២០២៦ បន្ទាប់ពីវិស្សមកាល ខ្ញុំបានរកឃើញ Claude Code។ ជាការចាប់ផ្តើមថ្មី ខ្ញុំកំពុងរួមបញ្ចូលវាក្នុង workflow របស់ក្រុម។ យើងស្ថិតនៅដំបូងនៃការផ្សងផ្រាសនេះ។
 
 នេះមិនមែនជាអត្ថបទផ្សព្វផ្សាយទេ។ វាជារបាយការណ៍បទពិសោធន៍ពិត — ជាមួយភាពជោគជ័យ ការបរាជ័យ ការប្រឆាំងរបស់មនុស្ស និងមេរៀនដែលបានរៀន — អំពីអ្វីដែលវាមានន័យជាក់ស្តែងក្នុងការរួមបញ្ចូលឧបករណ៍ AI ក្នុងក្រុមវិស្វកម្មដែលដំណើរការក្នុង production។
 
@@ -577,8 +589,8 @@ async function seedBlogClaudeCode() {
     contentFr,
     contentEn,
     contentKm,
-    excerptFr: "Retour d'expérience sur l'intégration de Claude Code dans une équipe de 6 ingénieurs : 25+ skills personnalisés, +40% de productivité, résistances humaines et leçons apprises.",
-    excerptEn: "Experience report on integrating Claude Code into a team of 6 engineers: 25+ custom skills, +40% productivity, human resistance and lessons learned.",
+    excerptFr: "Retour d'expérience honnête sur l'intégration de Claude Code dans une équipe de 6 ingénieurs : premiers résultats après quelques semaines, résistances humaines, et ce qu'on commence à comprendre.",
+    excerptEn: "Honest experience report on integrating Claude Code into a team of 6 engineers: early results after a few weeks, human resistance, and what we're starting to understand.",
     excerptKm: "របាយការណ៍បទពិសោធន៍លើការរួមបញ្ចូល Claude Code ក្នុងក្រុមវិស្វករ ៦ នាក់៖ 25+ skills ផ្ទាល់ខ្លួន +៤០% ផលិតភាព ការប្រឆាំង និងមេរៀនដែលបានរៀន។",
     tags: ['AI', 'Claude Code', 'Management', 'Productivity', 'MCP'],
     published: true
