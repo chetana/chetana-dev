@@ -67,6 +67,16 @@ export const experiences = pgTable('experiences', {
   sortOrder: integer('sort_order').default(0)
 })
 
+// Health tracking
+export const healthEntries = pgTable('health_entries', {
+  id: serial('id').primaryKey(),
+  date: varchar('date', { length: 10 }).notNull().unique(), // YYYY-MM-DD
+  pushups: integer('pushups').notNull(),
+  validated: boolean('validated').default(false),
+  validatedAt: timestamp('validated_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull()
+})
+
 // Skills
 export const skills = pgTable('skills', {
   id: serial('id').primaryKey(),

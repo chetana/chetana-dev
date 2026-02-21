@@ -117,6 +117,19 @@ const translations: Record<string, Record<string, string>> = {
   'comments.pending': { fr: 'Votre commentaire est en attente de modération.', en: 'Your comment is pending moderation.' },
   'comments.empty': { fr: 'Aucun commentaire pour le moment.', en: 'No comments yet.' },
 
+  // Health tracker
+  'health.title': { fr: 'Suivi pompes quotidien', en: 'Daily Pushup Tracker' },
+  'health.subtitle': { fr: 'Chaque jour compte. Pas d\'excuse.', en: 'Every day counts. No excuses.' },
+  'health.streak': { fr: 'Streak actuel', en: 'Current Streak' },
+  'health.total': { fr: 'Total pompes', en: 'Total Pushups' },
+  'health.days': { fr: 'Jours validés', en: 'Days Completed' },
+  'health.best': { fr: 'Meilleur streak', en: 'Best Streak' },
+  'health.today': { fr: 'Aujourd\'hui', en: 'Today' },
+  'health.target': { fr: 'Objectif', en: 'Target' },
+  'health.validate': { fr: 'Validé !', en: 'Done!' },
+  'health.done': { fr: 'Fait', en: 'Done' },
+  'health.calendar': { fr: 'Calendrier', en: 'Calendar' },
+
   // Footer
   'footer.text': { fr: 'Chetana YIN', en: 'Chetana YIN' }
 }
