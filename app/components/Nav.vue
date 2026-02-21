@@ -10,7 +10,7 @@
       <NuxtLink to="/blog">{{ t('nav.blog') }}</NuxtLink>
       <NuxtLink to="/contact">{{ t('nav.contact') }}</NuxtLink>
       <button class="lang-toggle" @click="toggleLocale">
-        {{ locale === 'fr' ? 'EN' : 'FR' }}
+        {{ locale === 'fr' ? 'EN' : locale === 'en' ? 'ខ្មែរ' : 'FR' }}
       </button>
     </div>
     <button class="mobile-menu" @click="mobileOpen = !mobileOpen">☰</button>
@@ -29,7 +29,7 @@
   <!-- Mobile lang toggle -->
   <div class="lang-toggle-mobile">
     <button class="lang-toggle" @click="toggleLocale">
-      {{ locale === 'fr' ? 'EN' : 'FR' }}
+      {{ locale === 'fr' ? 'EN' : locale === 'en' ? 'ខ្មែរ' : 'FR' }}
     </button>
   </div>
 </template>
