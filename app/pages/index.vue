@@ -303,6 +303,10 @@ useSeoMeta({
 
 @media (max-width: 768px) {
   .about-grid { grid-template-columns: 1fr; }
-  .stats { padding: 0 1.5rem; }
+  .stats { padding: 0 1.5rem; grid-template-columns: repeat(2, 1fr); }
+  .skills-grid { grid-template-columns: 1fr; }
+  .ai-section { padding: 1.5rem; }
+  .ai-metrics { grid-template-columns: repeat(2, 1fr); }
+  .contact-grid { grid-template-columns: 1fr; }
 }
 </style>

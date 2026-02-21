@@ -25,6 +25,7 @@ const { t } = useLocale()
   justify-content: center;
   padding: 6rem 2rem 4rem;
   position: relative;
+  overflow: hidden;
 }
 
 .hero::before {
