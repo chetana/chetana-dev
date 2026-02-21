@@ -4,7 +4,7 @@
     <div class="footer-meta">
       v{{ version }}
       <span class="separator">•</span>
-      <span class="commit" :title="`Commit: ${commitSha}`">{{ commitSha }}</span>
+      <span class="commit" :title="`Commit: ${commitSha}`">{{ String(commitSha) }}</span>
       <span class="separator">•</span>
       <time :datetime="deployDate">{{ deployDateFormatted }}</time>
     </div>
@@ -12,13 +12,11 @@
 </template>
 
 <script setup lang="ts">
-import pkg from '~/package.json'
-
 const { t } = useLocale()
 const config = useRuntimeConfig()
 
-const version = pkg.version
-const commitSha = config.public.commitSha || 'local'
+const version = '1.0.0'
+const commitSha = computed(() => config.public.commitSha || 'local')
 
 const deployDate = new Date().toISOString()
 const deployDateFormatted = new Date().toLocaleDateString('fr-FR', {
