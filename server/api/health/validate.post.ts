@@ -10,10 +10,16 @@ function getTodayTarget(dateStr: string): number {
   return dateStr >= '2026-02-17' ? 25 : 20
 }
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
   const db = getDB()
   const today = getTodayDate()
   const target = getTodayTarget(today)
+
+  // Allow client to override pushup count
+  const body = await readBody(event).catch(() => ({}))
+  const pushups = typeof body?.pushups === 'number' && Number.isInteger(body.pushups) && body.pushups >= 1 && body.pushups <= 200
+    ? body.pushups
+    : target
 
   // Check if entry exists for today
   const existing = await db.select().from(healthEntries).where(eq(healthEntries.date, today))
@@ -24,17 +30,17 @@ export default defineEventHandler(async () => {
     }
     // Update existing entry
     await db.update(healthEntries)
-      .set({ validated: true, validatedAt: new Date(), pushups: target })
+      .set({ validated: true, validatedAt: new Date(), pushups: pushups })
       .where(eq(healthEntries.date, today))
   } else {
     // Create new entry
     await db.insert(healthEntries).values({
       date: today,
-      pushups: target,
+      pushups: pushups,
       validated: true,
       validatedAt: new Date()
     })
   }
 
-  return { success: true, alreadyValidated: false, date: today, pushups: target }
+  return { success: true, alreadyValidated: false, date: today, pushups: pushups }
 })

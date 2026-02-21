@@ -35,14 +35,20 @@
         <span class="today-target">{{ t('health.target') }}: {{ stats?.todayTarget ?? 20 }} pompes</span>
       </div>
       <div class="today-action">
-        <button
-          v-if="!todayDone"
-          class="btn btn-primary btn-validate"
-          :disabled="validating"
-          @click="validateToday"
-        >
-          {{ t('health.validate') }}
-        </button>
+        <div v-if="!todayDone" class="stepper-row">
+          <div class="stepper">
+            <button class="stepper-btn" :disabled="pushupCount <= 1" @click="pushupCount--">−</button>
+            <span class="stepper-value">{{ pushupCount }}</span>
+            <button class="stepper-btn" :disabled="pushupCount >= 200" @click="pushupCount++">+</button>
+          </div>
+          <button
+            class="btn btn-primary btn-validate"
+            :disabled="validating"
+            @click="validateToday"
+          >
+            {{ t('health.validate') }}
+          </button>
+        </div>
         <div v-else class="done-badge" :class="{ celebrate: justValidated }">
           <span class="done-check">✓</span>
           <span>{{ t('health.done') }}</span>
@@ -70,6 +76,7 @@
             today: cell.isToday,
             future: cell.isFuture
           }"
+          :title="cell.pushups ? `${cell.pushups} ${locale === 'fr' ? 'pompes' : 'pushups'}` : undefined"
         >
           <span v-if="cell.date" class="cal-date">{{ cell.day }}</span>
           <span v-if="cell.validated" class="cal-check">✓</span>
@@ -104,6 +111,7 @@ const { data: entries } = await useFetch<Entry[]>('/api/health/entries', { defau
 const todayDone = ref(stats.value?.todayValidated ?? false)
 const validating = ref(false)
 const justValidated = ref(false)
+const pushupCount = ref(stats.value?.todayTarget ?? 20)
 
 watch(() => stats.value?.todayValidated, (val) => {
   if (val) todayDone.value = true
@@ -112,7 +120,7 @@ watch(() => stats.value?.todayValidated, (val) => {
 async function validateToday() {
   validating.value = true
   try {
-    await $fetch('/api/health/validate', { method: 'POST' })
+    await $fetch('/api/health/validate', { method: 'POST', body: { pushups: pushupCount.value } })
     todayDone.value = true
     justValidated.value = true
     await refreshStats()
@@ -168,11 +176,15 @@ const calendarCells = computed(() => {
     (entries.value ?? []).filter(e => e.validated).map(e => e.date)
   )
 
-  const cells: { date: string | null; day: number; validated: boolean; missed: boolean; isToday: boolean; isFuture: boolean }[] = []
+  const pushupsByDate = new Map(
+    (entries.value ?? []).filter(e => e.validated && e.pushups).map(e => [e.date, e.pushups])
+  )
+
+  const cells: { date: string | null; day: number; validated: boolean; missed: boolean; isToday: boolean; isFuture: boolean; pushups: number | null }[] = []
 
   // Empty cells before first day
   for (let i = 0; i < dayOfWeek; i++) {
-    cells.push({ date: null, day: 0, validated: false, missed: false, isToday: false, isFuture: false })
+    cells.push({ date: null, day: 0, validated: false, missed: false, isToday: false, isFuture: false, pushups: null })
   }
 
   // Days of month
@@ -184,7 +196,7 @@ const calendarCells = computed(() => {
     const validated = validatedDates.has(dateStr)
     const missed = !validated && !isFuture && !isBeforeStart && dateStr >= startDate
 
-    cells.push({ date: dateStr, day: d, validated, missed, isToday, isFuture })
+    cells.push({ date: dateStr, day: d, validated, missed, isToday, isFuture, pushups: pushupsByDate.get(dateStr) ?? null })
   }
 
   return cells
@@ -283,6 +295,7 @@ useSeoMeta({
 
 @media (max-width: 500px) {
   .today-card { flex-direction: column; gap: 1rem; text-align: center; }
+  .stepper-row { flex-direction: column; }
 }
 
 .today-header h2 {
@@ -319,6 +332,55 @@ useSeoMeta({
 
 .done-check {
   font-size: 1.5rem;
+}
+
+/* Stepper */
+.stepper-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stepper-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepper-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: rgba(196, 150, 60, 0.08);
+}
+
+.stepper-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.stepper-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  min-width: 2.5rem;
+  text-align: center;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Calendar */
