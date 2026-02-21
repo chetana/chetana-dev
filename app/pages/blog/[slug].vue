@@ -31,13 +31,43 @@ const renderedContent = computed(() => {
   if (!post.value) return ''
   const raw = locale.value === 'fr' ? post.value.contentFr : post.value.contentEn
   // Basic markdown-like rendering (headers, bold, paragraphs)
-  return raw
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+  // Process block-level elements first
+  let html = raw
+    // Horizontal rules
+    .replace(/^---$/gm, '<hr>')
+    // Headers
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+
+  // Process unordered lists (consecutive `- ` lines)
+  html = html.replace(/(^- .+$(\n- .+$)*)/gm, (match) => {
+    const items = match.split('\n').map(line => `<li>${line.replace(/^- /, '')}</li>`).join('\n')
+    return `<ul>${items}</ul>`
+  })
+
+  // Process ordered lists (consecutive `1. ` lines)
+  html = html.replace(/(^\d+\. .+$(\n\d+\. .+$)*)/gm, (match) => {
+    const items = match.split('\n').map(line => `<li>${line.replace(/^\d+\. /, '')}</li>`).join('\n')
+    return `<ol>${items}</ol>`
+  })
+
+  // Inline formatting
+  html = html
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/^/, '<p>')
-    .replace(/$/, '</p>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+
+  // Paragraphs: split on double newlines, wrap non-block content in <p>
+  html = html
+    .split(/\n\n/)
+    .map(block => {
+      const trimmed = block.trim()
+      if (!trimmed) return ''
+      if (/^<(h[23]|ul|ol|hr|blockquote)/.test(trimmed)) return trimmed
+      return `<p>${trimmed}</p>`
+    })
+    .join('\n')
+
+  return html
 })
 
 const postTitle = computed(() => {
@@ -110,6 +140,29 @@ h1 { font-size: 2rem; margin-bottom: 1rem; }
 
 .post-content :deep(p) { margin-bottom: 1rem; }
 .post-content :deep(strong) { color: var(--text); }
+.post-content :deep(em) { font-style: italic; }
+
+.post-content :deep(ul),
+.post-content :deep(ol) {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.post-content :deep(li) {
+  margin-bottom: 0.4rem;
+}
+
+.post-content :deep(hr) {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+  h1 { font-size: 1.5rem; }
+  .post-content :deep(h2) { font-size: 1.2rem; }
+  .post-content :deep(h3) { font-size: 1.1rem; }
+}
 
 .empty { color: var(--text-dim); text-align: center; padding: 4rem; }
 </style>
