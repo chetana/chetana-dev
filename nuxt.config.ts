@@ -84,7 +84,8 @@ export default defineNuxtConfig({
     vapidPrivateKey: process.env.VAPID_PRIVATE_KEY || '',
     cronSecret: process.env.CRON_SECRET || '',
     public: {
-      vapidPublicKey: process.env.VAPID_PUBLIC_KEY || ''
+      vapidPublicKey: process.env.VAPID_PUBLIC_KEY || '',
+      commitSha: (process.env.VERCEL_GIT_COMMIT_SHA || 'local').slice(0, 7)
     }
   }
 })
