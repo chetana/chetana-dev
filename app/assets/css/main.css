@@ -1,13 +1,13 @@
 :root {
-  --bg: #0f0f0f;
-  --bg-card: #1a1a1a;
-  --bg-card-hover: #222;
+  --bg: #f8f9fa;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f0f0f5;
   --accent: #6c63ff;
-  --accent-light: #8b83ff;
-  --text: #e8e8e8;
-  --text-muted: #888;
-  --text-dim: #555;
-  --border: #2a2a2a;
+  --accent-light: #5a52d5;
+  --text: #1a1a2e;
+  --text-muted: #6b7280;
+  --text-dim: #9ca3af;
+  --border: #e5e7eb;
   --gradient: linear-gradient(135deg, #6c63ff 0%, #48c6ef 100%);
 }
 
@@ -84,7 +84,7 @@ a:hover { color: var(--text); }
 
 .tag {
   padding: 0.3rem 0.8rem;
-  background: rgba(108, 99, 255, 0.1);
+  background: rgba(108, 99, 255, 0.08);
   border: 1px solid rgba(108, 99, 255, 0.2);
   border-radius: 6px;
   font-size: 0.8rem;
@@ -92,21 +92,21 @@ a:hover { color: var(--text); }
 }
 
 .tag.green {
-  background: rgba(72, 198, 139, 0.1);
-  border-color: rgba(72, 198, 139, 0.2);
-  color: #48c68b;
+  background: rgba(34, 154, 95, 0.08);
+  border-color: rgba(34, 154, 95, 0.25);
+  color: #1a8a55;
 }
 
 .tag.blue {
-  background: rgba(72, 198, 239, 0.1);
-  border-color: rgba(72, 198, 239, 0.2);
-  color: #48c6ef;
+  background: rgba(30, 144, 200, 0.08);
+  border-color: rgba(30, 144, 200, 0.25);
+  color: #1a7fb5;
 }
 
 .tag.orange {
-  background: rgba(239, 168, 72, 0.1);
-  border-color: rgba(239, 168, 72, 0.2);
-  color: #efa848;
+  background: rgba(200, 130, 30, 0.08);
+  border-color: rgba(200, 130, 30, 0.25);
+  color: #b07020;
 }
 
 /* === CARDS === */
@@ -118,7 +118,7 @@ a:hover { color: var(--text); }
   transition: all 0.3s;
 }
 
-.card:hover { border-color: var(--accent); transform: translateY(-4px); }
+.card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); }
 
 /* === FORMS === */
 .form-group {

@@ -161,6 +161,10 @@ useSeoMeta({
 .cv-edu { display: flex; flex-direction: column; gap: 8px; }
 .cv-edu-school { color: #444; font-size: 10pt; }
 
+@media (max-width: 768px) {
+  .cv-container { max-width: 100%; padding: 1rem; font-size: 9pt; }
+}
+
 @media print {
   .cv-page { padding-top: 0; background: #fff; }
   .cv-actions { display: none; }

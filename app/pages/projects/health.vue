@@ -304,11 +304,11 @@ useSeoMeta({
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(72, 198, 239, 0.1);
-  border: 1px solid rgba(72, 198, 239, 0.3);
+  background: rgba(30, 144, 200, 0.08);
+  border: 1px solid rgba(30, 144, 200, 0.25);
   border-radius: 12px;
   padding: 1rem 2rem;
-  color: #48c6ef;
+  color: #1a7fb5;
   font-weight: 600;
   font-size: 1.1rem;
 }
@@ -389,13 +389,13 @@ useSeoMeta({
 }
 
 .cal-cell.validated {
-  background: rgba(108, 99, 255, 0.2);
-  border: 1px solid rgba(108, 99, 255, 0.4);
+  background: rgba(108, 99, 255, 0.1);
+  border: 1px solid rgba(108, 99, 255, 0.3);
 }
 
 .cal-cell.missed {
-  background: rgba(255, 80, 80, 0.1);
-  border: 1px solid rgba(255, 80, 80, 0.2);
+  background: rgba(220, 60, 60, 0.08);
+  border: 1px solid rgba(220, 60, 60, 0.2);
 }
 
 .cal-cell.today {
