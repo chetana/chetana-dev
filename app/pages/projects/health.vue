@@ -382,6 +382,8 @@ useSeoMeta({
   font-size: 0.85rem;
   position: relative;
   transition: background 0.2s;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .cal-cell.empty {
@@ -421,6 +423,16 @@ useSeoMeta({
 .cal-miss {
   color: #ff5050;
   font-size: 0.65rem;
+}
+
+@media (max-width: 480px) {
+  .calendar-section { padding: 1rem; }
+  .calendar-grid { gap: 2px; }
+  .cal-cell { border-radius: 4px; font-size: 0.75rem; }
+  .cal-date { font-size: 0.65rem; }
+  .cal-check { font-size: 0.55rem; }
+  .cal-miss { font-size: 0.5rem; }
+  .cal-day-label { font-size: 0.6rem; letter-spacing: 0; }
 }
 
 /* Animations */

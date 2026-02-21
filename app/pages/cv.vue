@@ -162,7 +162,21 @@ useSeoMeta({
 .cv-edu-school { color: #444; font-size: 10pt; }
 
 @media (max-width: 768px) {
-  .cv-container { max-width: 100%; padding: 1rem; font-size: 9pt; }
+  .cv-page { overflow-x: hidden; }
+  .cv-container {
+    max-width: 100%;
+    padding: 1rem;
+    font-size: 9pt;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  .cv-header h1 { font-size: 16pt; }
+  .cv-subtitle { font-size: 10pt; }
+  .cv-actions { float: none; margin-bottom: 1rem; }
+  .cv-contact { font-size: 8.5pt; }
+  .cv-contact a { word-break: break-all; }
+  .cv-skills { padding-left: 14px; }
+  .cv-exp-bullets { padding-left: 14px; }
 }
 
 @media print {
