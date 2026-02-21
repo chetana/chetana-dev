@@ -11,7 +11,7 @@ const db = drizzle(sql)
 
 const contentFr = `## Introduction
 
-En janvier 2026, au retour de mes vacances, j'ai découvert Claude Code. Quelques semaines plus tard, je commençais à l'intégrer dans le workflow de mon équipe de 6 ingénieurs chez DJUST. On est encore au tout début de l'aventure — c'est frais, c'est récent, et les résultats ne sont pas encore spectaculaires.
+En janvier 2026, au retour de mes vacances, j'ai découvert Claude Code. Quelques semaines plus tard, je commençais à l'intégrer dans le workflow de mon équipe de 5 personnes chez DJUST. On est encore au tout début de l'aventure — c'est frais, c'est récent, et les résultats ne sont pas encore spectaculaires.
 
 Ce n'est pas un article promotionnel. C'est un retour d'expérience honnête — avec les premiers succès, les résistances humaines, les ajustements, et ce qu'on commence à comprendre — sur ce que ça implique concrètement de demander à une équipe d'engineering en production de changer ses habitudes pour intégrer un outil IA.
 
@@ -24,7 +24,7 @@ Ce n'est pas un article promotionnel. C'est un retour d'expérience honnête —
 DJUST est une plateforme e-commerce B2B SaaS. Mon périmètre en tant qu'Engineering Manager couvre l'Order Management System (OMS), les Payments et le Cart. C'est le cœur transactionnel de la plateforme — là où passent les commandes de clients comme Franprix, Eiffage (Blueon) ou VEJA.
 
 L'équipe :
-- 6 ingénieurs (4 seniors, 2 mid-level)
+- 5 personnes : 2 développeurs seniors, 1 mid-level, 1 junior, et 1 QA senior
 - Stack : Java 17, Spring Boot, PostgreSQL, Elasticsearch, Kubernetes sur AWS
 - ~15 modules Maven interdépendants
 - Releases hebdomadaires le jeudi
@@ -89,13 +89,17 @@ On a organisé nos skills en 5 catégories :
 - **check-api-contract** : vérification de la compatibilité backward des changements d'API
 - **check-migration** : validation des migrations DB (reversibilité, performance, locks)
 
-### 2. Testing (5 skills)
+### 2. Testing & QA (7 skills)
+
+C'est la catégorie qui a le plus d'impact — et c'est notre QA senior qui en tire le plus de valeur. Avant Claude, elle passait des heures à rédiger des cas de test manuellement. Maintenant, elle utilise Claude pour générer une première matrice de tests qu'elle affine ensuite.
 
 - **generate-unit-tests** : génération de tests unitaires pour une classe
 - **generate-e2e-test** : génération de scénarios E2E à partir d'un ticket Jira
 - **generate-test-data** : création de fixtures réalistes
 - **analyze-test-coverage** : identification des chemins non testés
 - **generate-mutation-tests** : suggestions de tests de mutation
+- **generate-test-matrix** : génération d'une matrice de cas de test (nominal, edge cases, erreurs) à partir d'une spec — le skill préféré de notre QA
+- **explore-edge-cases** : Claude explore les combinaisons improbables qu'un humain ne penserait pas à tester (valeurs limites, concurrence, encodages exotiques)
 
 ### 3. Deployment & Ops (5 skills)
 
@@ -157,12 +161,13 @@ Ce qu'on observe concrètement :
 - **Les code reviews assistées** : le gain est le plus clair. Claude détecte des choses que la fatigue cognitive nous fait rater
 - **La génération de tests** : pour les CRUDs et le boilerplate, c'est un vrai time-saver
 - **Les briefings de MEP** : le skill produit un document structuré en 30 secondes
+- **La QA** : c'est la surprise. Notre QA senior utilise Claude pour générer des matrices de tests à partir des specs Jira. Elle produit en 10 minutes ce qui prenait 2 heures. Et surtout, Claude trouve des edge cases auxquels personne n'aurait pensé — des combinaisons de données exotiques, des scénarios de concurrence, des cas limites sur les encodages. Elle dit que c'est "comme avoir un junior QA infatigable qui pose des questions stupides brillantes"
 
 ### Ce qui ne marche pas encore
 
 - **L'analyse de bugs complexes** : Claude est bon sur les NPE évidentes, mais sur les bugs de logique métier, il tâtonne autant que nous
 - **La vélocité globale** : on ne peut pas honnêtement dire "+40% de productivité". C'est plus nuancé — certaines tâches sont 3x plus rapides, d'autres ne changent pas
-- **L'adoption n'est pas uniforme** : sur 6 ingénieurs, 3 utilisent Claude quotidiennement, 2 occasionnellement, 1 reste sceptique
+- **L'adoption n'est pas uniforme** : sur 5 personnes, les 2 seniors et moi l'utilisons quotidiennement, le mid-level commence à accrocher, le junior a été une vraie surprise — il a directement créé plein de skills et voulu tout automatiser, c'est un excellent élément qui mériterait d'aller plus haut, et la QA senior — ironiquement — est celle qui en tire le plus de valeur immédiate (génération de cas de test, exploration de scénarios edge case)
 
 ### Le vrai impact : le temps libéré
 
@@ -237,7 +242,7 @@ C'est encore le début. On verra dans 6 mois si les promesses se confirment. En 
 
 const contentEn = `## Introduction
 
-In January 2026, right after coming back from vacation, I discovered Claude Code. A few weeks later, I started integrating it into my team's workflow of 6 engineers at DJUST. We're still at the very beginning of this journey — it's fresh, it's recent, and the results aren't spectacular yet.
+In January 2026, right after coming back from vacation, I discovered Claude Code. A few weeks later, I started integrating it into my team's workflow of 5 people at DJUST. We're still at the very beginning of this journey — it's fresh, it's recent, and the results aren't spectacular yet.
 
 This isn't a promotional article. It's an honest experience report — with early wins, human resistance, adjustments, and what we're starting to understand — about what it concretely means to ask an engineering team in production to change their habits and integrate an AI tool.
 
@@ -250,7 +255,7 @@ This isn't a promotional article. It's an honest experience report — with earl
 DJUST is a B2B SaaS e-commerce platform. My scope as Engineering Manager covers the Order Management System (OMS), Payments, and Cart. It's the transactional core of the platform — where orders flow for clients like Franprix, Eiffage (Blueon), and VEJA.
 
 The team:
-- 6 engineers (4 seniors, 2 mid-level)
+- 5 people: 2 senior developers, 1 mid-level, 1 junior, and 1 senior QA
 - Stack: Java 17, Spring Boot, PostgreSQL, Elasticsearch, Kubernetes on AWS
 - ~15 interdependent Maven modules
 - Weekly Thursday releases
@@ -315,13 +320,17 @@ We organized our skills into 5 categories:
 - **check-api-contract**: backward compatibility verification for API changes
 - **check-migration**: DB migration validation (reversibility, performance, locks)
 
-### 2. Testing (5 skills)
+### 2. Testing & QA (7 skills)
+
+This is the category with the most impact — and it's our senior QA who gets the most value. Before Claude, she spent hours writing test cases manually. Now she uses Claude to generate a first test matrix that she refines.
 
 - **generate-unit-tests**: unit test generation for a class
 - **generate-e2e-test**: E2E scenario generation from a Jira ticket
 - **generate-test-data**: realistic fixture creation
 - **analyze-test-coverage**: identification of untested paths
 - **generate-mutation-tests**: mutation test suggestions
+- **generate-test-matrix**: test case matrix generation (nominal, edge cases, errors) from a spec — our QA's favorite skill
+- **explore-edge-cases**: Claude explores unlikely combinations a human wouldn't think to test (boundary values, concurrency, exotic encodings)
 
 ### 3. Deployment & Ops (5 skills)
 
@@ -383,12 +392,13 @@ What we're concretely observing:
 - **Assisted code reviews**: the clearest gain. Claude catches things that cognitive fatigue makes us miss
 - **Test generation**: for CRUDs and boilerplate, it's a real time-saver
 - **Deployment briefings**: the skill produces a structured document in 30 seconds
+- **QA**: this is the surprise. Our senior QA uses Claude to generate test matrices from Jira specs. She produces in 10 minutes what used to take 2 hours. And above all, Claude finds edge cases nobody would have thought of — exotic data combinations, concurrency scenarios, encoding boundary cases. She says it's "like having a tireless junior QA who asks brilliantly stupid questions"
 
 ### What's Not Working Yet
 
 - **Complex bug analysis**: Claude is good on obvious NPEs, but on business logic bugs, it fumbles as much as we do
 - **Overall velocity**: we can't honestly claim "+40% productivity." It's more nuanced — some tasks are 3x faster, others don't change
-- **Adoption isn't uniform**: out of 6 engineers, 3 use Claude daily, 2 occasionally, 1 remains skeptical
+- **Adoption isn't uniform**: out of 5 people, the 2 seniors and I use it daily, the mid-level is starting to get hooked, the junior was a real surprise — he immediately created tons of skills and wanted to automate everything, he's an excellent talent who deserves to go higher, and the senior QA — ironically — is the one getting the most immediate value (test case generation, edge case scenario exploration)
 
 ### The Real Impact: Freed Time
 
@@ -589,8 +599,8 @@ async function seedBlogClaudeCode() {
     contentFr,
     contentEn,
     contentKm,
-    excerptFr: "Retour d'expérience honnête sur l'intégration de Claude Code dans une équipe de 6 ingénieurs : premiers résultats après quelques semaines, résistances humaines, et ce qu'on commence à comprendre.",
-    excerptEn: "Honest experience report on integrating Claude Code into a team of 6 engineers: early results after a few weeks, human resistance, and what we're starting to understand.",
+    excerptFr: "Retour d'expérience honnête sur l'intégration de Claude Code dans une équipe de 5 personnes : premiers résultats après quelques semaines, résistances humaines, et ce qu'on commence à comprendre.",
+    excerptEn: "Honest experience report on integrating Claude Code into a team of 5: early results after a few weeks, human resistance, and what we're starting to understand.",
     excerptKm: "របាយការណ៍បទពិសោធន៍លើការរួមបញ្ចូល Claude Code ក្នុងក្រុមវិស្វករ ៦ នាក់៖ 25+ skills ផ្ទាល់ខ្លួន +៤០% ផលិតភាព ការប្រឆាំង និងមេរៀនដែលបានរៀន។",
     tags: ['AI', 'Claude Code', 'Management', 'Productivity', 'MCP'],
     published: true
