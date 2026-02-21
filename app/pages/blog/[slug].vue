@@ -51,6 +51,18 @@ const renderedContent = computed(() => {
     return `<ol>${items}</ol>`
   })
 
+  // Process markdown tables
+  html = html.replace(/(^\|.+\|$(\n\|.+\|$)+)/gm, (match) => {
+    const rows = match.trim().split('\n')
+    const headerCells = rows[0].split('|').filter(c => c.trim()).map(c => `<th>${c.trim()}</th>`).join('')
+    const bodyRows = rows.slice(2) // skip header + separator
+      .map(row => {
+        const cells = row.split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`).join('')
+        return `<tr>${cells}</tr>`
+      }).join('\n')
+    return `<table><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table>`
+  })
+
   // Inline formatting
   html = html
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
@@ -62,8 +74,9 @@ const renderedContent = computed(() => {
     .map(block => {
       const trimmed = block.trim()
       if (!trimmed) return ''
-      if (/^<(h[23]|ul|ol|hr|blockquote)/.test(trimmed)) return trimmed
-      return `<p>${trimmed}</p>`
+      if (/^<(h[23]|ul|ol|hr|blockquote|table)/.test(trimmed)) return trimmed
+      // Convert single newlines to <br> for line breaks within paragraphs
+      return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`
     })
     .join('\n')
 
@@ -156,6 +169,35 @@ h1 { font-size: 2rem; margin-bottom: 1rem; }
   border: none;
   border-top: 1px solid var(--border);
   margin: 2rem 0;
+}
+
+.post-content :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+  overflow-x: auto;
+  display: block;
+}
+
+.post-content :deep(thead) {
+  background: var(--bg-card, rgba(196, 150, 60, 0.08));
+}
+
+.post-content :deep(th),
+.post-content :deep(td) {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.post-content :deep(th) {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.post-content :deep(tbody tr:hover) {
+  background: rgba(196, 150, 60, 0.04);
 }
 
 @media (max-width: 768px) {
