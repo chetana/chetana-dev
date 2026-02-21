@@ -60,7 +60,7 @@ chetana-dev/
 
 ## Schéma de base de données
 
-6 tables principales :
+7 tables principales :
 
 - **projects** — Projets personnels (bilingue FR/EN)
 - **blog_posts** — Articles de blog (bilingue, avec contenu Markdown)
@@ -68,6 +68,9 @@ chetana-dev/
 - **messages** — Messages de contact (formulaire)
 - **experiences** — Expériences CV (bilingue)
 - **skills** — Compétences techniques (groupées par catégorie)
+- **health_entries** — Suivi quotidien de pushups (validation, streaks)
+
+> Voir [DATABASE.md](DATABASE.md) pour le schéma détaillé, les routes API et les scripts de seed.
 
 ## Flux de données
 
