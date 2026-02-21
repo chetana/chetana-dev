@@ -191,7 +191,22 @@ Pas tout le monde était enthousiaste au départ :
 
 **Sur-confiance initiale** — Les premières semaines, certains développeurs validaient les suggestions de Claude sans vérification. On a eu un incident mineur (un test E2E qui passait en CI mais cachait un faux positif). Ça nous a rappelé que l'IA est un outil, pas un oracle.
 
-**Coût des tokens** — À raison de 6 développeurs qui utilisent Claude intensivement, la facture mensuelle est significative. On a dû optimiser les prompts et mettre en place des limites d'usage pour rester dans le budget.
+**Coût des tokens** — La facture mensuelle est significative. On a dû optimiser les prompts et mettre en place des limites d'usage pour rester dans le budget.
+
+### Le paradoxe de l'IA pour les profils en formation
+
+C'est la question qui me travaille le plus en tant que manager. Mon junior et mon mid-level produisent plus de code, plus vite, avec moins de bugs. Sur le papier, c'est un succès. Mais en creusant, je me demande : **est-ce qu'ils apprennent autant ?**
+
+Quand j'étais junior, je passais des heures à debugger un NPE. C'était frustrant, mais c'est comme ça que j'ai compris en profondeur le cycle de vie des objets Java. Aujourd'hui, mon junior tape un prompt et Claude lui donne la solution en 30 secondes. Il livre plus vite, mais a-t-il vraiment compris pourquoi ça marchait pas ?
+
+Mon mid-level utilise Claude pour écrire des tests qu'il n'aurait jamais écrits seul. Les tests sont bons. Mais est-ce qu'il a intériorisé les patterns de test, ou est-ce qu'il dépend de Claude pour ça ?
+
+**Je n'ai pas la réponse.** Ce que je fais en attendant :
+- Je demande au junior de m'**expliquer** le code que Claude a généré avant de le valider. Si tu ne peux pas l'expliquer, tu ne peux pas le committer
+- J'organise des sessions de **live coding sans IA** pour garder les fondamentaux
+- Je valorise la **compréhension** autant que la **livraison** dans mes évaluations
+
+C'est peut-être la question la plus importante de cette décennie pour les Engineering Managers : **comment former des développeurs solides dans un monde où l'IA écrit du code à leur place ?** Je n'ai pas de réponse définitive, mais j'y réfléchis chaque jour.
 
 ## Chapitre 6 : Les leçons apprises
 
@@ -422,7 +437,22 @@ Not everyone was enthusiastic at first:
 
 **Initial overconfidence** — In the first weeks, some developers validated Claude's suggestions without verification. We had a minor incident (an E2E test that passed in CI but hid a false positive). It reminded us that AI is a tool, not an oracle.
 
-**Token costs** — With 6 developers using Claude intensively, the monthly bill is significant. We had to optimize prompts and set usage limits to stay within budget.
+**Token costs** — The monthly bill is significant. We had to optimize prompts and set usage limits to stay within budget.
+
+### The AI Paradox for Junior/Mid Developers
+
+This is the question that weighs on me most as a manager. My junior and mid-level developers produce more code, faster, with fewer bugs. On paper, it's a success. But digging deeper, I wonder: **are they learning as much?**
+
+When I was a junior, I spent hours debugging an NPE. It was frustrating, but that's how I deeply understood Java object lifecycle. Today, my junior types a prompt and Claude gives him the solution in 30 seconds. He ships faster, but did he really understand why it wasn't working?
+
+My mid-level uses Claude to write tests he would never have written alone. The tests are good. But has he internalized the testing patterns, or does he depend on Claude for that?
+
+**I don't have the answer.** What I'm doing in the meantime:
+- I ask the junior to **explain** the code Claude generated before validating it. If you can't explain it, you can't commit it
+- I organize **live coding sessions without AI** to keep fundamentals sharp
+- I value **understanding** as much as **delivery** in my evaluations
+
+This might be the most important question of this decade for Engineering Managers: **how do you train solid developers in a world where AI writes code for them?** I don't have a definitive answer, but I think about it every day.
 
 ## Chapter 6: Lessons Learned
 
