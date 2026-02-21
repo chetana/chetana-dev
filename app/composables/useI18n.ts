@@ -33,9 +33,9 @@ const translations: Record<string, Record<string, string>> = {
     km: "ខ្ញុំមិនមែនជា manager ដែលមើល dashboards ទេ។ ខ្ញុំនៅក្នុងកូដ នៅក្នុង reviews នៅក្នុង incidents។ នៅពេល bug ធ្ងន់ដល់ production នៅយប់សុក្រ ខ្ញុំជាអ្នកបើក terminal។"
   },
   'about.p2': {
-    fr: "Chez DJUST, je manage l'équipe OMS (Order Management System) de 6 ingénieurs tout en restant le lead technique de la plateforme. Mon scope : gestion des commandes, paiements (Adyen, Mangopay, Lemonway), panier, intégration fournisseurs, et tout ce qui touche au flux transactionnel B2B.",
-    en: "At DJUST, I manage the OMS (Order Management System) team of 6 engineers while remaining the platform's technical lead. My scope: order management, payments (Adyen, Mangopay, Lemonway), cart, supplier integrations, and everything related to the B2B transactional flow.",
-    km: "នៅ DJUST ខ្ញុំដឹកនាំក្រុម OMS (Order Management System) មានវិស្វករ ៦ នាក់ ខណៈពេលដែលនៅជា lead technique នៃវេទិកា។ វិសាលភាពរបស់ខ្ញុំ៖ ការគ្រប់គ្រងការបញ្ជាទិញ ការទូទាត់ (Adyen, Mangopay, Lemonway) រទេះ ការរួមបញ្ចូលអ្នកផ្គត់ផ្គង់ និងអ្វីទាំងអស់ដែលទាក់ទងនឹងលំហូរប្រតិបត្តិការ B2B។"
+    fr: "Chez DJUST, je manage l'équipe OMS (Order Management System) de 5 personnes (devs + QA) tout en restant le lead technique de la plateforme. Mon scope : gestion des commandes, paiements (Adyen, Mangopay, Lemonway), panier, intégration fournisseurs, et tout ce qui touche au flux transactionnel B2B.",
+    en: "At DJUST, I manage the OMS (Order Management System) team of 5 people (devs + QA) while remaining the platform's technical lead. My scope: order management, payments (Adyen, Mangopay, Lemonway), cart, supplier integrations, and everything related to the B2B transactional flow.",
+    km: "នៅ DJUST ខ្ញុំដឹកនាំក្រុម OMS (Order Management System) មាន ៥ នាក់ (devs + QA) ខណៈពេលដែលនៅជា lead technique នៃវេទិកា។ វិសាលភាពរបស់ខ្ញុំ៖ ការគ្រប់គ្រងការបញ្ជាទិញ ការទូទាត់ (Adyen, Mangopay, Lemonway) រទេះ ការរួមបញ្ចូលអ្នកផ្គត់ផ្គង់ និងអ្វីទាំងអស់ដែលទាក់ទងនឹងលំហូរប្រតិបត្តិការ B2B។"
   },
   'about.p3': {
     fr: "Avant le management, j'ai passé 10 ans les mains dans le code : mobile chez miLibris, applications bancaires chez BNP Paribas, tunnel d'achat chez Galeries Lafayette. Mon parcours technique est mon plus grand atout de manager : je comprends les problèmes de mes devs parce que je les vis avec eux.",

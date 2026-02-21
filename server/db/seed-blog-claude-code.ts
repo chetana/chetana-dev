@@ -516,7 +516,7 @@ const contentKm = `## សេចក្តីផ្តើម
 DJUST គឺជាវេទិកា e-commerce B2B SaaS។ វិសាលភាពរបស់ខ្ញុំក្នុងនាមជា Engineering Manager គ្របដណ្តប់ Order Management System (OMS), Payments និង Cart។ វាជាស្នូលប្រតិបត្តិការរបស់វេទិកា — កន្លែងដែលការបញ្ជាទិញហូរសម្រាប់អតិថិជនដូចជា Franprix, Eiffage (Blueon) និង VEJA។
 
 ក្រុម៖
-- វិស្វករ ៦ នាក់ (៤ senior, ២ mid-level)
+- ៥ នាក់ (២ senior devs, ១ mid, ១ junior, ១ QA senior)
 - Stack៖ Java 17, Spring Boot, PostgreSQL, Elasticsearch, Kubernetes លើ AWS
 - ~១៥ Maven modules ដែលពឹងផ្អែកគ្នា
 - Releases រៀងរាល់ថ្ងៃព្រហស្បតិ៍
@@ -631,7 +631,7 @@ async function seedBlogClaudeCode() {
     contentKm,
     excerptFr: "Retour d'expérience honnête sur l'intégration de Claude Code dans une équipe de 5 personnes : premiers résultats après quelques semaines, résistances humaines, et ce qu'on commence à comprendre.",
     excerptEn: "Honest experience report on integrating Claude Code into a team of 5: early results after a few weeks, human resistance, and what we're starting to understand.",
-    excerptKm: "របាយការណ៍បទពិសោធន៍លើការរួមបញ្ចូល Claude Code ក្នុងក្រុមវិស្វករ ៦ នាក់៖ 25+ skills ផ្ទាល់ខ្លួន +៤០% ផលិតភាព ការប្រឆាំង និងមេរៀនដែលបានរៀន។",
+    excerptKm: "របាយការណ៍បទពិសោធន៍លើការរួមបញ្ចូល Claude Code ក្នុងក្រុម ៥ នាក់ (devs + QA)៖ 25+ skills ផ្ទាល់ខ្លួន +៤០% ផលិតភាព ការប្រឆាំង និងមេរៀនដែលបានរៀន។",
     tags: ['AI', 'Claude Code', 'Management', 'Productivity', 'MCP'],
     published: true
   })

@@ -19,7 +19,7 @@ async function seedKm() {
       dateStart: '2023-11',
       roleKm: 'Engineering Manager',
       bulletsKm: [
-        'ដឹកនាំក្រុម OMS (វិស្វករ ៦ នាក់)៖ ការជ្រើសរើស ការវាយតម្លៃ ការអភិវឌ្ឍជំនាញ',
+        'ដឹកនាំក្រុម OMS (៥ នាក់៖ devs + QA)៖ ការជ្រើសរើស ការវាយតម្លៃ ការអភិវឌ្ឍជំនាញ',
         'ទទួលខុសត្រូវលើ Order Management, Payments, Cart នៅលើវេទិកា B2B SaaS',
         'Lead technique៖ ស្ថាបត្យកម្មម៉ូឌុល code reviews ការសម្រេចចិត្តបច្ចេកទេorg សំខាន់ៗ',
         'ដឹកនាំ releases ប្រចាំសប្តាហ៍ ការគ្រប់គ្រង incidents production ការសម្របសម្រួលជាមួយក្រុម Catalog Infra និង Integration',
@@ -108,7 +108,7 @@ async function seedKm() {
       excerptKm: 'របៀបដែលយើងបានទទួល +40% ផលិតភាពដោយរួមបញ្ចូល Claude Code ក្នុង workflow ប្រចាំថ្ងៃរបស់ក្រុម។',
       contentKm: `## សេចក្តីផ្តើម
 
-ក្នុងនាមជា Engineering Manager នៅ DJUST ខ្ញុំជាអ្នកដំបូងគេដែលណែនាំ Claude Code ក្នុង workflow ប្រចាំថ្ងៃរបស់ក្រុមវិស្វករ ៦ នាក់របស់ខ្ញុំ។ នេះជារបៀបដែលយើងបានធ្វើ និងលទ្ធផលដែលទទួលបាន។
+ក្នុងនាមជា Engineering Manager នៅ DJUST ខ្ញុំជាអ្នកដំបូងគេដែលណែនាំ Claude Code ក្នុង workflow ប្រចាំថ្ងៃរបស់ក្រុម ៥ នាក់របស់ខ្ញុំ។ នេះជារបៀបដែលយើងបានធ្វើ និងលទ្ធផលដែលទទួលបាន។
 
 ## បញ្ហា
 

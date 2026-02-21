@@ -31,21 +31,21 @@ async function seed() {
       dateEnd: null,
       location: 'Paris',
       bulletsFr: [
-        "Management de l'équipe OMS (6 ingénieurs) : recrutement, évaluations, montée en compétences",
+        "Management de l'équipe OMS (5 personnes : devs + QA) : recrutement, évaluations, montée en compétences",
         "Responsable du périmètre Order Management, Payments, Cart sur une plateforme B2B SaaS",
         "Lead technique : architecture des modules, code reviews, décisions techniques structurantes",
         "Pilotage des MEP hebdomadaires, gestion des incidents prod, coordination avec les équipes Catalog, Infra et Intégration",
         "Intégration de l'IA (Claude Code) dans le workflow de l'équipe : +40% de productivité sur les tâches répétitives"
       ],
       bulletsEn: [
-        "Managing the OMS team (6 engineers): hiring, performance reviews, skill development",
+        "Managing the OMS team (5 people: devs + QA): hiring, performance reviews, skill development",
         "Responsible for Order Management, Payments, Cart on a B2B SaaS platform",
         "Technical lead: module architecture, code reviews, key technical decisions",
         "Weekly production releases, production incident management, coordination with Catalog, Infra and Integration teams",
         "Integrated AI (Claude Code) into the team's workflow: +40% productivity on repetitive tasks"
       ],
       bulletsKm: [
-        "ដឹកនាំក្រុម OMS (វិស្វករ ៦ នាក់)៖ ការជ្រើសរើស ការវាយតម្លៃ ការអភិវឌ្ឍជំនាញ",
+        "ដឹកនាំក្រុម OMS (៥ នាក់៖ devs + QA)៖ ការជ្រើសរើស ការវាយតម្លៃ ការអភិវឌ្ឍជំនាញ",
         "ទទួលខុសត្រូវលើ Order Management, Payments, Cart នៅលើវេទិកា B2B SaaS",
         "Lead technique៖ ស្ថាបត្យកម្មម៉ូឌុល code reviews ការសម្រេចចិត្តបច្ចេកទេorg សំខាន់ៗ",
         "ដឹកនាំ releases ប្រចាំសប្តាហ៍ ការគ្រប់គ្រង incidents production ការសម្របសម្រួលជាមួយក្រុម Catalog Infra និង Integration",
@@ -214,7 +214,7 @@ async function seed() {
     { category: 'Domaine métier', name: 'E-commerce B2B', color: 'green', sortOrder: 5 },
     { category: 'Domaine métier', name: 'Keycloak / Auth', color: 'green', sortOrder: 6 },
     // Management
-    { category: 'Management', name: 'Team Lead (6 devs)', color: 'orange', sortOrder: 1 },
+    { category: 'Management', name: 'Team Lead (5 : devs + QA)', color: 'orange', sortOrder: 1 },
     { category: 'Management', name: 'Code Reviews', color: 'orange', sortOrder: 2 },
     { category: 'Management', name: 'Recrutement', color: 'orange', sortOrder: 3 },
     { category: 'Management', name: 'People Review', color: 'orange', sortOrder: 4 },
