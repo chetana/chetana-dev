@@ -268,10 +268,27 @@ async function seed() {
     slug: 'dark-theme-light-theme-transition',
     titleFr: 'Du dark theme au light theme : pourquoi j\'ai changé après 15 ans',
     titleEn: 'From dark theme to light theme: why I switched after 15 years',
+    titleKm: 'ពី dark theme ទៅ light theme៖ ហេតុអ្វីខ្ញុំផ្លាស់ប្តូរបន្ទាប់ពី ១៥ ឆ្នាំ',
     contentFr,
     contentEn,
+    contentKm: `## សេចក្តីផ្តើម
+
+មានប្រធានបទក្នុងពិភពអភិវឌ្ឍន៍កម្មវិធីដែលបង្កើតសង្គ្រាមសាសនា។ Tabs vs spaces។ Vim vs Emacs។ ហើយពិតណាស់៖ **dark theme vs light theme**។
+
+អស់រយៈពេលជិត ១៥ ឆ្នាំ ខ្ញុំជាអ្នកគាំទ្រ dark theme មិនរំកិល។ Terminal ខ្មៅ IDE ខ្មៅ browser ក្នុង dark mode សូម្បីតែទូរស័ព្ទ។ អ្វីៗទាំងអស់ងងឹត។ វាជាអត្តសញ្ញាណអ្នកអភិវឌ្ឍន៍របស់ខ្ញុំ បង្កើតតាំងពីថ្ងៃដំបូងនៅ EPITECH ប្រមាណឆ្នាំ 2008 នៅពេលខ្ញុំមានអាយុ ២០ ឆ្នាំ។
+
+ហើយបន្ទាប់មក ប្រមាណអាយុ ៣៥ ខ្ញុំបានផ្លាស់ប្តូរ។ ទាំងស្រុង។ IDE របស់ខ្ញុំជា light theme។ Terminal របស់ខ្ញុំក៏ដូចគ្នា។ គេហទំព័រផ្ទាល់ខ្លួនរបស់ខ្ញុំ — ដែលអ្នកកំពុងអាននៅពេលនេះ — ទើបតែផ្លាស់ប្តូរទៅពណ៌ភ្លឺ។
+
+នេះមិនមែនជាឆន្ទៈទេ។ វាជាការវិវត្តន៍ធម្មជាតិ ហើយខ្ញុំនឹងពន្យល់ពីមូលហេតុ។
+
+## សេចក្តីសន្និដ្ឋាន
+
+នៅអាយុ ២០ ខ្ញុំបានជ្រើសរើស dark theme ព្រោះវាជាអ្វីដែលគ្រប់គ្នាធ្វើ។ នៅអាយុ ៣៧ ខ្ញុំបានជ្រើសរើស light theme ព្រោះវាសមស្របនឹងខ្ញុំ។
+
+ការវិវត្តន៍មិនមែនជាការក្បត់ទេ។ វាជាភស្តុតាងថាអ្នកបន្តស្តាប់រាងកាយរបស់អ្នក សួរសំណួរពីទម្លាប់របស់អ្នក និងធ្វើការសម្រេចចិត្តដោយចេតនាជំនួសឱ្យការធ្វើតាមទម្រង់។`,
     excerptFr: 'Après 15 ans de dark theme, j\'ai basculé en light. Physiologie, science, écrans modernes et évolution personnelle : pourquoi ce n\'est pas une trahison mais une maturité.',
     excerptEn: 'After 15 years of dark theme, I switched to light. Physiology, science, modern screens and personal evolution: why it\'s not betrayal but maturity.',
+    excerptKm: 'បន្ទាប់ពី ១៥ ឆ្នាំនៃ dark theme ខ្ញុំបានផ្លាស់ប្តូរទៅ light។ រូបវិទ្យា វិទ្យាសាស្ត្រ អេក្រង់ទំនើប និងការវិវត្តន៍ផ្ទាល់ខ្លួន៖ ហេតុអ្វីវាមិនមែនជាការក្បត់ ប៉ុន្តែជាភាពចាស់ទុំ។',
     tags: ['Opinion', 'Developer Life', 'UX'],
     published: true
   })

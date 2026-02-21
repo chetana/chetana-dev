@@ -6,13 +6,13 @@
       class="timeline-item"
       :class="{ current: i === 0 }"
     >
-      <div class="timeline-date">{{ formatDate(exp.dateStart) }} - {{ exp.dateEnd ? formatDate(exp.dateEnd) : (locale === 'fr' ? 'Présent' : 'Present') }}</div>
+      <div class="timeline-date">{{ formatDate(exp.dateStart) }} - {{ exp.dateEnd ? formatDate(exp.dateEnd) : (locale === 'fr' ? 'Présent' : locale === 'en' ? 'Present' : 'បច្ចុប្បន្ន') }}</div>
       <div class="timeline-company">{{ exp.company }} - {{ exp.location }}</div>
-      <div class="timeline-role">{{ locale === 'fr' ? exp.roleFr : exp.roleEn }}</div>
+      <div class="timeline-role">{{ localeField(exp, 'role') }}</div>
       <div class="timeline-desc">
         <ul>
           <li
-            v-for="(bullet, j) in (locale === 'fr' ? exp.bulletsFr : exp.bulletsEn)"
+            v-for="(bullet, j) in localeArrayField(exp, 'bullets')"
             :key="j"
             v-html="bullet"
           />
@@ -23,10 +23,10 @@
 </template>
 
 <script setup lang="ts">
-const { locale } = useLocale()
+const { locale, localeField } = useLocale()
 
 defineProps<{
-  experiences: Array<{
+  experiences: Array<Record<string, any> & {
     id: number
     company: string
     roleFr: string
@@ -39,15 +39,20 @@ defineProps<{
   }>
 }>()
 
+function localeArrayField(obj: Record<string, any>, field: string): string[] {
+  const suffix = locale.value === 'fr' ? 'Fr' : locale.value === 'en' ? 'En' : 'Km'
+  return obj[field + suffix] || obj[field + 'Fr'] || []
+}
+
 function formatDate(d: string): string {
   const [year, month] = d.split('-')
   const months: Record<string, Record<string, string>> = {
-    '01': { fr: 'Jan', en: 'Jan' }, '02': { fr: 'Fév', en: 'Feb' },
-    '03': { fr: 'Mar', en: 'Mar' }, '04': { fr: 'Avr', en: 'Apr' },
-    '05': { fr: 'Mai', en: 'May' }, '06': { fr: 'Juin', en: 'Jun' },
-    '07': { fr: 'Juil', en: 'Jul' }, '08': { fr: 'Août', en: 'Aug' },
-    '09': { fr: 'Sep', en: 'Sep' }, '10': { fr: 'Oct', en: 'Oct' },
-    '11': { fr: 'Nov', en: 'Nov' }, '12': { fr: 'Déc', en: 'Dec' }
+    '01': { fr: 'Jan', en: 'Jan', km: 'មករា' }, '02': { fr: 'Fév', en: 'Feb', km: 'កុម្ភៈ' },
+    '03': { fr: 'Mar', en: 'Mar', km: 'មីនា' }, '04': { fr: 'Avr', en: 'Apr', km: 'មេសា' },
+    '05': { fr: 'Mai', en: 'May', km: 'ឧសភា' }, '06': { fr: 'Juin', en: 'Jun', km: 'មិថុនា' },
+    '07': { fr: 'Juil', en: 'Jul', km: 'កក្កដា' }, '08': { fr: 'Août', en: 'Aug', km: 'សីហា' },
+    '09': { fr: 'Sep', en: 'Sep', km: 'កញ្ញា' }, '10': { fr: 'Oct', en: 'Oct', km: 'តុលា' },
+    '11': { fr: 'Nov', en: 'Nov', km: 'វិច្ឆិកា' }, '12': { fr: 'Déc', en: 'Dec', km: 'ធ្នូ' }
   }
   const lang = locale.value
   return `${months[month]?.[lang] || month} ${year}`

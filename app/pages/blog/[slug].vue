@@ -4,7 +4,7 @@
 
     <div v-if="post">
       <div class="post-date">{{ new Date(post.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}</div>
-      <h1>{{ locale === 'fr' ? post.titleFr : post.titleEn }}</h1>
+      <h1>{{ localeField(post, 'title') }}</h1>
 
       <div class="tags" style="margin: 1.5rem 0;">
         <span v-for="tag in (post.tags || [])" :key="tag" class="tag">{{ tag }}</span>
@@ -22,14 +22,14 @@
 </template>
 
 <script setup lang="ts">
-const { locale } = useLocale()
+const { locale, localeField } = useLocale()
 const route = useRoute()
 
 const { data: post } = await useFetch(`/api/blog/${route.params.slug}`)
 
 const renderedContent = computed(() => {
   if (!post.value) return ''
-  const raw = locale.value === 'fr' ? post.value.contentFr : post.value.contentEn
+  const raw = localeField(post.value, 'content')
   // Basic markdown-like rendering (headers, bold, paragraphs)
   // Process block-level elements first
   let html = raw
@@ -72,12 +72,12 @@ const renderedContent = computed(() => {
 
 const postTitle = computed(() => {
   if (!post.value) return 'Blog'
-  return locale.value === 'fr' ? post.value.titleFr : post.value.titleEn
+  return localeField(post.value, 'title')
 })
 
 const postDescription = computed(() => {
   if (!post.value) return ''
-  return locale.value === 'fr' ? post.value.excerptFr : post.value.excerptEn
+  return localeField(post.value, 'excerpt')
 })
 
 useSeoMeta({

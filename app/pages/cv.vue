@@ -42,10 +42,10 @@
       <div class="cv-section">
         <div class="cv-section-title">{{ locale === 'fr' ? 'Expériences professionnelles' : 'Professional Experience' }}</div>
         <div v-for="exp in experiences" :key="exp.id" class="cv-exp">
-          <div class="cv-exp-role">{{ locale === 'fr' ? exp.roleFr : exp.roleEn }}</div>
-          <div class="cv-exp-company">{{ exp.company }} — {{ exp.dateStart }} - {{ exp.dateEnd || (locale === 'fr' ? 'Présent' : 'Present') }}</div>
+          <div class="cv-exp-role">{{ localeField(exp, 'role') }}</div>
+          <div class="cv-exp-company">{{ exp.company }} — {{ exp.dateStart }} - {{ exp.dateEnd || (locale === 'fr' ? 'Présent' : locale === 'en' ? 'Present' : 'បច្ចុប្បន្ន') }}</div>
           <ul class="cv-exp-bullets">
-            <li v-for="(b, i) in (locale === 'fr' ? exp.bulletsFr : exp.bulletsEn)" :key="i" v-html="b" />
+            <li v-for="(b, i) in (exp[locale === 'fr' ? 'bulletsFr' : locale === 'en' ? 'bulletsEn' : 'bulletsKm'] || exp.bulletsFr)" :key="i" v-html="b" />
           </ul>
         </div>
       </div>
@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-const { locale, toggleLocale } = useLocale()
+const { locale, toggleLocale, localeField } = useLocale()
 
 const { data: experiences } = await useFetch('/api/experiences', { default: () => [] })
 

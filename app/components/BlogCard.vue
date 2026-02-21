@@ -11,10 +11,10 @@
 </template>
 
 <script setup lang="ts">
-const { locale, t } = useLocale()
+const { locale, t, localeField } = useLocale()
 
 const props = defineProps<{
-  post: {
+  post: Record<string, any> & {
     slug: string
     titleFr: string
     titleEn: string
@@ -25,8 +25,8 @@ const props = defineProps<{
   }
 }>()
 
-const title = computed(() => props.post[locale.value === 'fr' ? 'titleFr' : 'titleEn'])
-const excerpt = computed(() => props.post[locale.value === 'fr' ? 'excerptFr' : 'excerptEn'])
+const title = computed(() => localeField(props.post, 'title'))
+const excerpt = computed(() => localeField(props.post, 'excerpt'))
 </script>
 
 <style scoped>

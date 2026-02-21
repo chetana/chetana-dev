@@ -158,5 +158,10 @@ export function useLocale() {
     locale.value = cycle[locale.value] || 'fr'
   }
 
-  return { locale, t, toggleLocale }
+  function localeField(obj: Record<string, any>, field: string): string {
+    const suffix = locale.value === 'fr' ? 'Fr' : locale.value === 'en' ? 'En' : 'Km'
+    return obj[field + suffix] || obj[field + 'Fr'] || ''
+  }
+
+  return { locale, t, toggleLocale, localeField }
 }

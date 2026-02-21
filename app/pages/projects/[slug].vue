@@ -3,14 +3,14 @@
     <NuxtLink to="/projects" class="back-link">← {{ t('nav.projects') }}</NuxtLink>
 
     <div v-if="project">
-      <h1>{{ locale === 'fr' ? project.titleFr : project.titleEn }}</h1>
+      <h1>{{ localeField(project, 'title') }}</h1>
 
       <div class="tags" style="margin: 1.5rem 0;">
         <span v-for="tag in (project.tags || [])" :key="tag" class="tag">{{ tag }}</span>
       </div>
 
       <div class="project-content">
-        <p>{{ locale === 'fr' ? project.descriptionFr : project.descriptionEn }}</p>
+        <p>{{ localeField(project, 'description') }}</p>
       </div>
 
       <div class="project-actions">
@@ -30,19 +30,19 @@
 </template>
 
 <script setup lang="ts">
-const { locale, t } = useLocale()
+const { locale, t, localeField } = useLocale()
 const route = useRoute()
 
 const { data: project } = await useFetch(`/api/projects/${route.params.slug}`)
 
 const projectTitle = computed(() => {
   if (!project.value) return 'Projet'
-  return locale.value === 'fr' ? project.value.titleFr : project.value.titleEn
+  return localeField(project.value, 'title')
 })
 
 const projectDescription = computed(() => {
   if (!project.value) return ''
-  return locale.value === 'fr' ? project.value.descriptionFr : project.value.descriptionEn
+  return localeField(project.value, 'description')
 })
 
 useSeoMeta({
