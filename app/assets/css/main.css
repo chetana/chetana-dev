@@ -1,14 +1,14 @@
 :root {
-  --bg: #f8f9fa;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f0f0f5;
-  --accent: #6c63ff;
-  --accent-light: #5a52d5;
-  --text: #1a1a2e;
-  --text-muted: #6b7280;
-  --text-dim: #9ca3af;
-  --border: #e5e7eb;
-  --gradient: linear-gradient(135deg, #6c63ff 0%, #48c6ef 100%);
+  --bg: #faf8f5;
+  --bg-card: #fffefb;
+  --bg-card-hover: #f5f0e8;
+  --accent: #c4963c;
+  --accent-light: #a67c2e;
+  --text: #2c1810;
+  --text-muted: #6b5e54;
+  --text-dim: #9c8f85;
+  --border: #e8e0d4;
+  --gradient: linear-gradient(135deg, #c4963c 0%, #8b2e3b 100%);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -48,7 +48,7 @@ a:hover { color: var(--text); }
   color: #fff;
 }
 
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108, 99, 255, 0.3); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(196, 150, 60, 0.3); }
 
 .btn-outline {
   background: transparent;
@@ -77,6 +77,19 @@ a:hover { color: var(--text); }
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 3rem;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '◆ ◇ ◆ ◇ ◆';
+  display: block;
+  text-align: center;
+  font-size: 0.5rem;
+  letter-spacing: 0.4em;
+  color: var(--accent);
+  opacity: 0.18;
+  margin-top: 0.6rem;
 }
 
 /* === TAGS === */
@@ -84,8 +97,8 @@ a:hover { color: var(--text); }
 
 .tag {
   padding: 0.3rem 0.8rem;
-  background: rgba(108, 99, 255, 0.08);
-  border: 1px solid rgba(108, 99, 255, 0.2);
+  background: rgba(196, 150, 60, 0.08);
+  border: 1px solid rgba(196, 150, 60, 0.2);
   border-radius: 6px;
   font-size: 0.8rem;
   color: var(--accent-light);

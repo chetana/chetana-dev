@@ -50,7 +50,7 @@ nav {
   justify-content: space-between;
   align-items: center;
   backdrop-filter: blur(20px);
-  background: rgba(248, 249, 250, 0.85);
+  background: rgba(250, 248, 245, 0.85);
   border-bottom: 1px solid var(--border);
   transition: all 0.3s;
 }
@@ -105,7 +105,7 @@ nav {
   left: 0;
   right: 0;
   z-index: 99;
-  background: rgba(248, 249, 250, 0.97);
+  background: rgba(250, 248, 245, 0.97);
   backdrop-filter: blur(20px);
   padding: 1rem 2rem;
   display: flex;

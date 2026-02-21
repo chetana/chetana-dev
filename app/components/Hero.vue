@@ -35,8 +35,8 @@ const { t } = useLocale()
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at 30% 50%, rgba(108, 99, 255, 0.06) 0%, transparent 50%),
-              radial-gradient(circle at 70% 50%, rgba(72, 198, 239, 0.04) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 50%, rgba(196, 150, 60, 0.06) 0%, transparent 50%),
+              radial-gradient(circle at 70% 50%, rgba(139, 46, 59, 0.04) 0%, transparent 50%);
   animation: drift 20s ease-in-out infinite;
 }
 

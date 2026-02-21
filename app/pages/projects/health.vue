@@ -391,8 +391,8 @@ useSeoMeta({
 }
 
 .cal-cell.validated {
-  background: rgba(108, 99, 255, 0.1);
-  border: 1px solid rgba(108, 99, 255, 0.3);
+  background: rgba(196, 150, 60, 0.1);
+  border: 1px solid rgba(196, 150, 60, 0.3);
 }
 
 .cal-cell.missed {
@@ -402,7 +402,7 @@ useSeoMeta({
 
 .cal-cell.today {
   border: 2px solid var(--accent) !important;
-  box-shadow: 0 0 12px rgba(108, 99, 255, 0.3);
+  box-shadow: 0 0 12px rgba(196, 150, 60, 0.3);
 }
 
 .cal-cell.future {

@@ -86,7 +86,7 @@ function formatDate(d: string): string {
 }
 
 .timeline-item.current::before {
-  box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.3);
+  box-shadow: 0 0 0 4px rgba(196, 150, 60, 0.3);
 }
 
 .timeline-date {
