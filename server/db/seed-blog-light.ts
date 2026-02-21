@@ -12,7 +12,7 @@ const contentFr = `## Introduction
 
 Il y a des sujets dans le monde du développement qui déclenchent des guerres de religion. Tabs vs spaces. Vim vs Emacs. Et bien sûr : **dark theme vs light theme**.
 
-Pendant près de 15 ans, j'ai été un partisan inconditionnel du dark theme. Terminal noir, IDE noir, navigateur en dark mode, même mon téléphone. Tout était sombre. C'était mon identité de développeur, forgée dès mes débuts à EPITECH vers 2008, quand j'avais 20 ans.
+Pendant plus de 10 ans, j'ai été un partisan inconditionnel du dark theme. Terminal noir, IDE noir, navigateur en dark mode, même mon téléphone. Tout était sombre. C'était mon identité de développeur, forgée dès mes débuts à EPITECH vers 2008, quand j'avais 20 ans.
 
 Et puis, vers 35 ans, j'ai basculé. Complètement. Mon IDE est en light theme. Mon terminal aussi. Mon site perso — celui que vous lisez en ce moment — vient de passer en fond clair.
 
@@ -36,7 +36,7 @@ Commençons par les faits. Plusieurs études en ergonomie visuelle ont démontr�
 
 **La fatigue oculaire augmente avec l'âge.** À partir de 35-40 ans, la presbytie commence. Le cristallin perd en élasticité, l'accommodation est plus difficile. Les hauts contrastes du dark theme (blanc pur sur noir pur) deviennent fatigants. Le light theme, avec ses contrastes plus doux, est plus reposant pour les yeux vieillissants.
 
-Je suis né le 8 août 1988. J'ai 37 ans. Mon ophtalmologue m'a confirmé ce que je sentais depuis un moment : mes yeux ont changé. La presbytie pointe son nez. Et le dark theme, que j'ai adoré pendant 15 ans, est devenu un facteur de fatigue plutôt que de confort.
+Je suis né le 8 août 1988. J'ai 37 ans. Mon ophtalmologue m'a confirmé ce que je sentais depuis un moment : mes yeux ont changé. La presbytie pointe son nez. Et le dark theme, que j'ai adoré pendant plus de 10 ans, est devenu un facteur de fatigue plutôt que de confort.
 
 ## Les chiffres de l'industrie
 
@@ -53,7 +53,7 @@ Le dark theme reste populaire, et c'est très bien. Mais l'idée qu'il est objec
 
 En 2008, quand j'ai commencé, je codais sur un moniteur TN 19 pouces. En 2026, je suis devant un écran IPS 27 pouces avec un rapport de contraste de 1000:1, une luminosité de 350 nits, et un traitement anti-reflet.
 
-Les dalles modernes (IPS, OLED, Mini-LED) affichent un noir profond et un blanc pur sans fatigue. Le light theme sur un bon écran est incomparablement plus lisible qu'il ne l'était il y a 15 ans. L'argument technique qui justifiait le dark theme a largement disparu.
+Les dalles modernes (IPS, OLED, Mini-LED) affichent un noir profond et un blanc pur sans fatigue. Le light theme sur un bon écran est incomparablement plus lisible qu'il ne l'était il y a 10 ans. L'argument technique qui justifiait le dark theme a largement disparu.
 
 De plus, les systèmes d'exploitation modernes proposent des fonctions comme :
 
@@ -69,7 +69,7 @@ Ce passage du dark au light n'est pas un phénomène isolé. C'est une tendance 
 
 **Le café.** À 20 ans, je buvais du café noir, le plus fort possible. Double espresso, pas de sucre, pas de lait. Aujourd'hui ? Un latte oat milk, parfois un matcha. Ce n'est pas que le café noir est "mauvais" — c'est que mes goûts ont évolué vers la nuance.
 
-**La musique.** Adolescent, j'écoutais du metal progressif, du Meshuggah, du Tool. Du complexe, du technique, du loud. Aujourd'hui, ma playlist alterne entre du jazz, de la lo-fi, et du Radiohead. L'énergie brute a cédé la place à l'atmosphère.
+**La musique.** Adolescent, j'ai grandi avec la génération manga — les OST de Naruto, Bleach, One Piece, Dragon Ball. Du J-rock, du J-pop, des génériques d'animé en boucle. Aujourd'hui, ma playlist alterne entre du jazz, de la lo-fi, et du Radiohead. L'énergie des shōnen a cédé la place à l'atmosphère.
 
 **Les vêtements.** Tout noir, tout le temps. Maintenant ? Du gris clair, du bleu marine, même du beige. Impensable à 25 ans.
 
@@ -104,7 +104,7 @@ La transition ne s'est pas faite du jour au lendemain. Voici comment j'ai procé
 
 3. **Le terminal.** C'est le plus dur psychologiquement. Un terminal blanc, c'est comme trahir ses origines. Mais la lisibilité est tellement supérieure que je ne suis jamais revenu en arrière.
 
-4. **Le téléphone.** Dernier bastion. Le dark mode sur iPhone, je l'avais depuis iOS 13. L'enlever m'a fait réaliser à quel point les apps sont plus belles en mode clair.
+4. **Le téléphone.** Dernier bastion. Je fais partie de ceux qui ont commencé avec Android sur HTC, puis Samsung, jusqu'à arriver aux Pixel modernes de Google. Le dark mode sur Android, je l'avais depuis qu'il existait. L'enlever m'a fait réaliser à quel point les apps sont plus belles en mode clair.
 
 5. **Mon site perso.** La dernière étape. Passer chetana.dev en light theme, c'est un statement. C'est dire publiquement : j'ai changé, et j'assume.
 
@@ -118,7 +118,7 @@ Le dark theme reste excellent pour :
 - Les personnes photosensibles
 - L'esthétique de certaines applications (jeux, médias)
 
-Mais l'ériger en standard absolu, en marqueur d'identité de développeur, c'est absurde. C'est comme dire que les vrais musiciens ne jouent que du metal, ou que les vrais amateurs de café ne boivent que de l'espresso.
+Mais l'ériger en standard absolu, en marqueur d'identité de développeur, c'est absurde. C'est comme dire que les vrais fans d'animé ne regardent que du shōnen, ou que les vrais amateurs de café ne boivent que de l'espresso.
 
 ## Conclusion
 
@@ -133,13 +133,13 @@ Et si quelqu'un vous traite de "psychopath" parce que vous codez en light theme,
 ---
 
 *Chetana YIN — Février 2026*
-*Engineering Manager, développeur depuis 2008, converti au light theme depuis 2024.*`
+*Engineering Manager, développeur depuis 2008, converti au light theme depuis 2019 — bien avant que ce soit tendance.*`
 
 const contentEn = `## Introduction
 
 There are topics in the software development world that trigger holy wars. Tabs vs spaces. Vim vs Emacs. And of course: **dark theme vs light theme**.
 
-For nearly 15 years, I was an unwavering dark theme advocate. Black terminal, black IDE, dark mode browser, even my phone. Everything was dark. It was my developer identity, forged from my earliest days at EPITECH around 2008, when I was 20 years old.
+For over 10 years, I was an unwavering dark theme advocate. Black terminal, black IDE, dark mode browser, even my phone. Everything was dark. It was my developer identity, forged from my earliest days at EPITECH around 2008, when I was 20 years old.
 
 And then, around 35, I switched. Completely. My IDE is light theme. My terminal too. My personal website — the one you're reading right now — just went light.
 
@@ -163,7 +163,7 @@ Let's start with the facts. Several visual ergonomics studies have demonstrated 
 
 **Eye fatigue increases with age.** From 35-40 years old, presbyopia begins. The crystalline lens loses elasticity, accommodation becomes harder. The high contrasts of dark theme (pure white on pure black) become tiring. Light theme, with its softer contrasts, is more restful for aging eyes.
 
-I was born on August 8, 1988. I'm 37 years old. My ophthalmologist confirmed what I'd been feeling for a while: my eyes have changed. Presbyopia is starting. And dark theme, which I loved for 15 years, has become a fatigue factor rather than a comfort.
+I was born on August 8, 1988. I'm 37 years old. My ophthalmologist confirmed what I'd been feeling for a while: my eyes have changed. Presbyopia is starting. And dark theme, which I loved for over 10 years, has become a fatigue factor rather than a comfort.
 
 ## Industry numbers
 
@@ -180,7 +180,7 @@ Dark theme remains popular, and that's perfectly fine. But the idea that it's ob
 
 In 2008, when I started, I coded on a 19-inch TN monitor. In 2026, I'm in front of a 27-inch IPS display with a 1000:1 contrast ratio, 350 nits of brightness, and anti-glare coating.
 
-Modern panels (IPS, OLED, Mini-LED) display deep blacks and pure whites without fatigue. Light theme on a good screen is incomparably more readable than it was 15 years ago. The technical argument that justified dark theme has largely disappeared.
+Modern panels (IPS, OLED, Mini-LED) display deep blacks and pure whites without fatigue. Light theme on a good screen is incomparably more readable than it was 10 years ago. The technical argument that justified dark theme has largely disappeared.
 
 Moreover, modern operating systems offer features like:
 
@@ -196,7 +196,7 @@ This dark-to-light transition isn't an isolated phenomenon. It's a trend I obser
 
 **Coffee.** At 20, I drank black coffee, as strong as possible. Double espresso, no sugar, no milk. Today? An oat milk latte, sometimes a matcha. It's not that black coffee is "bad" — my tastes have evolved toward nuance.
 
-**Music.** As a teenager, I listened to progressive metal — Meshuggah, Tool. Complex, technical, loud. Today, my playlist alternates between jazz, lo-fi, and Radiohead. Raw energy has given way to atmosphere.
+**Music.** As a teenager, I grew up with the manga generation — Naruto OSTs, Bleach, One Piece, Dragon Ball. J-rock, J-pop, anime openings on repeat. Today, my playlist alternates between jazz, lo-fi, and Radiohead. The shōnen energy has given way to atmosphere.
 
 **Clothing.** All black, all the time. Now? Light gray, navy blue, even beige. Unthinkable at 25.
 
@@ -231,7 +231,7 @@ The transition didn't happen overnight. Here's how I proceeded:
 
 3. **The terminal.** This is the hardest psychologically. A white terminal feels like betraying your origins. But the readability is so superior that I never went back.
 
-4. **The phone.** Last bastion. Dark mode on iPhone — I'd had it since iOS 13. Removing it made me realize how much better apps look in light mode.
+4. **The phone.** Last bastion. I'm one of those who started with Android on HTC, then Samsung, all the way to modern Google Pixels. Dark mode on Android — I'd had it since it existed. Removing it made me realize how much better apps look in light mode.
 
 5. **My personal site.** The final step. Switching chetana.dev to light theme is a statement. It's publicly saying: I've changed, and I own it.
 
@@ -245,7 +245,7 @@ Dark theme remains excellent for:
 - Photosensitive individuals
 - The aesthetics of certain applications (games, media)
 
-But elevating it to an absolute standard, a developer identity marker, is absurd. It's like saying real musicians only play metal, or real coffee lovers only drink espresso.
+But elevating it to an absolute standard, a developer identity marker, is absurd. It's like saying real anime fans only watch shōnen, or real coffee lovers only drink espresso.
 
 ## Conclusion
 
@@ -260,7 +260,7 @@ And if someone calls you a "psychopath" for coding in light theme, just tell the
 ---
 
 *Chetana YIN — February 2026*
-*Engineering Manager, developer since 2008, light theme convert since 2024.*`
+*Engineering Manager, developer since 2008, light theme convert since 2019 — before it was cool.*`
 
 async function seed() {
   console.log('🌱 Seeding blog article: dark → light theme...')
@@ -270,8 +270,8 @@ async function seed() {
 
   await db.insert(blogPosts).values({
     slug: 'dark-theme-light-theme-transition',
-    titleFr: 'Du dark theme au light theme : pourquoi j\'ai changé après 15 ans',
-    titleEn: 'From dark theme to light theme: why I switched after 15 years',
+    titleFr: 'Du dark theme au light theme : pourquoi j\'ai changé après 10 ans',
+    titleEn: 'From dark theme to light theme: why I switched after 10 years',
     titleKm: 'ពី dark theme ទៅ light theme៖ ហេតុអ្វីខ្ញុំផ្លាស់ប្តូរបន្ទាប់ពី ១៥ ឆ្នាំ',
     contentFr,
     contentEn,
@@ -290,8 +290,8 @@ async function seed() {
 នៅអាយុ ២០ ខ្ញុំបានជ្រើសរើស dark theme ព្រោះវាជាអ្វីដែលគ្រប់គ្នាធ្វើ។ នៅអាយុ ៣៧ ខ្ញុំបានជ្រើសរើស light theme ព្រោះវាសមស្របនឹងខ្ញុំ។
 
 ការវិវត្តន៍មិនមែនជាការក្បត់ទេ។ វាជាភស្តុតាងថាអ្នកបន្តស្តាប់រាងកាយរបស់អ្នក សួរសំណួរពីទម្លាប់របស់អ្នក និងធ្វើការសម្រេចចិត្តដោយចេតនាជំនួសឱ្យការធ្វើតាមទម្រង់។`,
-    excerptFr: 'Après 15 ans de dark theme, j\'ai basculé en light. Physiologie, science, écrans modernes et évolution personnelle : pourquoi ce n\'est pas une trahison mais une maturité.',
-    excerptEn: 'After 15 years of dark theme, I switched to light. Physiology, science, modern screens and personal evolution: why it\'s not betrayal but maturity.',
+    excerptFr: 'Après plus de 10 ans de dark theme, j\'ai basculé en light. Physiologie, science, écrans modernes et évolution personnelle : pourquoi ce n\'est pas une trahison mais une maturité.',
+    excerptEn: 'After over 10 years of dark theme, I switched to light. Physiology, science, modern screens and personal evolution: why it\'s not betrayal but maturity.',
     excerptKm: 'បន្ទាប់ពី ១៥ ឆ្នាំនៃ dark theme ខ្ញុំបានផ្លាស់ប្តូរទៅ light។ រូបវិទ្យា វិទ្យាសាស្ត្រ អេក្រង់ទំនើប និងការវិវត្តន៍ផ្ទាល់ខ្លួន៖ ហេតុអ្វីវាមិនមែនជាការក្បត់ ប៉ុន្តែជាភាពចាស់ទុំ។',
     tags: ['Opinion', 'Developer Life', 'UX'],
     published: true
