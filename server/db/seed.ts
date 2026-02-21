@@ -243,9 +243,58 @@ async function seed() {
       titleFr: 'chetana.dev — Portfolio dynamique',
       titleEn: 'chetana.dev — Dynamic Portfolio',
       titleKm: 'chetana.dev — ផលប័ត្រថាមវន្ត',
-      descriptionFr: 'Portfolio/CV personnel construit avec Nuxt 4, Neon PostgreSQL et Drizzle ORM. Déployé sur Vercel avec support bilingue FR/EN.',
-      descriptionEn: 'Personal portfolio/CV built with Nuxt 4, Neon PostgreSQL and Drizzle ORM. Deployed on Vercel with bilingual FR/EN support.',
-      descriptionKm: 'ផលប័ត្រ/CV ផ្ទាល់ខ្លួនបង្កើតជាមួយ Nuxt 4, Neon PostgreSQL និង Drizzle ORM។ ដាក់ពង្រាយនៅ Vercel ជាមួយការគាំទ្រភាសា FR/EN/KM។',
+      descriptionFr: `## Le projet
+
+Ce site est mon portfolio personnel, mais aussi un terrain d'expérimentation technique. Plutôt que d'utiliser un template, j'ai voulu construire quelque chose de A à Z — du schema de base de données au déploiement continu.
+
+## Stack technique
+
+- **Frontend** : Nuxt 4 (Vue 3.5) + TypeScript — pour le SSR, le routing automatique et les composables
+- **Base de données** : Neon PostgreSQL (serverless) + Drizzle ORM — schema typé, migrations simples, connection pooling automatique
+- **Déploiement** : Vercel avec auto-deploy sur push to main — zéro config serveur
+- **SEO** : @nuxtjs/seo pour sitemap, robots.txt, schema.org (JSON-LD) sur chaque page
+
+## Fonctionnalités
+
+- **Trilingue** : français, anglais et khmer — avec un composable \`useLocale()\` maison et fallback FR
+- **Blog dynamique** : articles stockés en base avec rendu markdown, commentaires modérés, tags
+- **CV interactif** : page dédiée avec export PDF, alimentée par la base de données
+- **Formulaire de contact** : avec honeypot anti-spam et stockage en base
+- **Health tracker** : suivi quotidien de pompes style Duolingo avec streaks et calendrier
+
+## Architecture
+
+Le site suit une architecture full-stack unifiée grâce à Nitro (le moteur serveur de Nuxt). Les API REST sont des fichiers dans \`server/api/\`, le schema Drizzle définit les types partagés entre front et back, et tout est déployé comme une seule application serverless.
+
+## Pourquoi ce projet ?
+
+En tant qu'Engineering Manager, je code moins au quotidien qu'avant. Ce portfolio me permet de garder la main sur les technologies modernes, d'expérimenter (Nuxt 4, Drizzle, Neon serverless), et de documenter mes réflexions via le blog. C'est aussi un exercice de product ownership : je suis à la fois le dev, le PM et l'utilisateur final.`,
+      descriptionEn: `## The Project
+
+This site is my personal portfolio, but also a technical playground. Rather than using a template, I wanted to build something from scratch — from the database schema to continuous deployment.
+
+## Tech Stack
+
+- **Frontend**: Nuxt 4 (Vue 3.5) + TypeScript — for SSR, automatic routing and composables
+- **Database**: Neon PostgreSQL (serverless) + Drizzle ORM — typed schema, simple migrations, automatic connection pooling
+- **Deployment**: Vercel with auto-deploy on push to main — zero server config
+- **SEO**: @nuxtjs/seo for sitemap, robots.txt, schema.org (JSON-LD) on every page
+
+## Features
+
+- **Trilingual**: French, English and Khmer — with a custom \`useLocale()\` composable and FR fallback
+- **Dynamic blog**: articles stored in database with markdown rendering, moderated comments, tags
+- **Interactive CV**: dedicated page with PDF export, fed from the database
+- **Contact form**: with honeypot anti-spam and database storage
+- **Health tracker**: Duolingo-style daily pushup tracker with streaks and calendar
+
+## Architecture
+
+The site follows a unified full-stack architecture thanks to Nitro (Nuxt's server engine). REST APIs are files in \`server/api/\`, the Drizzle schema defines shared types between front and back, and everything deploys as a single serverless application.
+
+## Why This Project?
+
+As an Engineering Manager, I code less daily than I used to. This portfolio lets me keep my hands on modern technologies, experiment (Nuxt 4, Drizzle, Neon serverless), and document my thoughts through the blog. It's also a product ownership exercise: I'm the dev, the PM and the end user all at once.`,
       tags: ['Nuxt 4', 'TypeScript', 'Neon', 'Drizzle', 'Vercel'],
       githubUrl: 'https://github.com/chetana-dev/chetana-dev',
       demoUrl: 'https://chetana.dev',
@@ -257,9 +306,68 @@ async function seed() {
       titleFr: 'Claude Code Skills — Écosystème IA',
       titleEn: 'Claude Code Skills — AI Ecosystem',
       titleKm: 'Claude Code Skills — ប្រព័ន្ធអេកូ AI',
-      descriptionFr: '25+ skills personnalisés pour Claude Code : code reviews automatisées, génération de tests E2E, briefings MEP, analyse de bugs. Intégration Slack/Jira/Notion/GitLab via MCP.',
-      descriptionEn: '25+ custom skills for Claude Code: automated code reviews, E2E test generation, deployment briefings, bug analysis. Slack/Jira/Notion/GitLab integration via MCP.',
-      descriptionKm: '25+ skills ផ្ទាល់ខ្លួនសម្រាប់ Claude Code៖ code reviews ស្វ័យប្រវត្តិ ការបង្កើត tests E2E ការប្រជុំ deployment ការវិភាគ bugs។ ការរួមបញ្ចូល Slack/Jira/Notion/GitLab តាមរយៈ MCP។',
+      descriptionFr: `## Le concept
+
+Chez DJUST, j'ai développé un écosystème de **25+ skills personnalisés** pour Claude Code, transformant l'IA d'un simple assistant de code en un véritable membre de l'équipe. Chaque skill est un prompt spécialisé qui encode nos conventions, notre architecture et nos processus métier.
+
+## Cas d'usage concrets
+
+- **Code Review automatisée** : analyse le diff GitLab, vérifie le respect de nos conventions Spring Boot, détecte les problèmes de sécurité et de performance, génère un commentaire structuré
+- **Génération de tests E2E** : à partir d'un ticket Jira, génère les scénarios de test adaptés à notre framework, avec les fixtures et les assertions
+- **Briefing MEP** : compile automatiquement les changements de la release, identifie les risques, prépare le message Slack pour l'équipe
+- **Analyse de bugs** : à partir d'un stack trace ou d'un log, remonte la chaîne causale dans notre codebase multi-modules
+
+## Architecture MCP
+
+L'intégration repose sur le **Model Context Protocol** (MCP), qui permet à Claude Code d'interagir avec nos outils :
+
+- **Slack** : lecture des channels, envoi de messages, création de threads
+- **Jira** : lecture des tickets, ajout de commentaires, transitions de statut
+- **Notion** : consultation de la documentation technique
+- **GitLab** : lecture des merge requests, commentaires de review
+
+## Impact mesuré
+
+Après quelques semaines d'adoption progressive :
+- **Temps de code review** : -67% (45min → 15min en moyenne)
+- **Temps d'écriture de tests** : -63% (2h → 45min par feature)
+- **Couverture de tests** : +40% sur les nouveaux modules
+- **Onboarding** : les juniors montent en compétence plus vite grâce aux reviews IA détaillées
+
+## Philosophie
+
+L'IA ne remplace pas le développeur — elle amplifie son expertise. Les skills sont conçus pour que l'humain reste décisionnaire : l'IA propose, le dev dispose. C'est cette approche "human-in-the-loop" qui a permis l'adoption par toute l'équipe.`,
+      descriptionEn: `## The Concept
+
+At DJUST, I developed an ecosystem of **25+ custom skills** for Claude Code, transforming AI from a simple code assistant into a true team member. Each skill is a specialized prompt that encodes our conventions, architecture and business processes.
+
+## Concrete Use Cases
+
+- **Automated Code Review**: analyzes the GitLab diff, checks compliance with our Spring Boot conventions, detects security and performance issues, generates a structured comment
+- **E2E Test Generation**: from a Jira ticket, generates test scenarios adapted to our framework, with fixtures and assertions
+- **Deployment Briefing**: automatically compiles release changes, identifies risks, prepares the Slack message for the team
+- **Bug Analysis**: from a stack trace or log, traces the causal chain through our multi-module codebase
+
+## MCP Architecture
+
+The integration relies on the **Model Context Protocol** (MCP), which allows Claude Code to interact with our tools:
+
+- **Slack**: reading channels, sending messages, creating threads
+- **Jira**: reading tickets, adding comments, status transitions
+- **Notion**: consulting technical documentation
+- **GitLab**: reading merge requests, review comments
+
+## Measured Impact
+
+After a few weeks of progressive adoption:
+- **Code review time**: -67% (45min → 15min average)
+- **Test writing time**: -63% (2h → 45min per feature)
+- **Test coverage**: +40% on new modules
+- **Onboarding**: juniors ramp up faster thanks to detailed AI reviews
+
+## Philosophy
+
+AI doesn't replace the developer — it amplifies their expertise. Skills are designed so the human remains the decision-maker: AI proposes, the dev decides. This "human-in-the-loop" approach is what enabled adoption by the entire team.`,
       tags: ['Claude Code', 'MCP', 'AI', 'Automation'],
       type: 'project',
       featured: true
