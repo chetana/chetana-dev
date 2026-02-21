@@ -36,7 +36,15 @@ const props = defineProps<{
 }>()
 
 const title = computed(() => localeField(props.project, 'title'))
-const description = computed(() => localeField(props.project, 'description'))
+const description = computed(() => {
+  const raw = localeField(props.project, 'description')
+  // Extract first paragraph (skip markdown headers)
+  const lines = raw.split('\n').filter(l => l.trim() && !l.startsWith('#'))
+  const first = lines[0] || ''
+  // Strip markdown formatting
+  const clean = first.replace(/\*\*(.+?)\*\*/g, '$1').replace(/\*(.+?)\*/g, '$1').replace(/`(.+?)`/g, '$1')
+  return clean.length > 160 ? clean.slice(0, 157) + '...' : clean
+})
 </script>
 
 <style scoped>
