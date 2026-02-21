@@ -12,7 +12,7 @@ const contentFr = `## Introduction
 
 En 2024, Google Cloud nous a invités, mon équipe et moi chez DJUST, à une série d'événements exclusifs. Le pitch était clair : **"Vous êtes sur AWS depuis 4 ans. Venez chez nous, on vous accompagne dans la migration, et on vous offre des crédits cloud conséquents."**
 
-Google ne faisait pas ça par charité. DJUST est une plateforme e-commerce B2B SaaS qui gère des commandes pour des clients comme Franprix, Procity ou VEJA. C'est exactement le type de workload que GCP veut attirer : du Java/Spring Boot, du Kubernetes, du PostgreSQL, de l'Elasticsearch — tout ce que Google Cloud sait faire.
+Google ne faisait pas ça par charité. DJUST est une plateforme e-commerce B2B SaaS qui gère des commandes pour des clients comme Franprix, Eiffage (via Blueon, leur plateforme e-commerce décarbonée) ou VEJA. C'est exactement le type de workload que GCP veut attirer : du Java/Spring Boot, du Kubernetes, du PostgreSQL, de l'Elasticsearch — tout ce que Google Cloud sait faire.
 
 Moi, j'étais totalement pour. Je voyais dans cette migration une opportunité unique : non seulement économiser sur les coûts cloud, mais surtout **moderniser notre codebase** en travaillant main dans la main avec des ingénieurs Google et Theodo Cloud. C'était l'occasion rêvée de rembourser de la dette technique tout en étant accompagné par des experts.
 
@@ -137,7 +137,7 @@ Et on n'aurait pas été seuls. Les ingénieurs Google + Theodo Cloud auraient a
 
 ### L'argument du risque client
 
-DJUST sert des clients enterprise : Franprix (grande distribution), Procity (BTP), VEJA (mode). Ces clients ont des **SLA contractuels**. Un downtime de 2 heures, c'est pas juste un incident technique — c'est une pénalité financière et une perte de confiance.
+DJUST sert des clients enterprise : Franprix (grande distribution), Eiffage via Blueon (plateforme e-commerce décarbonée), VEJA (mode). Ces clients ont des **SLA contractuels**. Un downtime de 2 heures, c'est pas juste un incident technique — c'est une pénalité financière et une perte de confiance.
 
 La direction a posé la question fondamentale : **"Quel est le risque d'une migration cloud pour nos clients ?"**
 
@@ -423,7 +423,7 @@ const contentEn = `## Introduction
 
 In 2024, Google Cloud invited my team and me at DJUST to a series of exclusive events. The pitch was clear: **"You've been on AWS for 4 years. Come to us, we'll support your migration, and we'll offer you substantial cloud credits."**
 
-Google wasn't doing this out of charity. DJUST is a B2B SaaS e-commerce platform processing orders for clients like Franprix, Procity, and VEJA. It's exactly the type of workload GCP wants to attract: Java/Spring Boot, Kubernetes, PostgreSQL, Elasticsearch — everything Google Cloud excels at.
+Google wasn't doing this out of charity. DJUST is a B2B SaaS e-commerce platform processing orders for clients like Franprix, Eiffage (via Blueon, their low-carbon e-commerce platform), and VEJA. It's exactly the type of workload GCP wants to attract: Java/Spring Boot, Kubernetes, PostgreSQL, Elasticsearch — everything Google Cloud excels at.
 
 I was completely in favor. I saw this migration as a unique opportunity: not just saving on cloud costs, but above all **modernizing our codebase** by working hand-in-hand with Google engineers and Theodo Cloud. It was the perfect chance to pay down technical debt while being supported by experts.
 

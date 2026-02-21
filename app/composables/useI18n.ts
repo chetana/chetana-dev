@@ -44,9 +44,9 @@ const translations: Record<string, Record<string, string>> = {
   },
   'about.hl1.title': { fr: 'Plateforme e-commerce B2B', en: 'B2B E-commerce Platform', km: 'វេទិកា E-commerce B2B' },
   'about.hl1.desc': {
-    fr: "Architecture modulaire (15+ modules), multi-tenant, multi-PSP, gérant des millions de transactions pour des clients comme Franprix, Procity, VEJA",
-    en: "Modular architecture (15+ modules), multi-tenant, multi-PSP, handling millions of transactions for clients like Franprix, Procity, VEJA",
-    km: "ស្ថាបត្យកម្មម៉ូឌុល (15+ modules) multi-tenant multi-PSP គ្រប់គ្រងប្រតិបត្តិការរាប់លានសម្រាប់អតិថិជនដូចជា Franprix Procity VEJA"
+    fr: "Architecture modulaire (15+ modules), multi-tenant, multi-PSP, gérant des millions de transactions pour des clients comme Franprix, Eiffage (Blueon), VEJA",
+    en: "Modular architecture (15+ modules), multi-tenant, multi-PSP, handling millions of transactions for clients like Franprix, Eiffage (Blueon), VEJA",
+    km: "ស្ថាបត្យកម្មម៉ូឌុល (15+ modules) multi-tenant multi-PSP គ្រប់គ្រងប្រតិបត្តិការរាប់លានសម្រាប់អតិថិជនដូចជា Franprix Eiffage (Blueon) VEJA"
   },
   'about.hl2.title': { fr: 'Pionnier IA en équipe', en: 'AI Pioneer in team', km: 'អ្នកត្រួសត្រាយ AI ក្នុងក្រុម' },
   'about.hl2.desc': {
