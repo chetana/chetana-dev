@@ -9,8 +9,10 @@ export default defineEventHandler(async () => {
     slug: blogPosts.slug,
     titleFr: blogPosts.titleFr,
     titleEn: blogPosts.titleEn,
+    titleKm: blogPosts.titleKm,
     excerptFr: blogPosts.excerptFr,
     excerptEn: blogPosts.excerptEn,
+    excerptKm: blogPosts.excerptKm,
     tags: blogPosts.tags,
     createdAt: blogPosts.createdAt
   })
