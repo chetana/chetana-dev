@@ -1,16 +1,41 @@
-# Base de données — Neon Serverless PostgreSQL
+# Base de donnees — Neon Serverless PostgreSQL
 
 ## Connexion
 
-| Élément | Détail |
+| Element | Detail |
 |---------|--------|
 | Driver | `@neondatabase/serverless` (HTTP, pas de pool TCP) |
 | ORM | Drizzle ORM (type-safe, parameterized queries) |
 | Helper | `server/utils/db.ts` → `getDB()` (singleton) |
 | Config | `drizzle.config.ts` (dialect: postgresql) |
-| Env vars | `NUXT_DATABASE_URL` + `DATABASE_URL` (Vercel) |
+| Env vars | `DATABASE_URL` (Vercel) |
 
-## Schéma (`server/db/schema.ts`)
+## Schema (`server/db/schema.ts`)
+
+### users
+
+| Colonne | Type | Notes |
+|---------|------|-------|
+| id | serial PK | |
+| email | varchar unique | Google email |
+| name | varchar | Google display name |
+| picture | text | Google profile picture URL |
+| google_id | varchar unique | Google sub identifier |
+| created_at | timestamp | Default: `now()` |
+| last_login_at | timestamp | Updated on each auth call |
+
+### health_entries
+
+| Colonne | Type | Notes |
+|---------|------|-------|
+| id | serial PK | |
+| user_id | integer FK → users.id | Nullable (migration compat) |
+| date | varchar | Format `"YYYY-MM-DD"` |
+| pushups | integer | Objectif : 20 (avant 2026-02-17), 25 (apres) |
+| validated | boolean | |
+| validated_at | timestamp | |
+| created_at | timestamp | |
+| | | **Unique constraint**: `(user_id, date)` |
 
 ### projects
 
@@ -18,25 +43,25 @@
 |---------|------|-------|
 | id | serial PK | |
 | slug | varchar unique | URL slug |
-| titleFr, titleEn | text | Bilingue |
-| descriptionFr, descriptionEn | text | Bilingue |
+| titleFr, titleEn, titleKm | text | Trilingue |
+| descriptionFr, descriptionEn, descriptionKm | text | Trilingue |
 | tags | jsonb | Tableau de strings |
 | githubUrl, demoUrl, imageUrl | varchar | Liens optionnels |
 | type | varchar | Default: `'project'` |
 | featured | boolean | Mis en avant |
 | createdAt | timestamp | Default: `now()` |
 
-### blogPosts
+### blog_posts
 
 | Colonne | Type | Notes |
 |---------|------|-------|
 | id | serial PK | |
 | slug | varchar unique | URL slug |
-| titleFr, titleEn | text | Bilingue |
-| contentFr, contentEn | text | Article complet (markdown basique) |
-| excerptFr, excerptEn | text | Aperçu |
+| titleFr, titleEn, titleKm | text | Trilingue |
+| contentFr, contentEn, contentKm | text | Article complet (markdown) |
+| excerptFr, excerptEn, excerptKm | text | Apercu |
 | tags | jsonb | Tableau de strings |
-| published | boolean | Seuls les publiés sont affichés |
+| published | boolean | Seuls les publies sont affiches |
 | createdAt, updatedAt | timestamp | |
 
 ### comments
@@ -44,10 +69,10 @@
 | Colonne | Type | Notes |
 |---------|------|-------|
 | id | serial PK | |
-| postId | integer FK → blogPosts.id | |
-| authorName | varchar | Max 100 caractères |
-| content | text | Max 2000 caractères, anti-spam (>2 liens rejeté) |
-| approved | boolean | Default: `false` (modération) |
+| postId | integer FK → blog_posts.id | |
+| authorName | varchar | Max 100 caracteres |
+| content | text | Max 2000 caracteres |
+| approved | boolean | Default: `false` (moderation) |
 | createdAt | timestamp | |
 
 ### messages
@@ -55,9 +80,9 @@
 | Colonne | Type | Notes |
 |---------|------|-------|
 | id | serial PK | |
-| name | varchar | Max 100 caractères |
-| email | varchar | Validé par regex |
-| content | text | Max 5000 caractères |
+| name | varchar | Max 100 caracteres |
+| email | varchar | Valide par regex |
+| content | text | Max 5000 caracteres |
 | read | boolean | Default: `false` |
 | createdAt | timestamp | |
 
@@ -67,10 +92,10 @@
 |---------|------|-------|
 | id | serial PK | |
 | company | varchar | |
-| roleFr, roleEn | text | Bilingue |
+| roleFr, roleEn, roleKm | text | Trilingue |
 | location | varchar | |
 | dateStart, dateEnd | varchar | Format `"YYYY-MM"` |
-| bulletsFr, bulletsEn | jsonb | Tableaux de bullet points (peut contenir du HTML) |
+| bulletsFr, bulletsEn, bulletsKm | jsonb | Tableaux de bullet points |
 | sortOrder | integer | Ordre d'affichage |
 
 ### skills
@@ -78,87 +103,79 @@
 | Colonne | Type | Notes |
 |---------|------|-------|
 | id | serial PK | |
-| category | varchar | Groupe (Backend, Frontend, Data…) |
-| name | varchar | Nom de la compétence |
+| category | varchar | Groupe (Backend, Frontend, Data...) |
+| name | varchar | Nom de la competence |
 | color | varchar | Couleur CSS pour le tag |
 | sortOrder | integer | Ordre d'affichage |
 
-### healthEntries
+### push_subscriptions
 
 | Colonne | Type | Notes |
 |---------|------|-------|
 | id | serial PK | |
-| date | varchar unique | Format `"YYYY-MM-DD"` |
-| pushups | integer | Objectif : 20 (avant 2026-02-17), 25 (après) |
-| validated | boolean | |
-| validatedAt | timestamp | |
+| endpoint | text unique | Push endpoint URL |
+| p256dh | text | Public key |
+| auth | text | Auth secret |
 | createdAt | timestamp | |
 
 ## Routes API
 
-### Lecture (GET)
+### Lecture (GET) — publiques
 
 | Route | Description | Filtrage |
 |-------|-------------|----------|
-| `GET /api/blog` | Liste des articles publiés (sans contenu) | `published = true`, tri DESC createdAt |
+| `GET /api/blog` | Liste des articles publies (sans contenu) | `published = true`, tri DESC createdAt |
 | `GET /api/blog/:slug` | Article complet | `published = true` + slug |
 | `GET /api/projects` | Tous les projets | Tri DESC createdAt |
 | `GET /api/projects/:slug` | Projet par slug | |
-| `GET /api/experiences` | Expériences CV | Tri ASC sortOrder |
-| `GET /api/skills` | Compétences groupées par catégorie | Tri ASC sortOrder |
-| `GET /api/comments/:postId` | Commentaires approuvés d'un article | `approved = true`, tri DESC createdAt |
-| `GET /api/health/entries` | Toutes les entrées santé | Tri ASC date |
-| `GET /api/health/stats` | Statistiques (streaks, totaux, objectif) | Calculé dynamiquement |
-| `GET /api/__sitemap__/urls` | Entrées dynamiques pour le sitemap | Blog publiés + projets |
+| `GET /api/experiences` | Experiences CV | Tri ASC sortOrder |
+| `GET /api/skills` | Competences groupees par categorie | Tri ASC sortOrder |
+| `GET /api/comments/:postId` | Commentaires approuves d'un article | `approved = true` |
 
-### Écriture (POST)
+### Lecture (GET) — protegees (Google OAuth)
 
-| Route | Description | Validation |
-|-------|-------------|------------|
-| `POST /api/comments` | Créer un commentaire | `postId`, `authorName` (100 chars), `content` (2000 chars, max 2 liens) |
-| `POST /api/messages` | Envoyer un message contact | `name` (100 chars), `email` (regex), `content` (5000 chars), honeypot `website` |
-| `POST /api/health/validate` | Valider les pushups du jour | Crée ou met à jour l'entrée du jour |
+| Route | Description | Auth |
+|-------|-------------|------|
+| `GET /api/health/stats` | Statistiques pushups de l'utilisateur | Bearer token |
+| `GET /api/health/entries` | Historique entries de l'utilisateur | Bearer token |
 
-## Alimentation des données
+### Ecriture (POST)
 
-### 1. Push du schéma
+| Route | Description | Auth |
+|-------|-------------|------|
+| `POST /api/comments` | Creer un commentaire | Publique (modere) |
+| `POST /api/messages` | Envoyer un message contact | Publique (honeypot) |
+| `POST /api/health/validate` | Valider les pushups du jour | Bearer token |
+
+## Alimentation des donnees
+
+### 1. Push du schema
 
 ```bash
-npm run db:push          # drizzle-kit push → applique le schéma sur Neon
+npm run db:push          # drizzle-kit push → applique le schema sur Neon
 ```
 
 ### 2. Seed principal (`npm run db:seed`)
 
-Script : `server/db/seed.ts`
-
-Crée les données initiales :
-- **6 expériences** : miLibris (2012) → Kelkoo (2014) → S4M (2016) → Smart&Soft (2017) → DJUST (2019) → DJUST actuel (2023)
-- **40+ compétences** groupées en 6 catégories : Backend, Data & Infra, Domaine métier, Management, Frontend & Mobile, AI-Augmented Dev
-- **2 projets** : chetana-dev (portfolio), claude-code-skills
-- **2 articles de blog** : claude-code-equipe-engineering, nuxt4-neon-drizzle-portfolio
+Script : `server/db/seed.ts` — experiences, competences, projets, articles initiaux
 
 ### 3. Seed health (`npm run db:seed-health`)
 
-Script : `server/db/seed-health.ts`
+Script : `server/db/seed-health.ts` — entries pushups + projet `chet-health-strong`
 
-- Entrées du 1er janvier au 21 février 2026 (toutes validées)
-- 20 pushups/jour avant le 17 février, 25 après
-- Crée aussi le projet `chet-health-strong`
+### 4. Seed blog pushup
 
-### 4. Seed blog light (`npm run db:seed-blog-light`)
+Script : `server/db/seed-blog-pushup.ts` — article "52 jours de pompes"
 
-Script : `server/db/seed-blog-light.ts`
+### 5. Migration health → multi-user
 
-- Article unique bilingue : "Du thème sombre au thème clair : pourquoi j'ai changé après 15 ans"
+Script : `server/db/migrate-health-to-user.ts` — cree le user par defaut et assigne les entries existantes
 
-### 5. Données créées en runtime
+### 6. Donnees creees en runtime
 
-| Source | Table | Modération |
-|--------|-------|------------|
-| Visiteurs (commentaires) | comments | `approved: false` par défaut |
-| Formulaire de contact | messages | `read: false` par défaut |
-| Bouton pushups quotidien | healthEntries | Validation immédiate |
-
-### Pas d'interface admin
-
-Le contenu (articles, projets, expériences, compétences) est géré via les scripts de seed ou accès direct à la base. Il n'y a pas de CMS ni de panneau d'administration.
+| Source | Table | Auth | Moderation |
+|--------|-------|------|------------|
+| Visiteurs (commentaires) | comments | Non | `approved: false` |
+| Formulaire de contact | messages | Non | `read: false` |
+| App Android (pushups) | health_entries | Google OAuth | Validation immediate |
+| App Android (1er login) | users | Google OAuth | Auto-creation |
