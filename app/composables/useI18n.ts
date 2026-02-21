@@ -139,6 +139,9 @@ const translations: Record<string, Record<string, string>> = {
   'health.validate': { fr: 'Validé !', en: 'Done!', km: 'រួចរាល់!' },
   'health.done': { fr: 'Fait', en: 'Done', km: 'រួច' },
   'health.calendar': { fr: 'Calendrier', en: 'Calendar', km: 'ប្រតិទិន' },
+  'health.notif.enable': { fr: 'Activer les rappels', en: 'Enable reminders', km: 'បើកការរំលឹក' },
+  'health.notif.enabled': { fr: 'Rappels activés', en: 'Reminders on', km: 'ការរំលឹកបើក' },
+  'health.notif.denied': { fr: 'Notifications bloquées', en: 'Notifications blocked', km: 'ការជូនដំណឹងត្រូវបានរារាំង' },
 
   // Footer
   'footer.text': { fr: 'Chetana YIN', en: 'Chetana YIN', km: 'Chetana YIN' }

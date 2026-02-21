@@ -56,6 +56,19 @@
       </div>
     </div>
 
+    <!-- Notification toggle -->
+    <div class="notif-row">
+      <button
+        class="btn-notif"
+        :class="{ active: pushEnabled, denied: pushDenied }"
+        :disabled="pushDenied"
+        @click="togglePush"
+      >
+        <span class="notif-icon">{{ pushDenied ? '🔕' : pushEnabled ? '🔔' : '🔕' }}</span>
+        <span>{{ pushDenied ? t('health.notif.denied') : pushEnabled ? t('health.notif.enabled') : t('health.notif.enable') }}</span>
+      </button>
+    </div>
+
     <!-- Calendar -->
     <div class="calendar-section">
       <div class="calendar-header">
@@ -132,6 +145,62 @@ async function validateToday() {
 
 function formatNumber(n: number): string {
   return n.toLocaleString()
+}
+
+// Push notifications
+const pushEnabled = ref(false)
+const pushDenied = ref(false)
+
+onMounted(async () => {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return
+  pushDenied.value = Notification.permission === 'denied'
+  if (Notification.permission === 'granted') {
+    const reg = await navigator.serviceWorker.ready
+    const sub = await reg.pushManager.getSubscription()
+    pushEnabled.value = !!sub
+  }
+})
+
+async function togglePush() {
+  if (pushEnabled.value) {
+    // Unsubscribe
+    const reg = await navigator.serviceWorker.ready
+    const sub = await reg.pushManager.getSubscription()
+    if (sub) {
+      await $fetch('/api/push/unsubscribe', { method: 'POST', body: { endpoint: sub.endpoint } })
+      await sub.unsubscribe()
+    }
+    pushEnabled.value = false
+  } else {
+    // Subscribe
+    const permission = await Notification.requestPermission()
+    if (permission === 'denied') { pushDenied.value = true; return }
+    if (permission !== 'granted') return
+
+    const { key } = await $fetch<{ key: string }>('/api/push/vapid-public-key')
+    const reg = await navigator.serviceWorker.ready
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(key)
+    })
+    const json = sub.toJSON()
+    await $fetch('/api/push/subscribe', {
+      method: 'POST',
+      body: { endpoint: sub.endpoint, keys: json.keys }
+    })
+    pushEnabled.value = true
+  }
+}
+
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4)
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+  const rawData = atob(base64)
+  const outputArray = new Uint8Array(rawData.length)
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i)
+  }
+  return outputArray
 }
 
 // Calendar logic
@@ -381,6 +450,47 @@ useSeoMeta({
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Notification toggle */
+.notif-row {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-notif {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-notif:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.btn-notif.active {
+  border-color: var(--accent);
+  background: rgba(196, 150, 60, 0.08);
+  color: var(--accent-light);
+}
+
+.btn-notif.denied {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.notif-icon {
+  font-size: 1.1rem;
 }
 
 /* Calendar */

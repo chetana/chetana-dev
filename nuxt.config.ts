@@ -22,6 +22,7 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
+      importScripts: ['/push-sw.js'],
       navigateFallback: undefined,
       runtimeCaching: [
         {
@@ -79,6 +80,11 @@ export default defineNuxtConfig({
     preset: 'vercel'
   },
   runtimeConfig: {
-    databaseUrl: process.env.DATABASE_URL || ''
+    databaseUrl: process.env.DATABASE_URL || '',
+    vapidPrivateKey: process.env.VAPID_PRIVATE_KEY || '',
+    cronSecret: process.env.CRON_SECRET || '',
+    public: {
+      vapidPublicKey: process.env.VAPID_PUBLIC_KEY || ''
+    }
   }
 })

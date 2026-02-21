@@ -27,7 +27,8 @@
     "drizzle-orm": "^0.38.3",
     "nuxt": "^3.16.0",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@nuxt/devtools": "^2.3.0",
