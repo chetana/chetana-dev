@@ -225,7 +225,7 @@ async function seed() {
     // Frontend & Mobile
     { category: 'Frontend & Mobile', name: 'Nuxt 4 / Vue', color: 'purple', sortOrder: 1 },
     { category: 'Frontend & Mobile', name: 'TypeScript', color: 'purple', sortOrder: 2 },
-    { category: 'Frontend & Mobile', name: 'Android (Java)', color: 'purple', sortOrder: 3 },
+    { category: 'Frontend & Mobile', name: 'Android (Kotlin/Java)', color: 'purple', sortOrder: 3 },
     { category: 'Frontend & Mobile', name: 'iOS (Swift)', color: 'purple', sortOrder: 4 },
     // AI-Augmented Dev
     { category: 'AI-Augmented Dev', name: 'Claude Code', color: 'purple', sortOrder: 1 },

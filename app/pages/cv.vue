@@ -33,8 +33,8 @@
           <li><strong>Data & Infrastructure :</strong> PostgreSQL, Elasticsearch, MongoDB, Redis, Docker, Kubernetes, GCP, AWS (SQS, S3), GitLab CI/CD, Jenkins, Ansible, Keycloak.</li>
           <li><strong>{{ locale === 'fr' ? 'Domaine métier' : 'Business Domain' }} :</strong> Order Management (OMS), Payments (Adyen, Mangopay, Lemonway, Thunes), Cart & Checkout, E-commerce B2B SaaS.</li>
           <li><strong>Management :</strong> Team Lead (5 : devs + QA), {{ locale === 'fr' ? 'Recrutement' : 'Hiring' }}, People Review, Agile/Scrum, SAFe, Kanban, Incident Management.</li>
-          <li><strong>Frontend & Mobile :</strong> Nuxt 4/Vue.js, TypeScript, Android (Java), iOS (Swift).</li>
-          <li><strong>AI-Augmented Dev :</strong> Claude Code, MCP Servers, Custom AI Skills, Automated Reviews.</li>
+          <li><strong>Frontend & Mobile :</strong> Nuxt 4/Vue.js, TypeScript, Android (Kotlin/Java), iOS (Swift).</li>
+          <li><strong>AI-Augmented Dev :</strong> Claude Code, MCP Servers, Custom AI Skills, Automated Reviews, Google OAuth.</li>
         </ul>
       </div>
 
