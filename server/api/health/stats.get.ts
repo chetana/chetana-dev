@@ -1,6 +1,7 @@
 import { getDB } from '../../utils/db'
+import { requireAuth } from '../../utils/auth'
 import { healthEntries } from '../../db/schema'
-import { asc } from 'drizzle-orm'
+import { asc, eq } from 'drizzle-orm'
 
 function getTodayDate(): string {
   return new Date().toISOString().slice(0, 10)
@@ -10,9 +11,12 @@ function getTodayTarget(dateStr: string): number {
   return dateStr >= '2026-02-17' ? 25 : 20
 }
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+  const user = await requireAuth(event)
   const db = getDB()
-  const entries = await db.select().from(healthEntries).orderBy(asc(healthEntries.date))
+  const entries = await db.select().from(healthEntries)
+    .where(eq(healthEntries.userId, user.id))
+    .orderBy(asc(healthEntries.date))
 
   const today = getTodayDate()
   const todayEntry = entries.find(e => e.date === today)

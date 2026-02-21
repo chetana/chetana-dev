@@ -1,6 +1,7 @@
 import { getDB } from '../../utils/db'
+import { requireAuth } from '../../utils/auth'
 import { healthEntries } from '../../db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
 
 function getTodayDate(): string {
   return new Date().toISOString().slice(0, 10)
@@ -11,6 +12,7 @@ function getTodayTarget(dateStr: string): number {
 }
 
 export default defineEventHandler(async (event) => {
+  const user = await requireAuth(event)
   const db = getDB()
   const today = getTodayDate()
   const target = getTodayTarget(today)
@@ -21,8 +23,9 @@ export default defineEventHandler(async (event) => {
     ? body.pushups
     : target
 
-  // Check if entry exists for today
-  const existing = await db.select().from(healthEntries).where(eq(healthEntries.date, today))
+  // Check if entry exists for today for this user
+  const existing = await db.select().from(healthEntries)
+    .where(and(eq(healthEntries.userId, user.id), eq(healthEntries.date, today)))
 
   if (existing.length > 0) {
     if (existing[0].validated) {
@@ -31,10 +34,11 @@ export default defineEventHandler(async (event) => {
     // Update existing entry
     await db.update(healthEntries)
       .set({ validated: true, validatedAt: new Date(), pushups: pushups })
-      .where(eq(healthEntries.date, today))
+      .where(and(eq(healthEntries.userId, user.id), eq(healthEntries.date, today)))
   } else {
     // Create new entry
     await db.insert(healthEntries).values({
+      userId: user.id,
       date: today,
       pushups: pushups,
       validated: true,

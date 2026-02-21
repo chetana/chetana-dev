@@ -81,6 +81,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     databaseUrl: process.env.DATABASE_URL || '',
+    googleClientId: process.env.GOOGLE_CLIENT_ID || '',
     vapidPrivateKey: process.env.VAPID_PRIVATE_KEY || '',
     cronSecret: process.env.CRON_SECRET || '',
     public: {

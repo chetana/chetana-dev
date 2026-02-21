@@ -1,4 +1,4 @@
-import { pgTable, serial, text, varchar, boolean, timestamp, integer, jsonb } from 'drizzle-orm/pg-core'
+import { pgTable, serial, text, varchar, boolean, timestamp, integer, jsonb, unique } from 'drizzle-orm/pg-core'
 
 // Projects
 export const projects = pgTable('projects', {
@@ -74,15 +74,29 @@ export const experiences = pgTable('experiences', {
   sortOrder: integer('sort_order').default(0)
 })
 
+// Users (Google OAuth)
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  name: varchar('name', { length: 255 }),
+  picture: text('picture'),
+  googleId: varchar('google_id', { length: 255 }).notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  lastLoginAt: timestamp('last_login_at').defaultNow().notNull()
+})
+
 // Health tracking
 export const healthEntries = pgTable('health_entries', {
   id: serial('id').primaryKey(),
-  date: varchar('date', { length: 10 }).notNull().unique(), // YYYY-MM-DD
+  userId: integer('user_id').notNull().references(() => users.id),
+  date: varchar('date', { length: 10 }).notNull(), // YYYY-MM-DD
   pushups: integer('pushups').notNull(),
   validated: boolean('validated').default(false),
   validatedAt: timestamp('validated_at'),
   createdAt: timestamp('created_at').defaultNow().notNull()
-})
+}, (table) => [
+  unique('health_entries_user_date').on(table.userId, table.date)
+])
 
 // Push subscriptions
 export const pushSubscriptions = pgTable('push_subscriptions', {
