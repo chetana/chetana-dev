@@ -10,8 +10,9 @@ Portfolio dynamique, blog technique et projets personnels de **Chetana YIN** —
 - **Neon PostgreSQL** — Base de donnees serverless
 - **Drizzle ORM** — ORM type-safe
 - **Vercel** — Deploiement serverless (auto-deploy on push to main)
+- **Google OAuth** — Authentification stateless via ID Tokens (google-auth-library)
 - **@nuxtjs/seo** — Sitemap, robots.txt, Schema.org, OG meta
-- **i18n** — Bilingue FR/EN via composable `useLocale()`
+- **i18n** — Trilingue FR/EN/KM via composable `useLocale()`
 
 ## Pages
 
@@ -54,6 +55,36 @@ Toutes les pages sont optimisees pour mobile (320px+) :
 - `overflow-x: hidden` et `word-break: break-word` sur les contenus longs
 - Navigation mobile avec hamburger menu et overlay
 
+## Architecture
+
+```
+┌────────────────┐   ┌───────────────┐   ┌──────────────┐
+│  Web Browser   │   │ Android App   │   │ Android      │
+│  (SSR + SPA)   │   │ (Kotlin/MVVM) │   │ Widget       │
+└───────┬────────┘   └───────┬───────┘   └──────┬───────┘
+        │                    │ Bearer token      │
+        ▼                    ▼                   ▼
+┌──────────────────────────────────────────────────────┐
+│              Nuxt 4 / Nitro (Vercel)                 │
+│                                                       │
+│  Public routes:          Protected routes (OAuth):   │
+│  /api/projects           /api/health/stats    🔒     │
+│  /api/blog               /api/health/entries  🔒     │
+│  /api/comments           /api/health/validate 🔒     │
+│  /api/messages                                        │
+│                  requireAuth() → google-auth-library  │
+│                  upsert user → scope par userId       │
+└──────────────────────────┬───────────────────────────┘
+                           │ Drizzle ORM
+                    ┌──────▼───────┐
+                    │    Neon      │
+                    │  PostgreSQL  │
+                    │  (9 tables)  │
+                    └──────────────┘
+```
+
+> Voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) et [docs/DATABASE.md](docs/DATABASE.md) pour les details.
+
 ## Setup local
 
 ```bash
@@ -66,7 +97,7 @@ npm install
 
 # Copier et configurer les variables d'environnement
 cp .env.example .env.local
-# Editer .env.local avec votre DATABASE_URL Neon
+# Editer .env.local avec DATABASE_URL et GOOGLE_CLIENT_ID
 
 # Pousser le schema vers la DB
 npm run db:push
@@ -78,6 +109,16 @@ npm run db:seed
 npm run dev
 ```
 
+## Variables d'environnement
+
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | URL de connexion Neon PostgreSQL |
+| `GOOGLE_CLIENT_ID` | OAuth Web Client ID (Google Cloud Console) |
+| `VAPID_PRIVATE_KEY` | Cle privee pour les push notifications |
+| `VAPID_PUBLIC_KEY` | Cle publique pour les push notifications |
+| `CRON_SECRET` | Secret pour les endpoints cron |
+
 ## Scripts
 
 | Commande | Description |
@@ -88,7 +129,7 @@ npm run dev
 | `npm run db:generate` | Generer les migrations SQL |
 | `npm run db:push` | Pousser le schema vers la DB |
 | `npm run db:seed` | Alimenter la DB (experiences, skills, projects, blog) |
-| `npm run db:seed-health` | Seed des donnees health tracker (Jan-Fev 2026) |
+| `npm run db:seed-health` | Seed des donnees health tracker + projet |
 | `npm run db:seed-blog-light` | Seed de l'article "Dark theme to light theme" |
 | `npm run db:studio` | Ouvrir Drizzle Studio (GUI) |
 
@@ -97,35 +138,48 @@ npm run dev
 ```
 app/
   assets/css/main.css    # Variables CSS, boutons, tags, cards, grids, responsive
-  components/            # Nav, Hero, Footer, Timeline, SkillCard, BlogCard, ProjectCard, CommentSection
-  composables/           # useLocale() (i18n FR/EN)
+  components/            # Nav, Hero, Footer, Timeline, SkillCard, BlogCard, ProjectCard
+  composables/           # useLocale() (i18n FR/EN/KM)
   pages/                 # Routes Nuxt (index, blog, projects, cv, contact)
 server/
-  api/                   # Routes REST (GET/POST: blog, projects, comments, experiences, skills, health)
+  api/                   # Routes REST
+    health/              # Endpoints proteges (Google OAuth)
+      stats.get.ts       # GET stats scopees par userId
+      entries.get.ts     # GET entries scopees par userId
+      validate.post.ts   # POST validation scopee par userId
   db/
-    schema.ts            # Schema Drizzle (projects, blogPosts, comments, messages, experiences, healthEntries, skills)
-    seed.ts              # Seed principal (experiences, skills, projects, blog posts)
-    seed-health.ts       # Seed health tracker
-    seed-blog-light.ts   # Seed article dark-to-light theme
-  utils/db.ts            # Connexion Neon + fallback DATABASE_URL
+    schema.ts            # Schema Drizzle (users, healthEntries, projects, blogPosts, ...)
+    seed.ts              # Seed principal
+    seed-health.ts       # Seed health tracker + projet
+    seed-blog-pushup.ts  # Seed article "52 jours de pompes"
+    seed-blog-light.ts   # Seed article "Dark to light theme"
+    migrate-health-to-user.ts  # Migration one-time : entries → userId
+  utils/
+    db.ts                # Connexion Neon singleton
+    auth.ts              # requireAuth() — verification Google ID Token + upsert user
 drizzle/                 # Migrations auto-generees
+docs/                    # Architecture, Database, ADRs
 ```
 
 ## Base de donnees
 
-7 tables PostgreSQL sur Neon :
+9 tables PostgreSQL sur Neon :
 
-| Table | Description |
-|---|---|
-| `experiences` | CV : postes, entreprises, bullets FR/EN |
-| `skills` | Competences par categorie avec couleur |
-| `projects` | Projets perso avec tags, GitHub/demo URLs |
-| `blog_posts` | Articles bilingues FR/EN avec tags |
-| `comments` | Commentaires sur les articles (moderation) |
-| `messages` | Messages du formulaire contact |
-| `health_entries` | Suivi quotidien pompes (date, count, validation) |
+| Table | Description | Auth |
+|---|---|---|
+| `users` | Utilisateurs Google OAuth (email, name, picture, googleId) | — |
+| `health_entries` | Suivi quotidien pompes (scoped par userId) | Google OAuth |
+| `projects` | Projets perso avec tags, GitHub/demo URLs | Public |
+| `blog_posts` | Articles trilingues FR/EN/KM avec tags | Public |
+| `comments` | Commentaires sur les articles (moderation) | Public |
+| `messages` | Messages du formulaire contact | Public |
+| `experiences` | CV : postes, entreprises, bullets trilingues | Public |
+| `skills` | Competences par categorie avec couleur | Public |
+| `push_subscriptions` | Abonnements push web | Public |
 
 ## API
+
+### Endpoints publics
 
 | Endpoint | Methode | Description |
 |---|---|---|
@@ -138,9 +192,26 @@ drizzle/                 # Migrations auto-generees
 | `/api/comments/[postId]` | GET | Commentaires d'un article |
 | `/api/comments` | POST | Ajouter un commentaire |
 | `/api/contact` | POST | Envoyer un message |
-| `/api/health/stats` | GET | Stats pompes (streak, total, today) |
-| `/api/health/entries` | GET | Historique des jours |
-| `/api/health/validate` | POST | Valider le jour courant |
+
+### Endpoints proteges (Google OAuth)
+
+Requierent `Authorization: Bearer <google_id_token>` :
+
+| Endpoint | Methode | Description |
+|---|---|---|
+| `/api/health/stats` | GET | Stats pompes de l'utilisateur (streak, total, today) |
+| `/api/health/entries` | GET | Historique des jours de l'utilisateur |
+| `/api/health/validate` | POST | Valider le jour courant pour l'utilisateur |
+
+## Android Companion App
+
+L'application Android native ([repo](https://github.com/chetana/dailypushup)) consomme les endpoints health :
+
+- **Kotlin** / MVVM / Room (cache offline) / Retrofit 2
+- **Google Sign-In** via Credential Manager → Bearer token
+- **Widget home screen** avec streak 🔥 et validation one-tap ✅
+- **WorkManager** sync toutes les 30 minutes
+- **Light mode** avec le meme style beige/or que le portfolio
 
 ## SEO
 
@@ -155,7 +226,7 @@ Le deploiement est automatique sur push to `main`.
 
 - **Projet** : `chetana-cv`
 - **Domaine** : chetana.dev
-- **Variables d'env** : `NUXT_DATABASE_URL` + `DATABASE_URL`
+- **Variables d'env** : `DATABASE_URL`, `GOOGLE_CLIENT_ID`, `VAPID_*`, `CRON_SECRET`
 
 ## Blog
 
@@ -168,9 +239,16 @@ Le blog utilise un renderer markdown custom (pas de dependance externe) qui supp
 
 ### Articles
 
+- **52 jours de pompes** — Comment j'ai gamifie ma discipline avec du code, Android + OAuth
 - **Claude Code en equipe** — Integration de l'IA dans le workflow engineering
 - **Nuxt 4 + Neon + Drizzle** — Retour d'experience migration HTML statique vers stack moderne
-- **Dark theme to light theme** — Pourquoi j'ai change apres 15 ans (article long, bilingue)
+- **Dark theme to light theme** — Pourquoi j'ai change apres 15 ans
+
+## Documentation
+
+- [Architecture](docs/ARCHITECTURE.md) — Vue d'ensemble, schema, auth flow
+- [Database](docs/DATABASE.md) — Schema detaille, routes, seeds
+- [ADRs](docs/adr/) — Decisions architecturales
 
 ## Licence
 
