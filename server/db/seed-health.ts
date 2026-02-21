@@ -44,17 +44,38 @@ async function seedHealth() {
     titleKm: 'តាមដានកិច្ចការរាំងដៃប្រចាំថ្ងៃ',
     descriptionFr: `## L'idée
 
-Début janvier 2026, je me suis lancé un défi simple : **faire des pompes tous les jours**. Pas un programme de musculation complexe — juste une habitude quotidienne, mesurable, avec un objectif clair. Et comme je suis développeur, j'ai naturellement construit une app pour ça.
+Début janvier 2026, je me suis lancé un défi simple : **faire des pompes tous les jours**. Pas un programme de musculation complexe — juste une habitude quotidienne, mesurable, avec un objectif clair. Et comme je suis développeur, j'ai naturellement construit un écosystème complet pour ça.
 
 ## Le concept : gamification à la Duolingo
 
 L'inspiration vient directement de Duolingo et de sa mécanique de **streak** (série de jours consécutifs). Le principe est psychologiquement puissant : une fois qu'on a 30 jours de streak, on ne veut surtout pas casser la chaîne.
 
-L'application propose :
+## L'application web (portfolio)
+
+Le tracker est d'abord né comme un composant intégré au portfolio :
 - **Un stepper quotidien** : +5 / -5 pompes pour ajuster rapidement
-- **Un calendrier visuel** : chaque jour validé est coché, les jours manqués restent vides
+- **Un calendrier visuel** : chaque jour validé est coché, les jours manqués sont marqués
 - **Un compteur de streak** : le nombre de jours consécutifs sans interruption
 - **Des statistiques** : total, moyenne, progression mensuelle
+
+## L'application Android native
+
+Pour rendre la validation encore plus simple au quotidien, j'ai développé une **application Android native en Kotlin** :
+- **Architecture MVVM** avec ViewModel, LiveData et Room pour le cache local
+- **Retrofit 2** pour la synchronisation avec le backend
+- **Widget home screen** : un widget qui affiche le streak et le statut du jour directement sur l'écran d'accueil — impossible de l'ignorer en allumant le téléphone
+- **WorkManager** : synchronisation en arrière-plan toutes les 30 minutes
+- **Swipe to refresh** : pull-to-refresh pour forcer la synchronisation
+- **Light mode** : design épuré avec le même style beige/or que le portfolio
+
+## Authentification Google OAuth
+
+L'application a évolué d'un outil purement personnel vers un système **multi-utilisateur** avec authentification :
+- **Google Sign-In** via Credential Manager sur Android
+- **Vérification stateless** des Google ID Tokens côté backend (compatible serverless Vercel)
+- **Upsert automatique** des utilisateurs à la première connexion
+- **Données scopées** : chaque utilisateur ne voit que ses propres données
+- Pas de sessions, pas de cookies — juste un token dans le header \`Authorization: Bearer\`
 
 ## Progression
 
@@ -64,28 +85,44 @@ L'application propose :
 
 ## Stack technique
 
-Le tracker est intégré directement dans le portfolio :
-- **Frontend** : composant Vue avec stepper interactif et calendrier responsive
-- **Backend** : API Nitro avec validation (pas de double validation par jour)
-- **Base de données** : table \`health_entries\` dans Neon PostgreSQL
-- **Pas d'authentification** : c'est un outil personnel, pas un SaaS
-
-## Pourquoi le rendre public ?
-
-Parce que la transparence crée de l'engagement. Quand le tracker est visible sur mon portfolio, j'ai une motivation supplémentaire pour ne pas tricher. C'est aussi une démonstration concrète que le code n'est pas qu'un métier — c'est un outil pour améliorer sa vie quotidienne.`,
+- **Backend** : Nuxt 3 / Nitro, Drizzle ORM, PostgreSQL Neon serverless, déployé sur Vercel
+- **Auth** : Google OAuth 2.0 (google-auth-library)
+- **Android** : Kotlin, MVVM, Retrofit 2, Room 2.6, Credential Manager, WorkManager
+- **Web** : composant Vue avec stepper interactif et calendrier responsive`,
     descriptionEn: `## The Idea
 
-Early January 2026, I set myself a simple challenge: **do pushups every day**. Not a complex workout program — just a daily, measurable habit with a clear goal. And since I'm a developer, I naturally built an app for it.
+Early January 2026, I set myself a simple challenge: **do pushups every day**. Not a complex workout program — just a daily, measurable habit with a clear goal. And since I'm a developer, I naturally built a complete ecosystem for it.
 
 ## The Concept: Duolingo-Style Gamification
 
 The inspiration comes directly from Duolingo and its **streak** mechanics (consecutive day series). The principle is psychologically powerful: once you have a 30-day streak, you really don't want to break the chain.
 
-The application offers:
+## The Web App (Portfolio)
+
+The tracker was first born as a component integrated into the portfolio:
 - **A daily stepper**: +5 / -5 pushups for quick adjustment
-- **A visual calendar**: each validated day is checked, missed days remain empty
+- **A visual calendar**: each validated day is checked, missed days are marked
 - **A streak counter**: consecutive days without interruption
 - **Statistics**: total, average, monthly progression
+
+## The Native Android App
+
+To make daily validation even simpler, I built a **native Android app in Kotlin**:
+- **MVVM architecture** with ViewModel, LiveData and Room for local caching
+- **Retrofit 2** for backend synchronization
+- **Home screen widget**: a widget that displays the streak and today's status right on the home screen — impossible to ignore when unlocking the phone
+- **WorkManager**: background sync every 30 minutes
+- **Swipe to refresh**: pull-to-refresh to force sync
+- **Light mode**: clean design matching the portfolio's beige/gold style
+
+## Google OAuth Authentication
+
+The app evolved from a purely personal tool into a **multi-user system** with authentication:
+- **Google Sign-In** via Credential Manager on Android
+- **Stateless verification** of Google ID Tokens on the backend (Vercel serverless compatible)
+- **Automatic upsert** of users on first login
+- **Scoped data**: each user only sees their own data
+- No sessions, no cookies — just a token in the \`Authorization: Bearer\` header
 
 ## Progression
 
@@ -95,17 +132,13 @@ The application offers:
 
 ## Tech Stack
 
-The tracker is integrated directly into the portfolio:
-- **Frontend**: Vue component with interactive stepper and responsive calendar
-- **Backend**: Nitro API with validation (no double validation per day)
-- **Database**: \`health_entries\` table in Neon PostgreSQL
-- **No authentication**: it's a personal tool, not a SaaS
-
-## Why Make It Public?
-
-Because transparency creates commitment. When the tracker is visible on my portfolio, I have extra motivation not to cheat. It's also a concrete demonstration that code isn't just a job — it's a tool to improve your daily life.`,
-    tags: ['Vue', 'Nuxt', 'Health', 'Gamification'],
+- **Backend**: Nuxt 3 / Nitro, Drizzle ORM, PostgreSQL Neon serverless, deployed on Vercel
+- **Auth**: Google OAuth 2.0 (google-auth-library)
+- **Android**: Kotlin, MVVM, Retrofit 2, Room 2.6, Credential Manager, WorkManager
+- **Web**: Vue component with interactive stepper and responsive calendar`,
+    tags: ['Vue', 'Nuxt', 'Kotlin', 'Android', 'OAuth', 'Health', 'Gamification'],
     demoUrl: 'https://chetana.dev/projects/health',
+    githubUrl: 'https://github.com/chetana/dailypushup',
     type: 'project',
     featured: true
   })
