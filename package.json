@@ -18,7 +18,8 @@
     "db:seed-blog-java": "npx tsx server/db/seed-blog-java-evolution.ts",
     "db:seed-blog-aws-gcp": "npx tsx server/db/seed-blog-aws-gcp.ts",
     "db:seed-blog-claude": "npx tsx server/db/seed-blog-claude-code.ts",
-    "db:seed-blog-nuxt": "npx tsx server/db/seed-blog-nuxt-portfolio.ts"
+    "db:seed-blog-nuxt": "npx tsx server/db/seed-blog-nuxt-portfolio.ts",
+    "db:seed-skills-advanced": "npx tsx server/db/seed-skills-advanced.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
