@@ -1,6 +1,7 @@
 import { neon } from '@neondatabase/serverless'
 import { drizzle } from 'drizzle-orm/neon-http'
 import { blogPosts } from './schema'
+import { eq } from 'drizzle-orm'
 import { config } from 'dotenv'
 config({ path: '.env.local' })
 
@@ -263,6 +264,9 @@ And if someone calls you a "psychopath" for coding in light theme, just tell the
 
 async function seed() {
   console.log('🌱 Seeding blog article: dark → light theme...')
+
+  // Delete existing if present to avoid duplicates
+  await db.delete(blogPosts).where(eq(blogPosts.slug, 'dark-theme-light-theme-transition'))
 
   await db.insert(blogPosts).values({
     slug: 'dark-theme-light-theme-transition',

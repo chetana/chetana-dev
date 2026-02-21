@@ -1,13 +1,24 @@
 import { neon } from '@neondatabase/serverless'
 import { drizzle } from 'drizzle-orm/neon-http'
-import { experiences, skills, projects, blogPosts } from './schema'
+import { experiences, skills, projects, blogPosts, comments } from './schema'
 import 'dotenv/config'
+import { config } from 'dotenv'
+config({ path: '.env.local' })
 
 const sql = neon(process.env.DATABASE_URL!)
 const db = drizzle(sql)
 
 async function seed() {
   console.log('🌱 Seeding database...')
+
+  // Clear existing data to avoid duplicates on re-run
+  // Order matters: comments references blogPosts (FK)
+  await db.delete(comments)
+  await db.delete(blogPosts)
+  await db.delete(experiences)
+  await db.delete(skills)
+  await db.delete(projects)
+  console.log('🗑️  Cleared existing data')
 
   // Seed experiences from existing CV
   await db.insert(experiences).values([
