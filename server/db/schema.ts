@@ -88,7 +88,7 @@ export const users = pgTable('users', {
 // Health tracking
 export const healthEntries = pgTable('health_entries', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id').references(() => users.id),
   date: varchar('date', { length: 10 }).notNull(), // YYYY-MM-DD
   pushups: integer('pushups').notNull(),
   validated: boolean('validated').default(false),
