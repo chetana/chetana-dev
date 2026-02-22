@@ -578,7 +578,9 @@ Le bon nombre de requêtes simultanées n'est pas "le maximum possible". C'est "
 
 L'application tourne depuis janvier 2026. Plusieurs centaines de photos et vidéos. Des repas partagés virtuellement, des levers de soleil à 7000 km de distance, une bague photographiée sous tous les angles.
 
-Ma grand-mère sortait son album cartonné, cherchait la bonne page à tâtons, et racontait. Ce geste avait quelque chose d'intime et de rituel que les applications photo grand public — Google Photos, iCloud — ne reproduisent pas. Elles sont faites pour des millions d'utilisateurs, optimisées pour des catalogues de milliers de photos. Pas pour deux personnes qui veulent garder trace d'un repas un mardi soir.
+Mes parents n'ont pas d'album photo. Personne dans ma famille n'a ce geste de sortir une boîte en carton, de feuilleter des pages jaunies, de raconter. Ce rituel que beaucoup tiennent pour acquis — pour nous, il a été effacé avant d'exister.
+
+C'est peut-être pour ça que ce projet compte autant. Google Photos et iCloud sont faits pour des millions d'utilisateurs, optimisés pour des catalogues de milliers de photos. Pas pour deux personnes qui veulent garder trace d'un repas un mardi soir, et qui savent ce que ça coûte de ne rien garder du tout.
 
 Construire quelque chose soi-même, c'est comprendre chaque couche. La mémoire GPU. L'algorithme HMAC-SHA256. La spec HTML sur les entités. L'histoire divergente des scrapers WhatsApp et Facebook. Ce sont des détails que personne ne devrait connaître pour utiliser une app photo — mais que quelqu'un doit connaître pour en construire une qui fonctionne bien.
 
@@ -777,7 +779,9 @@ The right number of simultaneous requests isn't "the maximum possible." It's "th
 
 The app has been running since January 2026. Several hundred photos and videos. Meals shared virtually, sunrises from 7,000 km away, a ring photographed from every angle.
 
-My grandmother brought out her cardboard album, found the right page by touch, and started telling stories. That gesture had something intimate and ritual that mainstream photo apps — Google Photos, iCloud — don't reproduce. They're built for millions of users, optimized for catalogs of thousands of photos. Not for two people who want to remember a meal on a Tuesday evening.
+My parents have no photo album. Nobody in my family has that gesture — pulling out a cardboard box, leafing through yellowed pages, telling stories. That ritual many take for granted was erased for us before it ever existed.
+
+Maybe that's why this project matters. Google Photos and iCloud are built for millions of users, optimized for catalogs of thousands of photos. Not for two people who want to remember a meal on a Tuesday evening — and who know what it costs to keep nothing at all.
 
 Building something yourself means understanding every layer. GPU memory. The HMAC-SHA256 algorithm. The HTML spec on entities. The divergent history of WhatsApp and Facebook scrapers. These are details no one should need to know to use a photo app — but someone must know to build one that works well.
 
