@@ -2,9 +2,11 @@ import { Storage } from '@google-cloud/storage'
 import { createHash, createSign } from 'crypto'
 
 function getCredentials() {
-  const creds = JSON.parse(process.env.GCS_SERVICE_ACCOUNT_JSON!)
+  const raw = process.env.GCS_SERVICE_ACCOUNT_JSON!.trim()
+  const creds = JSON.parse(raw)
   // Normalize \n escape sequences to real newlines (Vercel env var quirk)
-  creds.private_key = (creds.private_key as string).replace(/\\n/g, '\n')
+  creds.private_key = (creds.private_key as string).replace(/\\n/g, '\n').trim() + '\n'
+  creds.client_email = (creds.client_email as string).trim()
   return creds
 }
 
@@ -21,7 +23,7 @@ function buildSignedUrl(
   contentType?: string
 ): string {
   const creds = getCredentials()
-  const bucket = process.env.GCS_BUCKET_NAME!
+  const bucket = process.env.GCS_BUCKET_NAME!.trim()
   const now = new Date()
 
   const pad = (n: number) => n.toString().padStart(2, '0')
