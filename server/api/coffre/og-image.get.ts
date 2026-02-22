@@ -23,11 +23,17 @@ export default defineEventHandler(async (event) => {
 
   const buffer = Buffer.from(await response.arrayBuffer())
 
-  // Transcode en JPEG, max 1200px de large (taille recommandée pour og:image)
-  // Cela normalise WebP, HEIC, PNG, etc. en un JPEG universellement supporté
+  // Paramètre optionnel ?w= pour adapter la taille à l'usage :
+  // - og:image social : 1200px (défaut)
+  // - thumbnail grille Flutter : 300px
+  const wParam = parseInt(String(query.w ?? ''), 10)
+  const width = (!isNaN(wParam) && wParam > 0 && wParam <= 2000) ? wParam : 1200
+
+  // Transcode en JPEG — normalise WebP, HEIC, RAW, PNG, etc.
+  // Évite le décodage full-res côté client (ex: Lumix 8 MB, 6000×4000px)
   const jpeg = await sharp(buffer)
-    .resize({ width: 1200, withoutEnlargement: true })
-    .jpeg({ quality: 85 })
+    .resize({ width, withoutEnlargement: true })
+    .jpeg({ quality: width <= 400 ? 80 : 85 })
     .toBuffer()
 
   setHeader(event, 'Content-Type', 'image/jpeg')
