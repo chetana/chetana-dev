@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
     const storage = getStorage()
     const file = storage.bucket(bucket).file(path)
 
-    const [url] = await file.generateSignedUrl({
+    const [url] = await file.getSignedUrl({
       version: 'v4',
       action: 'write',
       expires: Date.now() + 15 * 60 * 1000,
