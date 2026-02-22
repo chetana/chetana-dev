@@ -79,7 +79,10 @@ const renderedContent = computed(() => {
   html = html
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`([^`\n]+)`/g, '<code>$1</code>')  // code inline
+    .replace(/`([^`\n]+)`/g, (_, code) => {
+      const esc = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      return `<code>${esc}</code>`
+    })  // code inline
 
   // 4. Paragraphes
   html = html
