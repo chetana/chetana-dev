@@ -84,6 +84,8 @@ export default defineNuxtConfig({
     googleClientId: process.env.GOOGLE_CLIENT_ID || '',
     vapidPrivateKey: process.env.VAPID_PRIVATE_KEY || '',
     cronSecret: process.env.CRON_SECRET || '',
+    gcsBucketName: process.env.GCS_BUCKET_NAME || '',
+    gcsServiceAccountJson: process.env.GCS_SERVICE_ACCOUNT_JSON || '',
     public: {
       vapidPublicKey: process.env.VAPID_PUBLIC_KEY || '',
       commitSha: (process.env.VERCEL_GIT_COMMIT_SHA || 'local').slice(0, 7),
