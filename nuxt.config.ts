@@ -77,7 +77,10 @@ export default defineNuxtConfig({
     '/cv': { robots: false }
   },
   nitro: {
-    preset: 'vercel'
+    preset: 'vercel',
+    externals: {
+      external: ['@google-cloud/storage']
+    }
   },
   runtimeConfig: {
     databaseUrl: process.env.DATABASE_URL || '',
