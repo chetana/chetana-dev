@@ -18,15 +18,19 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'path and contentType are required' })
   }
 
-  const storage = getStorage()
-  const file = storage.bucket(bucket).file(path)
+  try {
+    const storage = getStorage()
+    const file = storage.bucket(bucket).file(path)
 
-  const [url] = await file.generateSignedUrl({
-    version: 'v4',
-    action: 'write',
-    expires: Date.now() + 15 * 60 * 1000,
-    contentType,
-  })
+    const [url] = await file.generateSignedUrl({
+      version: 'v4',
+      action: 'write',
+      expires: Date.now() + 15 * 60 * 1000,
+      contentType,
+    })
 
-  return { url }
+    return { url }
+  } catch (e: any) {
+    throw createError({ statusCode: 500, statusMessage: e?.message ?? String(e) })
+  }
 })
