@@ -13,10 +13,14 @@ export default defineEventHandler(async (event) => {
 
   const path = `${y}/${m}/${d}/${f}`
   const flutterUrl = `https://chetlys.vercel.app/?tab=coffre&y=${encodeURIComponent(y)}&m=${encodeURIComponent(m)}&d=${encodeURIComponent(d)}&f=${encodeURIComponent(f)}`
+  // En HTML, & dans les attributs doit être &amp; — les signed URLs GCS en contiennent beaucoup
+  const flutterUrlHtml = flutterUrl.replace(/&/g, '&amp;')
 
   let imageUrl = ''
+  let imageUrlHtml = ''
   try {
     imageUrl = signedGetUrl(path)
+    imageUrlHtml = imageUrl.replace(/&/g, '&amp;')
   } catch (_) {}
 
   const monthsFr = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']
@@ -33,12 +37,12 @@ export default defineEventHandler(async (event) => {
   <meta property="og:site_name" content="Chet &amp; Lys">
   <meta property="og:title" content="${title}">
   <meta property="og:description" content="Un souvenir partagé · ការចងចាំរួម">
-  ${imageUrl ? `<meta property="og:image" content="${imageUrl}">
+  ${imageUrlHtml ? `<meta property="og:image" content="${imageUrlHtml}">
   <meta name="twitter:card" content="summary_large_image">` : '<meta name="twitter:card" content="summary">'}
-  <meta property="og:url" content="${flutterUrl}">
-  <meta http-equiv="refresh" content="0;url=${flutterUrl}">
+  <meta property="og:url" content="${flutterUrlHtml}">
+  <meta http-equiv="refresh" content="0;url=${flutterUrlHtml}">
   <script>window.location.replace(${JSON.stringify(flutterUrl)});</script>
 </head><body>
-  <p><a href="${flutterUrl}">Voir sur Chet &amp; Lys</a></p>
+  <p><a href="${flutterUrlHtml}">Voir sur Chet &amp; Lys</a></p>
 </body></html>`
 })
