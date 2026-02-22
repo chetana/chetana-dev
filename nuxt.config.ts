@@ -86,7 +86,8 @@ export default defineNuxtConfig({
     cronSecret: process.env.CRON_SECRET || '',
     public: {
       vapidPublicKey: process.env.VAPID_PUBLIC_KEY || '',
-      commitSha: (process.env.VERCEL_GIT_COMMIT_SHA || 'local').slice(0, 7)
+      commitSha: (process.env.VERCEL_GIT_COMMIT_SHA || 'local').slice(0, 7),
+      googleClientId: process.env.GOOGLE_CLIENT_ID || ''
     }
   }
 })

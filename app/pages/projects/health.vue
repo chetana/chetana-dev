@@ -4,104 +4,124 @@
     <h1 class="section-title">{{ t('health.title') }}</h1>
     <p class="subtitle">{{ t('health.subtitle') }}</p>
 
-    <!-- Stats cards -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-icon" :class="{ pulse: stats?.currentStreak }">🔥</span>
-        <div class="stat-value">{{ stats?.currentStreak ?? 0 }}</div>
-        <div class="stat-label">{{ t('health.streak') }}</div>
-      </div>
-      <div class="stat-card">
-        <span class="stat-icon">💪</span>
-        <div class="stat-value">{{ formatNumber(stats?.totalPushups ?? 0) }}</div>
-        <div class="stat-label">{{ t('health.total') }}</div>
-      </div>
-      <div class="stat-card">
-        <span class="stat-icon">✅</span>
-        <div class="stat-value">{{ stats?.totalDays ?? 0 }}</div>
-        <div class="stat-label">{{ t('health.days') }}</div>
-      </div>
-      <div class="stat-card">
-        <span class="stat-icon">🏆</span>
-        <div class="stat-value">{{ stats?.longestStreak ?? 0 }}</div>
-        <div class="stat-label">{{ t('health.best') }}</div>
+    <!-- Auth gate -->
+    <div v-if="!isAuthenticated" class="auth-gate">
+      <div class="auth-card">
+        <div class="auth-icon">💪</div>
+        <h2>{{ locale === 'fr' ? 'Connectez-vous pour voir vos stats' : 'Sign in to see your stats' }}</h2>
+        <p>{{ locale === 'fr' ? 'Vos données push-ups sont privées et sécurisées avec Google.' : 'Your push-up data is private and secured with Google.' }}</p>
+        <div ref="googleBtnRef" class="google-btn-container"></div>
       </div>
     </div>
 
-    <!-- Today card -->
-    <div class="today-card">
-      <div class="today-header">
-        <h2>{{ t('health.today') }}</h2>
-        <span class="today-target">{{ t('health.target') }}: {{ stats?.todayTarget ?? 20 }} pompes</span>
+    <!-- Main content (authenticated) -->
+    <template v-else>
+      <!-- User info + sign out -->
+      <div class="user-row">
+        <span class="user-name">👤 {{ userName }}</span>
+        <button class="btn-signout" @click="signOut">{{ locale === 'fr' ? 'Déconnexion' : 'Sign out' }}</button>
       </div>
-      <div class="today-action">
-        <div v-if="!todayDone" class="stepper-row">
-          <div class="stepper">
-            <button class="stepper-btn" :disabled="pushupCount <= 1" @click="pushupCount--">−</button>
-            <span class="stepper-value">{{ pushupCount }}</span>
-            <button class="stepper-btn" :disabled="pushupCount >= 200" @click="pushupCount++">+</button>
+
+      <!-- Stats cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-icon" :class="{ pulse: stats?.currentStreak }">🔥</span>
+          <div class="stat-value">{{ stats?.currentStreak ?? 0 }}</div>
+          <div class="stat-label">{{ t('health.streak') }}</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">💪</span>
+          <div class="stat-value">{{ formatNumber(stats?.totalPushups ?? 0) }}</div>
+          <div class="stat-label">{{ t('health.total') }}</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">✅</span>
+          <div class="stat-value">{{ stats?.totalDays ?? 0 }}</div>
+          <div class="stat-label">{{ t('health.days') }}</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">🏆</span>
+          <div class="stat-value">{{ stats?.longestStreak ?? 0 }}</div>
+          <div class="stat-label">{{ t('health.best') }}</div>
+        </div>
+      </div>
+
+      <!-- Today card -->
+      <div class="today-card">
+        <div class="today-header">
+          <h2>{{ t('health.today') }}</h2>
+          <span class="today-target">{{ t('health.target') }}: {{ stats?.todayTarget ?? 20 }} pompes</span>
+        </div>
+        <div class="today-action">
+          <div v-if="!todayDone" class="stepper-row">
+            <div class="stepper">
+              <button class="stepper-btn" :disabled="pushupCount <= 1" @click="pushupCount--">−</button>
+              <span class="stepper-value">{{ pushupCount }}</span>
+              <button class="stepper-btn" :disabled="pushupCount >= 200" @click="pushupCount++">+</button>
+            </div>
+            <button
+              class="btn btn-primary btn-validate"
+              :disabled="validating"
+              @click="validateToday"
+            >
+              {{ t('health.validate') }}
+            </button>
           </div>
-          <button
-            class="btn btn-primary btn-validate"
-            :disabled="validating"
-            @click="validateToday"
-          >
-            {{ t('health.validate') }}
-          </button>
-        </div>
-        <div v-else class="done-badge" :class="{ celebrate: justValidated }">
-          <span class="done-check">✓</span>
-          <span>{{ t('health.done') }}</span>
+          <div v-else class="done-badge" :class="{ celebrate: justValidated }">
+            <span class="done-check">✓</span>
+            <span>{{ t('health.done') }}</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Notification toggle -->
-    <div class="notif-row">
-      <button
-        class="btn-notif"
-        :class="{ active: pushEnabled, denied: pushDenied }"
-        :disabled="pushDenied"
-        @click="togglePush"
-      >
-        <span class="notif-icon">{{ pushDenied ? '🔕' : pushEnabled ? '🔔' : '🔕' }}</span>
-        <span>{{ pushDenied ? t('health.notif.denied') : pushEnabled ? t('health.notif.enabled') : t('health.notif.enable') }}</span>
-      </button>
-    </div>
-
-    <!-- Calendar -->
-    <div class="calendar-section">
-      <div class="calendar-header">
-        <button class="cal-nav" @click="prevMonth">←</button>
-        <h3>{{ monthLabel }}</h3>
-        <button class="cal-nav" @click="nextMonth">→</button>
-      </div>
-      <div class="calendar-grid">
-        <div v-for="day in dayLabels" :key="day" class="cal-day-label">{{ day }}</div>
-        <div
-          v-for="(cell, i) in calendarCells"
-          :key="i"
-          class="cal-cell"
-          :class="{
-            empty: !cell.date,
-            validated: cell.validated,
-            missed: cell.missed,
-            today: cell.isToday,
-            future: cell.isFuture
-          }"
-          :title="cell.pushups ? `${cell.pushups} ${locale === 'fr' ? 'pompes' : 'pushups'}` : undefined"
+      <!-- Notification toggle -->
+      <div class="notif-row">
+        <button
+          class="btn-notif"
+          :class="{ active: pushEnabled, denied: pushDenied }"
+          :disabled="pushDenied"
+          @click="togglePush"
         >
-          <span v-if="cell.date" class="cal-date">{{ cell.day }}</span>
-          <span v-if="cell.validated" class="cal-check">✓</span>
-          <span v-else-if="cell.missed" class="cal-miss">✗</span>
+          <span class="notif-icon">{{ pushDenied ? '🔕' : pushEnabled ? '🔔' : '🔕' }}</span>
+          <span>{{ pushDenied ? t('health.notif.denied') : pushEnabled ? t('health.notif.enabled') : t('health.notif.enable') }}</span>
+        </button>
+      </div>
+
+      <!-- Calendar -->
+      <div class="calendar-section">
+        <div class="calendar-header">
+          <button class="cal-nav" @click="prevMonth">←</button>
+          <h3>{{ monthLabel }}</h3>
+          <button class="cal-nav" @click="nextMonth">→</button>
+        </div>
+        <div class="calendar-grid">
+          <div v-for="day in dayLabels" :key="day" class="cal-day-label">{{ day }}</div>
+          <div
+            v-for="(cell, i) in calendarCells"
+            :key="i"
+            class="cal-cell"
+            :class="{
+              empty: !cell.date,
+              validated: cell.validated,
+              missed: cell.missed,
+              today: cell.isToday,
+              future: cell.isFuture
+            }"
+            :title="cell.pushups ? `${cell.pushups} ${locale === 'fr' ? 'pompes' : 'pushups'}` : undefined"
+          >
+            <span v-if="cell.date" class="cal-date">{{ cell.day }}</span>
+            <span v-if="cell.validated" class="cal-check">✓</span>
+            <span v-else-if="cell.missed" class="cal-miss">✗</span>
+          </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
 const { locale, t } = useLocale()
+const { isAuthenticated, userName, getAuthHeaders, loadFromStorage, initGIS, signOut: authSignOut, handleUnauthorized } = useGoogleAuth()
 
 interface Stats {
   totalPushups: number
@@ -118,29 +138,67 @@ interface Entry {
   validated: boolean
 }
 
-const { data: stats, refresh: refreshStats } = await useFetch<Stats>('/api/health/stats')
-const { data: entries } = await useFetch<Entry[]>('/api/health/entries', { default: () => [] })
+// Data — only fetched once authenticated (client-side)
+const stats = ref<Stats | null>(null)
+const entries = ref<Entry[]>([])
 
-const todayDone = ref(stats.value?.todayValidated ?? false)
+const todayDone = ref(false)
 const validating = ref(false)
 const justValidated = ref(false)
-const pushupCount = ref(stats.value?.todayTarget ?? 20)
+const pushupCount = ref(20)
 
-watch(() => stats.value?.todayValidated, (val) => {
-  if (val) todayDone.value = true
-})
+const googleBtnRef = ref<HTMLElement | null>(null)
+
+async function fetchData() {
+  const headers = getAuthHeaders()
+  try {
+    const [s, e] = await Promise.all([
+      $fetch<Stats>('/api/health/stats', { headers }),
+      $fetch<Entry[]>('/api/health/entries', { headers })
+    ])
+    stats.value = s
+    entries.value = e
+    todayDone.value = s.todayValidated
+    pushupCount.value = s.todayTarget ?? 20
+  } catch (err: unknown) {
+    if ((err as { statusCode?: number })?.statusCode === 401) {
+      handleUnauthorized()
+    }
+  }
+}
 
 async function validateToday() {
   validating.value = true
   try {
-    await $fetch('/api/health/validate', { method: 'POST', body: { pushups: pushupCount.value } })
+    await $fetch('/api/health/validate', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: { pushups: pushupCount.value }
+    })
     todayDone.value = true
     justValidated.value = true
-    await refreshStats()
+    await fetchData()
     setTimeout(() => { justValidated.value = false }, 2000)
+  } catch (err: unknown) {
+    if ((err as { statusCode?: number })?.statusCode === 401) {
+      handleUnauthorized()
+    }
   } finally {
     validating.value = false
   }
+}
+
+function signOut() {
+  authSignOut()
+  stats.value = null
+  entries.value = []
+  todayDone.value = false
+  // Re-render the sign-in button after DOM updates
+  nextTick(() => {
+    if (googleBtnRef.value) {
+      initGIS(googleBtnRef.value)
+    }
+  })
 }
 
 function formatNumber(n: number): string {
@@ -151,19 +209,8 @@ function formatNumber(n: number): string {
 const pushEnabled = ref(false)
 const pushDenied = ref(false)
 
-onMounted(async () => {
-  if (!('Notification' in window) || !('serviceWorker' in navigator)) return
-  pushDenied.value = Notification.permission === 'denied'
-  if (Notification.permission === 'granted') {
-    const reg = await navigator.serviceWorker.ready
-    const sub = await reg.pushManager.getSubscription()
-    pushEnabled.value = !!sub
-  }
-})
-
 async function togglePush() {
   if (pushEnabled.value) {
-    // Unsubscribe
     const reg = await navigator.serviceWorker.ready
     const sub = await reg.pushManager.getSubscription()
     if (sub) {
@@ -172,7 +219,6 @@ async function togglePush() {
     }
     pushEnabled.value = false
   } else {
-    // Subscribe
     const permission = await Notification.requestPermission()
     if (permission === 'denied') { pushDenied.value = true; return }
     if (permission !== 'granted') return
@@ -237,7 +283,6 @@ const calendarCells = computed(() => {
   const today = new Date().toISOString().slice(0, 10)
   const startDate = '2026-01-01'
 
-  // Monday = 0, Sunday = 6
   let dayOfWeek = firstDay.getDay() - 1
   if (dayOfWeek < 0) dayOfWeek = 6
 
@@ -251,12 +296,10 @@ const calendarCells = computed(() => {
 
   const cells: { date: string | null; day: number; validated: boolean; missed: boolean; isToday: boolean; isFuture: boolean; pushups: number | null }[] = []
 
-  // Empty cells before first day
   for (let i = 0; i < dayOfWeek; i++) {
     cells.push({ date: null, day: 0, validated: false, missed: false, isToday: false, isFuture: false, pushups: null })
   }
 
-  // Days of month
   for (let d = 1; d <= lastDay.getDate(); d++) {
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
     const isToday = dateStr === today
@@ -269,6 +312,49 @@ const calendarCells = computed(() => {
   }
 
   return cells
+})
+
+// Load GIS script + init on mount
+onMounted(async () => {
+  loadFromStorage()
+
+  // Push notification state
+  if ('Notification' in window && 'serviceWorker' in navigator) {
+    pushDenied.value = Notification.permission === 'denied'
+    if (Notification.permission === 'granted') {
+      const reg = await navigator.serviceWorker.ready
+      const sub = await reg.pushManager.getSubscription()
+      pushEnabled.value = !!sub
+    }
+  }
+
+  // Load Google Identity Services script
+  await new Promise<void>((resolve) => {
+    if (window.google?.accounts?.id) { resolve(); return }
+    const script = document.createElement('script')
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.defer = true
+    script.onload = () => resolve()
+    script.onerror = () => resolve() // fail silently
+    document.head.appendChild(script)
+  })
+
+  if (isAuthenticated.value) {
+    // Already signed in — fetch data
+    await fetchData()
+  } else {
+    // Show sign-in button + One Tap
+    await nextTick()
+    initGIS(googleBtnRef.value)
+  }
+
+  // Watch for auth state change (after One Tap sign-in)
+  watch(isAuthenticated, async (val) => {
+    if (val) {
+      await fetchData()
+    }
+  })
 })
 
 // SEO
@@ -295,6 +381,76 @@ useSeoMeta({
   color: var(--text-muted);
   margin-top: -2rem;
   margin-bottom: 3rem;
+}
+
+/* Auth gate */
+.auth-gate {
+  display: flex;
+  justify-content: center;
+  padding: 4rem 0;
+}
+
+.auth-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 3rem 2.5rem;
+  text-align: center;
+  max-width: 420px;
+  width: 100%;
+}
+
+.auth-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.auth-card h2 {
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
+}
+
+.auth-card p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.google-btn-container {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}
+
+/* User row */
+.user-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.user-name {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.btn-signout {
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-signout:hover {
+  border-color: var(--accent);
+  color: var(--text);
 }
 
 /* Stats grid */
