@@ -1,12 +1,60 @@
 import { Storage } from '@google-cloud/storage'
+import { createHash, createSign } from 'crypto'
 
-export function getGcsStorage(): Storage {
-  const credentials = JSON.parse(process.env.GCS_SERVICE_ACCOUNT_JSON!)
-  // Vercel env vars can store \n as literal two chars — normalize to real newlines
-  credentials.private_key = credentials.private_key.replace(/\\n/g, '\n')
-  return new Storage({ credentials })
+function getCredentials() {
+  const creds = JSON.parse(process.env.GCS_SERVICE_ACCOUNT_JSON!)
+  // Normalize \n escape sequences to real newlines (Vercel env var quirk)
+  creds.private_key = (creds.private_key as string).replace(/\\n/g, '\n')
+  return creds
 }
 
 export function getGcsBucket() {
-  return getGcsStorage().bucket(process.env.GCS_BUCKET_NAME!)
+  const creds = getCredentials()
+  return new Storage({ credentials: creds }).bucket(process.env.GCS_BUCKET_NAME!)
 }
+
+// Pure Node.js crypto v4 signed URL — bypasses @google-cloud/storage signing
+function buildSignedUrl(
+  path: string,
+  method: 'PUT' | 'GET',
+  expiresSeconds: number,
+  contentType?: string
+): string {
+  const creds = getCredentials()
+  const bucket = process.env.GCS_BUCKET_NAME!
+  const now = new Date()
+
+  const pad = (n: number) => n.toString().padStart(2, '0')
+  const date = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}`
+  const datetime = `${date}T${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}Z`
+
+  const serviceAccount: string = creds.client_email
+  const scope = `${date}/auto/storage/goog4_request`
+  const credential = `${serviceAccount}/${scope}`
+
+  const signedHeaders = method === 'PUT' ? 'content-type;host' : 'host'
+  const canonicalHeaders = method === 'PUT'
+    ? `content-type:${contentType}\nhost:storage.googleapis.com\n`
+    : `host:storage.googleapis.com\n`
+
+  const qs = [
+    'X-Goog-Algorithm=GOOG4-RSA-SHA256',
+    `X-Goog-Credential=${encodeURIComponent(credential)}`,
+    `X-Goog-Date=${datetime}`,
+    `X-Goog-Expires=${expiresSeconds}`,
+    `X-Goog-SignedHeaders=${encodeURIComponent(signedHeaders)}`,
+  ].join('&')
+
+  const canonicalRequest = [method, `/${bucket}/${path}`, qs, canonicalHeaders, signedHeaders, 'UNSIGNED-PAYLOAD'].join('\n')
+  const hash = createHash('sha256').update(canonicalRequest).digest('hex')
+  const stringToSign = `GOOG4-RSA-SHA256\n${datetime}\n${scope}\n${hash}`
+  const signature = createSign('RSA-SHA256').update(stringToSign).sign(creds.private_key, 'hex')
+
+  return `https://storage.googleapis.com/${bucket}/${path}?${qs}&X-Goog-Signature=${signature}`
+}
+
+export const signedPutUrl = (path: string, contentType: string) =>
+  buildSignedUrl(path, 'PUT', 900, contentType)
+
+export const signedGetUrl = (path: string) =>
+  buildSignedUrl(path, 'GET', 3600)

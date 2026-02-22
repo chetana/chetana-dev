@@ -1,5 +1,5 @@
 import { requireAuth } from '../../utils/auth'
-import { getGcsBucket } from '../../utils/gcs'
+import { signedPutUrl } from '../../utils/gcs'
 
 export default defineEventHandler(async (event) => {
   await requireAuth(event)
@@ -12,12 +12,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const [url] = await getGcsBucket().file(path).getSignedUrl({
-      version: 'v4',
-      action: 'write',
-      expires: Date.now() + 15 * 60 * 1000,
-      contentType,
-    })
+    const url = signedPutUrl(path, contentType)
     return { url }
   } catch (e: any) {
     throw createError({ statusCode: 500, statusMessage: e?.message ?? String(e) })
