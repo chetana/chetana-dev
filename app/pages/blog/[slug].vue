@@ -30,32 +30,44 @@ const { data: post } = await useFetch(`/api/blog/${route.params.slug}`)
 const renderedContent = computed(() => {
   if (!post.value) return ''
   const raw = localeField(post.value, 'content')
-  // Basic markdown-like rendering (headers, bold, paragraphs)
-  // Process block-level elements first
   let html = raw
-    // Horizontal rules
+
+  // 1. Extraire les blocs de code (```lang\n...\n```) avant tout autre traitement
+  //    car ils peuvent contenir des \n\n et du markdown qui ne doit pas être rendu
+  const codeBlocks: string[] = []
+  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+    const escaped = code
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+    const langAttr = lang ? ` class="language-${lang}"` : ''
+    codeBlocks.push(`<pre><code${langAttr}>${escaped}</code></pre>`)
+    return `\n\n__CODEBLOCK_${codeBlocks.length - 1}__\n\n`
+  })
+
+  // 2. Éléments block
+  html = html
     .replace(/^---$/gm, '<hr>')
-    // Headers
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
     .replace(/^## (.+)$/gm, '<h2>$1</h2>')
 
-  // Process unordered lists (consecutive `- ` lines)
+  // Listes non ordonnées
   html = html.replace(/(^- .+$(\n- .+$)*)/gm, (match) => {
     const items = match.split('\n').map(line => `<li>${line.replace(/^- /, '')}</li>`).join('\n')
     return `<ul>${items}</ul>`
   })
 
-  // Process ordered lists (consecutive `1. ` lines)
+  // Listes ordonnées
   html = html.replace(/(^\d+\. .+$(\n\d+\. .+$)*)/gm, (match) => {
     const items = match.split('\n').map(line => `<li>${line.replace(/^\d+\. /, '')}</li>`).join('\n')
     return `<ol>${items}</ol>`
   })
 
-  // Process markdown tables
+  // Tableaux
   html = html.replace(/(^\|.+\|$(\n\|.+\|$)+)/gm, (match) => {
     const rows = match.trim().split('\n')
     const headerCells = rows[0].split('|').filter(c => c.trim()).map(c => `<th>${c.trim()}</th>`).join('')
-    const bodyRows = rows.slice(2) // skip header + separator
+    const bodyRows = rows.slice(2)
       .map(row => {
         const cells = row.split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`).join('')
         return `<tr>${cells}</tr>`
@@ -63,22 +75,29 @@ const renderedContent = computed(() => {
     return `<table><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table>`
   })
 
-  // Inline formatting
+  // 3. Formatage inline — après extraction des blocs code
   html = html
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`([^`\n]+)`/g, '<code>$1</code>')  // code inline
 
-  // Paragraphs: split on double newlines, wrap non-block content in <p>
+  // 4. Paragraphes
   html = html
     .split(/\n\n/)
     .map(block => {
       const trimmed = block.trim()
       if (!trimmed) return ''
-      if (/^<(h[23]|ul|ol|hr|blockquote|table)/.test(trimmed)) return trimmed
-      // Convert single newlines to <br> for line breaks within paragraphs
+      if (/^<(h[23]|ul|ol|hr|blockquote|table|pre)/.test(trimmed)) return trimmed
+      if (/^__CODEBLOCK_\d+__$/.test(trimmed)) return trimmed  // placeholder
       return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`
     })
     .join('\n')
+
+  // 5. Réinjecter les blocs de code à la place des placeholders
+  codeBlocks.forEach((block, i) => {
+    html = html.replace(`<p>__CODEBLOCK_${i}__</p>`, block)
+    html = html.replace(`__CODEBLOCK_${i}__`, block)
+  })
 
   return html
 })
@@ -198,6 +217,36 @@ h1 { font-size: 2rem; margin-bottom: 1rem; }
 
 .post-content :deep(tbody tr:hover) {
   background: rgba(196, 150, 60, 0.04);
+}
+
+.post-content :deep(pre) {
+  background: var(--bg-card, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.2rem 1.4rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.post-content :deep(pre code) {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  color: var(--text-muted);
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+}
+
+.post-content :deep(code) {
+  background: var(--bg-card, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0.15em 0.4em;
+  font-size: 0.85em;
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  color: var(--accent-light);
 }
 
 @media (max-width: 768px) {
