@@ -21,7 +21,8 @@
     "db:seed-blog-aws-gcp": "npx tsx server/db/seed-blog-aws-gcp.ts",
     "db:seed-blog-claude": "npx tsx server/db/seed-blog-claude-code.ts",
     "db:seed-blog-nuxt": "npx tsx server/db/seed-blog-nuxt-portfolio.ts",
-    "db:seed-skills-advanced": "npx tsx server/db/seed-skills-advanced.ts"
+    "db:seed-skills-advanced": "npx tsx server/db/seed-skills-advanced.ts",
+    "db:seed-blog-coffre": "npx tsx server/db/seed-blog-coffre-photo.ts"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.19.0",
