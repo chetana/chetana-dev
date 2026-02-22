@@ -11,13 +11,15 @@ const db = drizzle(sql)
 
 const contentFr = `## La mémoire, c'est précieux
 
-Ma grand-mère avait un album photo cartonné, à la couverture usée par les années. Elle le sortait lors de chaque visite familiale, l'ouvrait au même endroit — toujours la même page, comme si les photos elles-mêmes avaient mémorisé ses doigts — et elle racontait. Chaque image déclenchait une histoire. Une photo floue d'un jardin en 1963 valait dix minutes de récit.
+Mes parents sont des réfugiés de la guerre Khmers rouges. Ils n'ont pas d'albums photo de leur enfance — pas de photos du tout, en fait. Tout a été perdu, ou plutôt tout a été délibérément effacé. Le régime de Pol Pot a détruit les archives, les documents, les visages. Garder une photo de famille, c'était parfois risquer sa vie.
 
-Cet album était une technologie de mémoire. Rudimentaire, physique, irremplaçable.
+J'ai grandi en entendant des histoires. Des récits de gens qui existaient mais dont il ne reste aucune image. Ma mère me décrivait ses parents, ses frères — des silhouettes sans visage. La mémoire orale comme seule archive.
+
+Alors quand j'ai voulu construire quelque chose pour ne pas oublier, le projet a pris une autre dimension. Pas de la nostalgie de développeur. Plutôt une évidence : **la mémoire se perd si on ne la construit pas activement**.
 
 Aujourd'hui je vis à 9 074 km de la personne que j'aime. Paris — Phnom Penh. Six heures de décalage horaire. La distance est une forme de mémoire inversée : au lieu d'archiver le passé, elle efface le présent. Un repas partagé, un coucher de soleil, un geste du quotidien — autant de moments qui disparaissent faute d'un endroit où les déposer ensemble.
 
-J'ai donc construit un album photo privé. Une PWA Flutter déployée sur Vercel, un bucket Google Cloud Storage, une API Nuxt sur le backend Nuxt. Deux utilisateurs. Aucune concession sur la sécurité ni sur l'expérience.
+J'ai donc construit un album photo privé. Une PWA Flutter déployée sur Vercel, un bucket Google Cloud Storage, une API Nuxt serverless. Deux utilisateurs. Aucune concession sur la sécurité ni sur l'expérience.
 
 Ce qui suit est le récit complet de cette construction : les choix techniques, les bugs, les optimisations — et les leçons que j'en ai tirées sur la gestion mémoire dans une app web multimédia moderne.
 
@@ -589,9 +591,11 @@ Cette app est petite. Deux utilisateurs. Pas de scale, pas de SLA, pas de monito
 
 const contentEn = `## Memory is Precious
 
-My grandmother had a cardboard photo album, its cover worn by years of use. She'd bring it out at every family visit, open it to the same spot — as if the photos themselves had memorized her fingers — and start telling stories. Each image triggered a narrative. A blurry garden photo from 1963 was worth ten minutes of storytelling.
+My parents are refugees of the Khmer Rouge war. They have no childhood photo albums — no photos at all, actually. Everything was lost, or rather deliberately erased. Pol Pot's regime destroyed archives, documents, faces. Keeping a family photo was sometimes enough to risk your life.
 
-That album was a memory technology. Rudimentary, physical, irreplaceable.
+I grew up hearing stories. Accounts of people who existed but left no image behind. My mother described her parents, her siblings — silhouettes without faces. Oral memory as the only archive.
+
+So when I wanted to build something to keep from forgetting, the project took on a different weight. Not developer nostalgia. More of an obvious truth: **memory disappears if you don't actively build it**.
 
 Today I live 9,074 km from the person I love. Paris — Phnom Penh. Six hours time difference. Distance is a form of inverted memory: instead of archiving the past, it erases the present. A shared meal, a sunset, a small daily gesture — moments that vanish without somewhere to deposit them together.
 
@@ -786,7 +790,11 @@ This app is small. Two users. No scale, no SLA, no monitoring. And yet it taught
 
 const contentKm = `## ការចងចាំមានតម្លៃ
 
-យាយរបស់ខ្ញុំមានអាល់ប៊ុមរូបថតមួយ ដែលក្រោមមានស្នាមប្រើប្រាស់ជាច្រើនឆ្នាំ។ នាងនឹងយកវាចេញក្នុងការជួបជុំគ្រួសារ ហើយចាប់ផ្តើមនិយាយ។ រូបថតនីមួយៗបានបង្ករឿងរ៉ាវ។ អាល់ប៊ុមមួយនោះគឺជាបច្ចេកវិទ្យានៃការចងចាំ។
+ឪពុកម្តាយរបស់ខ្ញុំជាជនភៀសខ្លួននៃសង្គ្រាម ខ្មែរក្រហម។ ពួកគេមិនមានអាល់ប៊ុមរូបថតនៃវ័យកុមារភាព — គ្មានរូបថតសោះ។ អ្វីៗទាំងអស់ត្រូវបានបំផ្លាញ ឬលុបចោលដោយចេតនា។ របបប៉ុលពតបំផ្លាញប័ណ្ណសារ ឯកសារ និងមុខមាត់។ ការរក្សាទុករូបថតគ្រួសារ ជួនកាលគឺគ្រោះថ្នាក់ដល់ជីវិត។
+
+ខ្ញុំធំដឹងក្តីដោយស្តាប់រឿងរ៉ាវ។ ការនិទានអំពីមនុស្សដែលមានជីវិត ប៉ុន្តែមិនមានរូបភាពណាមួយរក្សាទុក។ ម្តាយរបស់ខ្ញុំពណ៌នាអំពីឪពុកម្តាយ និងបងប្អូនរបស់នាង — ស្រមោលដែលគ្មានមុខ។ ការចងចាំផ្ទាល់មាត់ ជាប័ណ្ណសារតែមួយគត់។
+
+ហេតុនេះហើយ ពេលខ្ញុំចង់បង្កើតអ្វីមួយ ដើម្បីកុំភ្លេច គម្រោងបានទទួលទំហំខ្លឹមសារផ្សេង។ **ការចងចាំបាត់បង់ ប្រសិនបើយើងមិនបង្កើតវាដោយសកម្ម**។
 
 ថ្ងៃនេះខ្ញុំរស់នៅ ៩,០៧៤ គីឡូម៉ែត្រ ពីមនុស្សដែលខ្ញុំស្រឡាញ់។ ប៉ារីស — ភ្នំពេញ។ ដូច្នេះខ្ញុំបានបង្កើតអាល់ប៊ុមរូបថតឯកជន — PWA Flutter ដែលដាក់ពង្រាយនៅ Vercel, Google Cloud Storage bucket, API Nuxt serverless។ អ្នកប្រើប្រាស់ពីរនាក់។
 
