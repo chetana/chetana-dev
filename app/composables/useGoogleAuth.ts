@@ -62,8 +62,10 @@ export function useGoogleAuth() {
 
   function handleCredentialResponse(response: { credential: string }) {
     try {
-      // Decode JWT payload (no verification needed here — server verifies)
-      const payload = JSON.parse(atob(response.credential.split('.')[1]))
+      // Decode JWT payload with proper UTF-8 handling
+      const base64 = response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+      const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0))
+      const payload = JSON.parse(new TextDecoder().decode(bytes))
       saveToStorage(response.credential, payload.email ?? '', payload.name ?? '')
     } catch {
       console.error('[GoogleAuth] Failed to decode token')
