@@ -1,22 +1,15 @@
 import { Storage } from '@google-cloud/storage'
 import { requireAuth } from '../../utils/auth'
 
-let _storage: Storage | null = null
-
 function getStorage(): Storage {
-  if (!_storage) {
-    const config = useRuntimeConfig()
-    const credentials = JSON.parse(config.gcsServiceAccountJson)
-    _storage = new Storage({ credentials })
-  }
-  return _storage
+  const credentials = JSON.parse(process.env.GCS_SERVICE_ACCOUNT_JSON!)
+  return new Storage({ credentials })
 }
 
 export default defineEventHandler(async (event) => {
   await requireAuth(event)
 
-  const config = useRuntimeConfig()
-  const bucket = config.gcsBucketName as string
+  const bucket = process.env.GCS_BUCKET_NAME!
   const query = getQuery(event)
   const prefix = (query.prefix as string) ?? ''
 
