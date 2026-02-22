@@ -20,6 +20,7 @@ declare global {
 const TOKEN_KEY = 'google_id_token'
 const USER_EMAIL_KEY = 'google_user_email'
 const USER_NAME_KEY = 'google_user_name'
+const REFRESH_MARGIN_MS = 5 * 60 * 1000 // refresh 5 min before expiry
 
 export function useGoogleAuth() {
   const config = useRuntimeConfig()
@@ -30,11 +31,57 @@ export function useGoogleAuth() {
 
   const isAuthenticated = computed(() => !!token.value)
 
+  let refreshTimer: ReturnType<typeof setTimeout> | null = null
+
+  // Decode exp (unix seconds) from JWT payload
+  function getTokenExpiry(jwt: string): number {
+    try {
+      const base64 = jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+      const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0))
+      const payload = JSON.parse(new TextDecoder().decode(bytes))
+      return payload.exp ?? 0
+    } catch {
+      return 0
+    }
+  }
+
+  function scheduleRefresh(expSec: number) {
+    if (refreshTimer) clearTimeout(refreshTimer)
+    const msUntilRefresh = expSec * 1000 - Date.now() - REFRESH_MARGIN_MS
+    if (msUntilRefresh <= 0) {
+      // Already expired or about to — prompt immediately
+      silentRefresh()
+      return
+    }
+    refreshTimer = setTimeout(silentRefresh, msUntilRefresh)
+  }
+
+  function silentRefresh() {
+    if (window.google?.accounts?.id) {
+      window.google.accounts.id.prompt()
+    }
+  }
+
   function loadFromStorage() {
     if (import.meta.server) return
-    token.value = localStorage.getItem(TOKEN_KEY)
+    const stored = localStorage.getItem(TOKEN_KEY)
+    if (!stored) return
+
+    // Check if already expired
+    const exp = getTokenExpiry(stored)
+    if (exp && exp * 1000 < Date.now()) {
+      // Token expired — clear and re-prompt after GIS is ready
+      localStorage.removeItem(TOKEN_KEY)
+      localStorage.removeItem(USER_EMAIL_KEY)
+      localStorage.removeItem(USER_NAME_KEY)
+      return
+    }
+
+    token.value = stored
     userEmail.value = localStorage.getItem(USER_EMAIL_KEY)
     userName.value = localStorage.getItem(USER_NAME_KEY)
+
+    if (exp) scheduleRefresh(exp)
   }
 
   function saveToStorage(idToken: string, email: string, name: string) {
@@ -44,9 +91,13 @@ export function useGoogleAuth() {
     token.value = idToken
     userEmail.value = email
     userName.value = name
+
+    const exp = getTokenExpiry(idToken)
+    if (exp) scheduleRefresh(exp)
   }
 
   function clearStorage() {
+    if (refreshTimer) { clearTimeout(refreshTimer); refreshTimer = null }
     localStorage.removeItem(TOKEN_KEY)
     localStorage.removeItem(USER_EMAIL_KEY)
     localStorage.removeItem(USER_NAME_KEY)
@@ -62,7 +113,6 @@ export function useGoogleAuth() {
 
   function handleCredentialResponse(response: { credential: string }) {
     try {
-      // Decode JWT payload with proper UTF-8 handling
       const base64 = response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
       const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0))
       const payload = JSON.parse(new TextDecoder().decode(bytes))
@@ -93,7 +143,6 @@ export function useGoogleAuth() {
       })
     }
 
-    // Show One Tap if not already signed in
     if (!token.value) {
       window.google.accounts.id.prompt()
     }
@@ -108,7 +157,6 @@ export function useGoogleAuth() {
     clearStorage()
   }
 
-  // Call this when a 401 is received — clears token and re-prompts
   function handleUnauthorized() {
     clearStorage()
     if (window.google?.accounts?.id) {
