@@ -1,4 +1,3 @@
-import { signedGetUrl } from '../../utils/gcs'
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
@@ -16,12 +15,10 @@ export default defineEventHandler(async (event) => {
   // En HTML, & dans les attributs doit être &amp; — les signed URLs GCS en contiennent beaucoup
   const flutterUrlHtml = flutterUrl.replace(/&/g, '&amp;')
 
-  let imageUrl = ''
-  let imageUrlHtml = ''
-  try {
-    imageUrl = signedGetUrl(path)
-    imageUrlHtml = imageUrl.replace(/&/g, '&amp;')
-  } catch (_) {}
+  // Proxy JPEG — transcode tout format en JPEG pour compatibilité Facebook/Telegram
+  // (Facebook Messenger n'accepte pas WebP en og:image, contrairement à WhatsApp)
+  const ogImageUrl = `https://chetana.dev/api/coffre/og-image?path=${encodeURIComponent(path)}`
+  const ogImageUrlHtml = ogImageUrl.replace(/&/g, '&amp;')
 
   const monthsFr = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']
   const monthName = monthsFr[parseInt(m, 10) - 1] ?? m
@@ -37,8 +34,8 @@ export default defineEventHandler(async (event) => {
   <meta property="og:site_name" content="Chet &amp; Lys">
   <meta property="og:title" content="${title}">
   <meta property="og:description" content="Un souvenir partagé · ការចងចាំរួម">
-  ${imageUrlHtml ? `<meta property="og:image" content="${imageUrlHtml}">
-  <meta name="twitter:card" content="summary_large_image">` : '<meta name="twitter:card" content="summary">'}
+  <meta property="og:image" content="${ogImageUrlHtml}">
+  <meta name="twitter:card" content="summary_large_image">
   <meta property="og:url" content="${flutterUrlHtml}">
   <meta http-equiv="refresh" content="0;url=${flutterUrlHtml}">
   <script>window.location.replace(${JSON.stringify(flutterUrl)});</script>
