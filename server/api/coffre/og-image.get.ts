@@ -31,8 +31,13 @@ export default defineEventHandler(async (event) => {
 
   // Transcode en JPEG — normalise WebP, HEIC, RAW, PNG, etc.
   // Évite le décodage full-res côté client (ex: Lumix 8 MB, 6000×4000px)
+  // Pour les thumbnails grille (w <= 600), crop carré centré pour un rendu uniforme
+  const isThumb = width <= 600
   const jpeg = await sharp(buffer)
-    .resize({ width, withoutEnlargement: true })
+    .resize(isThumb
+      ? { width, height: width, fit: 'cover', position: 'centre', withoutEnlargement: true }
+      : { width, withoutEnlargement: true }
+    )
     .jpeg({ quality: width <= 400 ? 80 : 85 })
     .toBuffer()
 
