@@ -138,11 +138,13 @@ export interface TranscriptionResult {
 
 // Transcrit un message audio et traduit en 3 langues en un seul appel Gemini
 export async function geminiTranscribeAndTranslate(audioBase64: string, mimeType: string): Promise<TranscriptionResult> {
-  const prompt = `Tu es un assistant de traduction pour un couple franco-cambodgien (Chet parle français, Lys parle khmer).
-Transcris fidèlement ce message vocal. Détecte la langue parlée (français, anglais ou khmer) et conserve-la.
-Corrige discrètement les imprécisions si nécessaire. Traduis dans les 2 autres langues.
+  const prompt = `Transcris EXACTEMENT ce qui est dit dans ce message vocal, mot pour mot, sans rien ajouter ni inventer.
+Si le message est court (ex: "bonjour", "hello", "ok"), la transcription doit contenir uniquement ces mots.
+Ne complète pas, ne reformule pas, ne corrige pas.
+Détecte la langue (français, anglais ou khmer).
+Traduis ensuite dans les 2 autres langues (traduction courte et fidèle au message d'origine).
 Réponds UNIQUEMENT avec un JSON valide (sans markdown) :
-{"text":"transcription originale","fr":"texte en français","en":"text in English","kh":"អត្ថបទជាភាសាខ្មែរ"}`
+{"text":"transcription exacte","fr":"texte en français","en":"text in English","kh":"អត្ថបទជាភាសាខ្មែរ"}`
 
   const raw = await geminiRequest(
     [{ inlineData: { mimeType, data: audioBase64 } }, { text: prompt }],
