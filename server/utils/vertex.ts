@@ -51,6 +51,10 @@ async function geminiRequest(parts: object[], maxTokens = 300): Promise<string> 
     }
   )
   const data = await res.json() as any
+  if (!res.ok) {
+    console.error('[vertex] Gemini error', res.status, JSON.stringify(data))
+    throw new Error(`Gemini ${res.status}: ${data?.error?.message ?? 'unknown'}`)
+  }
   const raw: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}'
   return raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
 }
