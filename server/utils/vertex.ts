@@ -114,9 +114,13 @@ export async function geminiSuggest(text: string, authorLang: 'fr' | 'kh'): Prom
     ? `question courte en khmer, commençant par "តើអ្នកចង់និយាយថា"`
     : `question courte en français, commençant par "Tu voulais dire"`
 
-  const lessonField = authorLang === 'kh'
+  const lessonHint = authorLang === 'kh'
     ? `,"lesson":"explication très courte en khmer (1 phrase max, mots simples et doux) de ce qui a été corrigé et pourquoi"`
-    : ''
+    : `,"lesson":"explication très courte en français (1 phrase max) de ce qui a été corrigé et pourquoi"`
+
+  const lessonRule = authorLang === 'kh'
+    ? '- lesson : explique la règle en khmer simple pour aider Lys à apprendre (ex: "បានប្រើ X ព្រោះ...")'
+    : '- lesson : explique la règle en français simple pour aider Chet à s\'améliorer (ex: "On dit X parce que...")'
 
   const prompt = `Tu es un assistant de traduction pour un couple : Chet (français) et Lys (cambodgienne).
 ${context}
@@ -128,14 +132,15 @@ Règles :
 - Signaler la correction avec une question naturelle dans la langue de l'auteur
 - Traductions : privilégier le sens et l'intention, pas le mot-à-mot
 - Registre intime et tendre, adapté à un couple
-${authorLang === 'kh' ? '- lesson : explique la correction en khmer simple pour aider Lys à apprendre (ex: "បានប្រើ X ព្រោះ...")' : ''}
+- Si aucune faute n'est détectée, ne mets pas de champ "lesson" (omets-le du JSON)
+${lessonRule}
 
 Message : "${text}"
 
 Réponds UNIQUEMENT avec un JSON valide (sans markdown) :
-{"corrected":"message corrigé dans la langue détectée","fr":"texte en français","en":"text in English","kh":"អត្ថបទជាភាសាខ្មែរ","question":"${questionHint}"${lessonField}}`
+{"corrected":"message corrigé dans la langue détectée","fr":"texte en français","en":"text in English","kh":"អត្ថបទជាភាសាខ្មែរ","question":"${questionHint}"${lessonHint}}`
 
-  const raw = await callGemini(prompt, 400)
+  const raw = await callGemini(prompt, 500)
   return JSON.parse(raw) as GeminiSuggestion
 }
 
