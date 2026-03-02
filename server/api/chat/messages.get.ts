@@ -3,10 +3,12 @@ import { getGcsBucket } from '../../utils/gcs'
 
 export interface ChatMessage {
   id: string
-  author: string  // 'Chet' | 'Lys'
+  author: string
   text: string
-  translation: string
-  ts: string  // ISO 8601
+  fr: string
+  en: string
+  kh: string
+  ts: string
 }
 
 export default defineEventHandler(async (event) => {

@@ -1,5 +1,6 @@
 import { requireAuth } from '../../utils/auth'
 import { getGcsBucket } from '../../utils/gcs'
+import { geminiTranslateAll } from '../../utils/vertex'
 import type { ChatMessage } from './messages.get'
 
 export default defineEventHandler(async (event) => {
@@ -14,24 +15,37 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'y, m, d are required' })
   }
 
-  const body = await readBody(event) as { author: string; text: string; translation: string }
+  const body = await readBody(event) as { author: string; text: string; fr?: string; en?: string; kh?: string }
 
   if (!body?.author || !body?.text) {
     throw createError({ statusCode: 400, statusMessage: 'author and text are required' })
+  }
+
+  // Traduit toujours en 3 langues — utilise les valeurs fournies si déjà disponibles
+  let fr = body.fr ?? ''
+  let en = body.en ?? ''
+  let kh = body.kh ?? ''
+
+  if ((!fr || !en || !kh) && body.text.trim().length >= 2) {
+    const translations = await geminiTranslateAll(body.text).catch(() => ({ fr: '', en: '', kh: '' }))
+    if (!fr) fr = translations.fr
+    if (!en) en = translations.en
+    if (!kh) kh = translations.kh
   }
 
   const newMessage: ChatMessage = {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     author: body.author,
     text: body.text,
-    translation: body.translation ?? '',
+    fr,
+    en,
+    kh,
     ts: new Date().toISOString(),
   }
 
   const path = `chat/${y}/${m}/${d}.json`
   const bucket = getGcsBucket()
 
-  // Lit les messages existants du jour
   let messages: ChatMessage[] = []
   try {
     const [contents] = await bucket.file(path).download()
