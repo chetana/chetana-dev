@@ -6,7 +6,7 @@ const ALLOWED_ORIGINS = [
 
 export default defineEventHandler((event) => {
   const path = event.path ?? ''
-  if (!path.startsWith('/api/coffre')) return
+  if (!path.startsWith('/api/coffre') && !path.startsWith('/api/chat')) return
 
   const origin = getHeader(event, 'origin') ?? ''
   const allow = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]
