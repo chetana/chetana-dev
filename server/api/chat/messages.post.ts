@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'y, m, d are required' })
   }
 
-  const body = await readBody(event) as { author: string; text?: string; fr?: string; en?: string; kh?: string; image?: string }
+  const body = await readBody(event) as { author: string; text?: string; fr?: string; en?: string; kh?: string; image?: string; source?: 'audio' }
 
   if (!body?.author || (!body?.text && !body?.image)) {
     throw createError({ statusCode: 400, statusMessage: 'author and text or image are required' })
@@ -44,6 +44,7 @@ export default defineEventHandler(async (event) => {
     kh,
     ts: new Date().toISOString(),
     ...(body.image ? { image: body.image } : {}),
+    ...(body.source ? { source: body.source } : {}),
   }
 
   const path = `chat/${y}/${m}/${d}.json`

@@ -33,7 +33,7 @@ async function getAccessToken(): Promise<string> {
   return data.access_token
 }
 
-async function callGemini(prompt: string, maxTokens = 300): Promise<string> {
+async function geminiRequest(parts: object[], maxTokens = 300): Promise<string> {
   const token = await getAccessToken()
   const project = process.env.VERTEX_PROJECT_ID ?? 'cykt-399216'
   const location = process.env.VERTEX_LOCATION ?? 'us-central1'
@@ -45,7 +45,7 @@ async function callGemini(prompt: string, maxTokens = 300): Promise<string> {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        contents: [{ role: 'user', parts }],
         generationConfig: { temperature: 0.2, maxOutputTokens: maxTokens },
       }),
     }
@@ -53,6 +53,10 @@ async function callGemini(prompt: string, maxTokens = 300): Promise<string> {
   const data = await res.json() as any
   const raw: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}'
   return raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+}
+
+async function callGemini(prompt: string, maxTokens = 300): Promise<string> {
+  return geminiRequest([{ text: prompt }], maxTokens)
 }
 
 // Détecte si le texte contient des caractères khmers (U+1780–U+17FF)
@@ -123,4 +127,26 @@ Réponds UNIQUEMENT avec un JSON valide (sans markdown) :
 
   const raw = await callGemini(prompt, 400)
   return JSON.parse(raw) as GeminiSuggestion
+}
+
+export interface TranscriptionResult {
+  text: string  // transcription dans la langue d'origine
+  fr: string
+  en: string
+  kh: string
+}
+
+// Transcrit un message audio et traduit en 3 langues en un seul appel Gemini
+export async function geminiTranscribeAndTranslate(audioBase64: string, mimeType: string): Promise<TranscriptionResult> {
+  const prompt = `Tu es un assistant de traduction pour un couple franco-cambodgien (Chet parle français, Lys parle khmer).
+Transcris fidèlement ce message vocal. Détecte la langue parlée (français, anglais ou khmer) et conserve-la.
+Corrige discrètement les imprécisions si nécessaire. Traduis dans les 2 autres langues.
+Réponds UNIQUEMENT avec un JSON valide (sans markdown) :
+{"text":"transcription originale","fr":"texte en français","en":"text in English","kh":"អត្ថបទជាភាសាខ្មែរ"}`
+
+  const raw = await geminiRequest(
+    [{ inlineData: { mimeType, data: audioBase64 } }, { text: prompt }],
+    500
+  )
+  return JSON.parse(raw) as TranscriptionResult
 }

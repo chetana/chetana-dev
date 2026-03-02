@@ -9,7 +9,8 @@ export interface ChatMessage {
   en: string
   kh: string
   ts: string
-  image?: string  // chemin GCS de l'image (optionnel)
+  image?: string   // chemin GCS de l'image (optionnel)
+  source?: 'audio' // indique que le message vient d'un vocal
 }
 
 export default defineEventHandler(async (event) => {
