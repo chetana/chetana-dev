@@ -167,12 +167,96 @@ Le client principal est une app Android native. Les sessions/cookies sont pensee
 4. **Neon** : Connexion HTTP (pas de pool TCP), ideal pour serverless.
 5. **i18n** : Le composable `useI18n()` expose un `useState('locale')` reactif.
 
+## Chat chet_lys
+
+API chat temps réel pour [chetlys.vercel.app](https://chetlys.vercel.app).
+
+Messages stockés dans GCS : `chat/YYYY/MM/DD.json` (tableau de `ChatMessage`).
+
+### Fichiers chat
+
+```
+server/
+  api/chat/
+    messages.get.ts    # GET  — liste les messages du jour
+    messages.post.ts   # POST — sauvegarde + traduit via Gemini si traductions vides
+    messages.delete.ts # DELETE — vérifie auteur === user.firstName
+    transcribe.post.ts # POST — audio base64 → texte + 3 traductions (Gemini)
+    suggest.post.ts    # POST — correction + traductions + leçon grammaticale
+  utils/
+    vertex.ts          # geminiTranslateAll, geminiTranscribeAndTranslate, geminiSuggest
+```
+
+### Fonctions Vertex AI (`vertex.ts`)
+
+| Fonction | maxTokens | Description |
+|---|---|---|
+| `geminiTranslateAll(text)` | 300 | Detecte langue, corrige, traduit FR/EN/KH |
+| `geminiTranscribeAndTranslate(audio, mime)` | 500 | Transcrit audio + traduit |
+| `geminiSuggest(text, lang)` | 500 | Correction + traductions + `lesson?` |
+
+`GeminiSuggestion.lesson` : explication grammaticale dans la langue de l'auteur (FR pour Chet, KH pour Lys) — absent si aucune faute.
+
+> ⚠️ `gemini-2.5-flash` thinking activé par défaut → toujours ajouter `thinkingConfig: { thinkingBudget: 0 }` dans `generationConfig`.
+
+---
+
+## Coffre a souvenirs — chet_lys
+
+API GCS pour l'application SvelteKit `chet_lys` (chetlys.vercel.app). Permet d'uploader, lister, telecharger et supprimer des photos/videos stockees dans Google Cloud Storage.
+
+### Fichiers
+
+```
+server/
+  api/coffre/
+    list.get.ts          # GET /api/coffre/list?prefix=YYYY/MM/DD/
+    sign-upload.post.ts  # POST /api/coffre/sign-upload { path, contentType }
+    sign-download.get.ts # GET /api/coffre/sign-download?path=
+    delete.delete.ts     # DELETE /api/coffre/delete?path=
+  middleware/
+    cors.ts              # CORS pour /api/coffre/* — autorise chetlys.vercel.app
+  utils/
+    gcs.ts               # getGcsBucket() + signedPutUrl() + signedGetUrl()
+cors.json                # Config CORS bucket GCS (PUT/GET depuis chetlys.vercel.app)
+```
+
+### Signed URLs v4 (Node.js natif)
+
+Le SDK `@google-cloud/storage` est bundle par Nitro/Rollup, ce qui casse ses prototypes de classes. La solution : implementation v4 avec le module `crypto` natif de Node.js (`createHash`, `createSign`).
+
+```
+Canonical request :
+  METHOD\n/bucket/path\nqueryString\ncanonicalHeaders\nsignedHeaders\nUNSIGNED-PAYLOAD
+  → SHA-256(canonicalRequest) = hash
+  → stringToSign = "GOOG4-RSA-SHA256\ndatetime\nscope\nhash"
+  → signature = RSA-SHA256(stringToSign, private_key) en hex
+  → URL : https://storage.googleapis.com/bucket/path?...&X-Goog-Signature=<hex>
+```
+
+Toutes les variables d'environnement sont lues avec `.trim()` pour eviter les `%0A` dans les URLs (Vercel ajoute parfois un `\n` en fin de valeur).
+
+### Convention de nommage GCS
+
+```
+YYYY/MM/DD/filename.ext
+```
+
+Le prefix seul suffit pour le drill-down temporel, sans base de donnees.
+
+### CORS
+
+Deux niveaux :
+1. **Nuxt middleware** `cors.ts` : permet a `chetlys.vercel.app` d'appeler `chetana.dev/api/coffre/*`
+2. **Bucket GCS** (`cors.json`) : permet a `chetlys.vercel.app` de faire des PUT directs sur GCS
+
 ## Securite
 
-- **Google OAuth** sur les endpoints health (Bearer token verifie)
+- **Google OAuth** sur tous les endpoints proteges (health + coffre) — Bearer token verifie
 - Validation des inputs sur toutes les routes POST
 - Honeypot anti-spam sur le formulaire de contact
 - Moderation des commentaires (approved = false par defaut)
 - Pas de SQL injection grace a Drizzle (parameterized queries)
-- `DATABASE_URL` et `GOOGLE_CLIENT_ID` en variables d'environnement (jamais dans le code)
+- `DATABASE_URL`, `GOOGLE_CLIENT_ID`, `GCS_*` en variables d'environnement (jamais dans le code)
 - Donnees scopees par userId (aucun utilisateur ne peut voir les donnees d'un autre)
+- Signed URLs GCS avec expiration courte (PUT: 15 min, GET: 1h)

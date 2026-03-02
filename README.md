@@ -118,6 +118,8 @@ npm run dev
 | `VAPID_PRIVATE_KEY` | Cle privee pour les push notifications |
 | `VAPID_PUBLIC_KEY` | Cle publique pour les push notifications |
 | `CRON_SECRET` | Secret pour les endpoints cron |
+| `GCS_BUCKET_NAME` | Nom du bucket Google Cloud Storage (coffre chet_lys) |
+| `GCS_SERVICE_ACCOUNT_JSON` | JSON stringifie du service account GCS (Storage Object Admin) |
 
 ## Scripts
 
@@ -143,10 +145,17 @@ app/
   pages/                 # Routes Nuxt (index, blog, projects, cv, contact)
 server/
   api/                   # Routes REST
-    health/              # Endpoints proteges (Google OAuth)
+    health/              # Endpoints proteges (Google OAuth) — daily pushup tracker
       stats.get.ts       # GET stats scopees par userId
       entries.get.ts     # GET entries scopees par userId
       validate.post.ts   # POST validation scopee par userId
+    coffre/              # Endpoints proteges (Google OAuth) — coffre a souvenirs chet_lys
+      list.get.ts        # GET liste objets GCS avec delimiter
+      sign-upload.post.ts  # POST genere signed URL PUT v4
+      sign-download.get.ts # GET genere signed URL GET v4
+      delete.delete.ts   # DELETE supprime un objet GCS
+  middleware/
+    cors.ts              # CORS pour /api/coffre/* (chetlys.vercel.app)
   db/
     schema.ts            # Schema Drizzle (users, healthEntries, projects, blogPosts, ...)
     seed.ts              # Seed principal
@@ -157,6 +166,8 @@ server/
   utils/
     db.ts                # Connexion Neon singleton
     auth.ts              # requireAuth() — verification Google ID Token + upsert user
+    gcs.ts               # GCS bucket + signed URLs v4 (Node.js crypto natif)
+cors.json                # Config CORS du bucket GCS (PUT direct depuis chetlys.vercel.app)
 drizzle/                 # Migrations auto-generees
 docs/                    # Architecture, Database, ADRs
 ```
@@ -202,6 +213,45 @@ Requierent `Authorization: Bearer <google_id_token>` :
 | `/api/health/stats` | GET | Stats pompes de l'utilisateur (streak, total, today) |
 | `/api/health/entries` | GET | Historique des jours de l'utilisateur |
 | `/api/health/validate` | POST | Valider le jour courant pour l'utilisateur |
+| `/api/coffre/list?prefix=` | GET | Liste les objets GCS avec delimiter `/` |
+| `/api/coffre/sign-upload` | POST | Genere un signed URL PUT v4 (15 min) |
+| `/api/coffre/sign-download?path=` | GET | Genere un signed URL GET v4 (1h) |
+| `/api/coffre/delete?path=` | DELETE | Supprime un objet GCS |
+| `/api/chat/messages?y=&m=&d=` | GET | Liste les messages GCS du jour |
+| `/api/chat/messages?y=&m=&d=` | POST | Envoie un message (traduit automatiquement via Gemini) |
+| `/api/chat/messages?y=&m=&d=&id=` | DELETE | Supprime un message (auteur uniquement) |
+| `/api/chat/transcribe` | POST | Transcrit un audio base64 → texte + 3 traductions (Gemini) |
+| `/api/chat/suggest` | POST | Suggestion/correction + traductions + lecon grammaticale (Gemini) |
+
+## Chat chet_lys
+
+API chat pour l'application couple [chetlys.vercel.app](https://chetlys.vercel.app).
+
+Messages stockes dans GCS : `chat/YYYY/MM/DD.json` (tableau de `ChatMessage`).
+
+```typescript
+interface ChatMessage {
+  id: string       // `${Date.now()}-${random}`
+  author: string   // prenom Google (firstName)
+  text: string     // texte original
+  fr: string       // traduction francaise (Gemini)
+  en: string       // traduction anglaise (Gemini)
+  kh: string       // traduction khmere (Gemini)
+  ts: string       // ISO timestamp
+  image?: string   // chemin GCS (YYYY/MM/DD/filename)
+  source?: 'audio' // message transcrit depuis un vocal
+}
+```
+
+### Fonctions Vertex AI (`server/utils/vertex.ts`)
+
+| Fonction | Description |
+|---|---|
+| `geminiTranslateAll(text)` | Detecte la langue, corrige, traduit FR/EN/KH |
+| `geminiTranscribeAndTranslate(audio, mime)` | Transcrit un audio + traduit en 3 langues |
+| `geminiSuggest(text, lang)` | Correction + traductions + `lesson?` (explication grammaticale en FR ou KH) |
+
+> ⚠️ `gemini-2.5-flash` active le thinking par defaut — toujours ajouter `thinkingConfig: { thinkingBudget: 0 }` dans `generationConfig`.
 
 ## Android Companion App
 
