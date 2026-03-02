@@ -37,7 +37,7 @@ async function geminiRequest(parts: object[], maxTokens = 300): Promise<string> 
   const token = await getAccessToken()
   const project = process.env.VERTEX_PROJECT_ID ?? 'cykt-399216'
   const location = process.env.VERTEX_LOCATION ?? 'us-central1'
-  const model = 'gemini-2.0-flash-001'
+  const model = 'gemini-2.5-flash'
 
   const res = await fetch(
     `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/publishers/google/models/${model}:generateContent`,
