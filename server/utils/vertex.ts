@@ -46,7 +46,7 @@ async function geminiRequest(parts: object[], maxTokens = 300): Promise<string> 
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ role: 'user', parts }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: maxTokens },
+        generationConfig: { temperature: 0.2, maxOutputTokens: maxTokens, thinkingConfig: { thinkingBudget: 0 } },
       }),
     }
   )
