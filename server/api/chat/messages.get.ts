@@ -9,6 +9,7 @@ export interface ChatMessage {
   en: string
   kh: string
   ts: string
+  image?: string  // chemin GCS de l'image (optionnel)
 }
 
 export default defineEventHandler(async (event) => {

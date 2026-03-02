@@ -15,19 +15,21 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'y, m, d are required' })
   }
 
-  const body = await readBody(event) as { author: string; text: string; fr?: string; en?: string; kh?: string }
+  const body = await readBody(event) as { author: string; text?: string; fr?: string; en?: string; kh?: string; image?: string }
 
-  if (!body?.author || !body?.text) {
-    throw createError({ statusCode: 400, statusMessage: 'author and text are required' })
+  if (!body?.author || (!body?.text && !body?.image)) {
+    throw createError({ statusCode: 400, statusMessage: 'author and text or image are required' })
   }
 
-  // Traduit toujours en 3 langues — utilise les valeurs fournies si déjà disponibles
+  const text = body.text ?? ''
+
+  // Traduit seulement si du texte est présent
   let fr = body.fr ?? ''
   let en = body.en ?? ''
   let kh = body.kh ?? ''
 
-  if ((!fr || !en || !kh) && body.text.trim().length >= 2) {
-    const translations = await geminiTranslateAll(body.text).catch(() => ({ fr: '', en: '', kh: '' }))
+  if (text.trim().length >= 2 && (!fr || !en || !kh)) {
+    const translations = await geminiTranslateAll(text).catch(() => ({ fr: '', en: '', kh: '' }))
     if (!fr) fr = translations.fr
     if (!en) en = translations.en
     if (!kh) kh = translations.kh
@@ -36,11 +38,12 @@ export default defineEventHandler(async (event) => {
   const newMessage: ChatMessage = {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     author: body.author,
-    text: body.text,
+    text,
     fr,
     en,
     kh,
     ts: new Date().toISOString(),
+    ...(body.image ? { image: body.image } : {}),
   }
 
   const path = `chat/${y}/${m}/${d}.json`
