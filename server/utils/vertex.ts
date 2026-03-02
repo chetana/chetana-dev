@@ -68,13 +68,20 @@ export interface Translations {
 
 // Détecte la langue du message, corrige-la, puis traduit dans les 2 autres langues
 export async function geminiTranslateAll(text: string): Promise<Translations> {
-  const prompt = `Tu es un assistant affectueux pour un couple franco-cambodgien.
-Détecte la langue du message (français, anglais ou khmer).
-Corrige les fautes dans cette langue, puis traduis dans les 2 autres langues.
+  const prompt = `Tu es un assistant de traduction pour un couple : Chet (français) et Lys (cambodgienne). Ils s'écrivent des messages affectueux en français, khmer ou anglais.
+
+Rôle : détecter la langue du message, corriger discrètement les fautes, puis traduire dans les 2 autres langues.
+
+Règles de traduction :
+- Privilégier le sens et l'intention, jamais le mot-à-mot
+- Garder le registre naturel du message (tendre, intime, quotidien)
+- Adapter au contexte culturel (couple franco-cambodgien)
+- Le champ de la langue d'origine contient le texte corrigé, pas une retraduction
+
+Message : "${text}"
+
 Réponds UNIQUEMENT avec un JSON valide (sans markdown) :
-{"fr":"version française correcte et affectueuse","en":"natural English translation","kh":"ការបកប្រែខ្មែរធម្មជាតិ"}
-— Le champ de la langue détectée doit contenir le message corrigé (pas une retraduction).
-Message : "${text}"`
+{"fr":"texte en français","en":"text in English","kh":"អត្ថបទជាភាសាខ្មែរ"}`
 
   const raw = await callGemini(prompt, 300)
   return JSON.parse(raw) as Translations
@@ -90,17 +97,29 @@ export interface GeminiSuggestion {
 
 // Appelle Gemini Flash pour suggérer une correction + traductions avant envoi
 export async function geminiSuggest(text: string, authorLang: 'fr' | 'kh'): Promise<GeminiSuggestion> {
-  const prompt = authorLang === 'kh'
-    ? `Tu es un assistant affectueux pour un couple franco-cambodgien. Lys écrit à Chet.
-Détecte la langue du message. Corrige les fautes dans cette langue. Traduis dans les 2 autres langues.
+  const context = authorLang === 'kh'
+    ? `Lys (cambodgienne) écrit à Chet (français). Elle écrit probablement en khmer, parfois en français ou anglais appris.`
+    : `Chet (français) écrit à Lys (cambodgienne). Il écrit probablement en français, parfois en anglais ou khmer appris.`
+
+  const questionHint = authorLang === 'kh'
+    ? `question courte en khmer, commençant par "តើអ្នកចង់និយាយថា"`
+    : `question courte en français, commençant par "Tu voulais dire"`
+
+  const prompt = `Tu es un assistant de traduction pour un couple : Chet (français) et Lys (cambodgienne).
+${context}
+
+Rôle : détecter la langue réelle du message, corriger discrètement les fautes (orthographe, grammaire, mots manquants), puis traduire dans les 2 autres langues.
+
+Règles :
+- Corriger sans dénaturer le sens ni le ton du message
+- Signaler la correction avec une question naturelle dans la langue de l'auteur
+- Traductions : privilégier le sens et l'intention, pas le mot-à-mot
+- Registre intime et tendre, adapté à un couple
+
 Message : "${text}"
+
 Réponds UNIQUEMENT avec un JSON valide (sans markdown) :
-{"corrected":"message corrigé dans la langue détectée","fr":"traduction française douce","en":"natural English translation","kh":"version khmer corrigée","question":"question courte en khmer commençant par តើអ្នកចង់និយាយថា"}`
-    : `Tu es un assistant affectueux pour un couple franco-cambodgien. Chet écrit à Lys.
-Détecte la langue du message. Corrige les fautes dans cette langue. Traduis dans les 2 autres langues.
-Message : "${text}"
-Réponds UNIQUEMENT avec un JSON valide (sans markdown) :
-{"corrected":"message corrigé dans la langue détectée","fr":"version française corrigée","en":"natural English translation","kh":"ការបកប្រែខ្មែរស្រស់ស្អាត","question":"question courte en français commençant par Tu voulais dire"}`
+{"corrected":"message corrigé dans la langue détectée","fr":"texte en français","en":"text in English","kh":"អត្ថបទជាភាសាខ្មែរ","question":"${questionHint}"}`
 
   const raw = await callGemini(prompt, 400)
   return JSON.parse(raw) as GeminiSuggestion
