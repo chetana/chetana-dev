@@ -134,8 +134,8 @@
           <div class="empty-icon">📭</div>
           <div class="empty-title">{{ locale === 'fr' ? 'Aucune correction enregistrée' : 'No corrections recorded yet' }}</div>
           <div class="empty-sub">{{ locale === 'fr'
-            ? 'Les leçons apparaissent ici dès qu\'un message avec une faute est envoyé dans l\'app.'
-            : 'Lessons appear here as soon as a message with an error is sent in the app.' }}</div>
+            ? 'Analysez une phrase avec une faute dans l\'onglet Analyser — la leçon s\'enregistre ici.'
+            : 'Analyze a sentence with an error in the Analyze tab — the lesson will appear here.' }}</div>
         </div>
         <div v-else>
           <div class="history-count">
@@ -222,11 +222,20 @@ async function analyze() {
   analyzeError.value = ''
   result.value = null
   try {
-    result.value = await $fetch<Suggestion>('/api/chat/suggest', {
+    const suggestion = await $fetch<Suggestion>('/api/chat/suggest', {
       method: 'POST',
       headers: getAuthHeaders(),
       body: { text }
     })
+    result.value = suggestion
+    // Sauvegarde les leçons dans le fichier démo séparé (isolé des leçons privées)
+    if (suggestion.lessons?.length) {
+      $fetch('/api/chat/lessons-demo', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: { lessons: suggestion.lessons, lang: suggestion.lang }
+      }).then((r: any) => { lessonsCount.value += r?.saved ?? 0 }).catch(() => {})
+    }
   } catch (err: unknown) {
     if ((err as { statusCode?: number })?.statusCode === 401) {
       handleUnauthorized()
@@ -241,7 +250,7 @@ async function analyze() {
 async function loadHistory() {
   historyLoading.value = true
   try {
-    const data = await $fetch<LessonEntry[]>('/api/chat/lessons', {
+    const data = await $fetch<LessonEntry[]>('/api/chat/lessons-demo', {
       headers: getAuthHeaders()
     })
     lessons.value = data
