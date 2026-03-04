@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'y, m, d are required' })
   }
 
-  const body = await readBody(event) as { author: string; text?: string; fr?: string; en?: string; kh?: string; lang?: string; lesson?: string; corrected?: string; image?: string; source?: 'audio' }
+  const body = await readBody(event) as { author: string; text?: string; fr?: string; en?: string; kh?: string; lang?: string; lessons?: { original: string; corrected: string; explanation: string }[]; image?: string; source?: 'audio' }
 
   if (!body?.author || (!body?.text && !body?.image)) {
     throw createError({ statusCode: 400, statusMessage: 'author and text or image are required' })
@@ -66,26 +66,27 @@ export default defineEventHandler(async (event) => {
   messages.push(newMessage)
   await bucket.file(path).save(JSON.stringify(messages), { contentType: 'application/json' })
 
-  // Sauvegarde la leçon si présente
-  if (body.lesson?.trim() && body.corrected) {
+  // Sauvegarde les leçons individuelles si présentes
+  if (body.lessons && body.lessons.length > 0) {
     try {
       const lessonsPath = 'chat/lessons.json'
-      let lessons: object[] = []
+      let stored: object[] = []
       try {
         const [lc] = await bucket.file(lessonsPath).download()
-        lessons = JSON.parse(lc.toString('utf-8'))
+        stored = JSON.parse(lc.toString('utf-8'))
       } catch {}
-      const entry = {
-        id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      const now = Date.now()
+      const entries = body.lessons.map((l, i) => ({
+        id: `${now + i}-${Math.random().toString(36).slice(2, 7)}`,
         ts: newMessage.ts,
         author: body.author,
-        original: text,
-        corrected: body.corrected,
-        lesson: body.lesson,
+        original: l.original,
+        corrected: l.corrected,
+        lesson: l.explanation,
         lang: lang || 'fr',
-      }
-      lessons.unshift(entry)
-      await bucket.file(lessonsPath).save(JSON.stringify(lessons), { contentType: 'application/json' })
+      }))
+      stored.unshift(...entries)
+      await bucket.file(lessonsPath).save(JSON.stringify(stored), { contentType: 'application/json' })
     } catch {}
   }
 
