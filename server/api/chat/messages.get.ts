@@ -8,6 +8,7 @@ export interface ChatMessage {
   fr: string
   en: string
   kh: string
+  lang?: string    // langue détectée du message original : 'fr', 'en' ou 'kh'
   ts: string
   image?: string   // chemin GCS de l'image (optionnel)
   source?: 'audio' // indique que le message vient d'un vocal

@@ -89,6 +89,7 @@ export interface Translations {
   fr: string
   en: string
   kh: string
+  lang?: string // langue détectée du message original : 'fr', 'en' ou 'kh'
 }
 
 // Détecte la langue du message, corrige-la, puis traduit dans les 2 autres langues
@@ -104,11 +105,12 @@ Règles de traduction :
 - Garder le registre naturel du message (tendre, intime, quotidien)
 - Adapter au contexte culturel (couple franco-cambodgien)
 - Le champ de la langue d'origine contient le texte corrigé, pas une retraduction
+- "lang" : code de la langue détectée du message original ("fr", "en" ou "kh")
 
 Message : "${text}"
 
 Réponds UNIQUEMENT avec un JSON valide (sans markdown) :
-{"fr":"texte en français","en":"text in English","kh":"អត្ថបទជាភាសាខ្មែរ"}`
+{"fr":"texte en français","en":"text in English","kh":"អត្ថបទជាភាសាខ្មែរ","lang":"code_langue"}`
 
   const raw = await callGemini(prompt, 300)
   return JSON.parse(raw) as Translations
@@ -119,6 +121,7 @@ export interface GeminiSuggestion {
   fr: string
   en: string
   kh: string
+  lang: string       // langue détectée du message original : 'fr', 'en' ou 'kh'
   question: string   // question de confirmation dans la langue d'origine
   lesson?: string    // explication courte en khmer de la correction (pour Lys uniquement)
 }
@@ -155,12 +158,13 @@ Règles :
 - Traductions : privilégier le sens et l'intention, pas le mot-à-mot
 - Registre intime et tendre, adapté à un couple
 - Si aucune faute n'est détectée, ne mets pas de champ "lesson" (omets-le du JSON)
+- "lang" : code de la langue détectée du message original ("fr", "en" ou "kh")
 ${lessonRule}
 
 Message : "${text}"
 
 Réponds UNIQUEMENT avec un JSON valide (sans markdown) :
-{"corrected":"message corrigé dans la langue détectée","fr":"texte en français","en":"text in English","kh":"អត្ថបទជាភាសាខ្មែរ","question":"${questionHint}"${lessonHint}}`
+{"corrected":"message corrigé dans la langue détectée","fr":"texte en français","en":"text in English","kh":"អត្ថបទជាភាសាខ្មែរ","lang":"code_langue","question":"${questionHint}"${lessonHint}}`
 
   const raw = await callGemini(prompt, 500)
   return JSON.parse(raw) as GeminiSuggestion

@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'y, m, d are required' })
   }
 
-  const body = await readBody(event) as { author: string; text?: string; fr?: string; en?: string; kh?: string; image?: string; source?: 'audio' }
+  const body = await readBody(event) as { author: string; text?: string; fr?: string; en?: string; kh?: string; lang?: string; image?: string; source?: 'audio' }
 
   if (!body?.author || (!body?.text && !body?.image)) {
     throw createError({ statusCode: 400, statusMessage: 'author and text or image are required' })
@@ -27,12 +27,14 @@ export default defineEventHandler(async (event) => {
   let fr = body.fr ?? ''
   let en = body.en ?? ''
   let kh = body.kh ?? ''
+  let lang = body.lang ?? ''
 
   if (text.trim().length >= 2 && (!fr || !en || !kh)) {
-    const translations = await geminiTranslateAll(text, body.author).catch(() => ({ fr: '', en: '', kh: '' }))
+    const translations = await geminiTranslateAll(text, body.author).catch(() => ({ fr: '', en: '', kh: '', lang: '' }))
     if (!fr) fr = translations.fr
     if (!en) en = translations.en
     if (!kh) kh = translations.kh
+    if (!lang) lang = translations.lang ?? ''
   }
 
   const newMessage: ChatMessage = {
@@ -42,6 +44,7 @@ export default defineEventHandler(async (event) => {
     fr,
     en,
     kh,
+    ...(lang ? { lang } : {}),
     ts: new Date().toISOString(),
     ...(body.image ? { image: body.image } : {}),
     ...(body.source ? { source: body.source } : {}),
