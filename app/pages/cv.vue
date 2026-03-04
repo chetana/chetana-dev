@@ -20,8 +20,8 @@
       <div class="cv-section">
         <div class="cv-section-title">{{ locale === 'fr' ? 'Profil' : 'Profile' }}</div>
         <p class="cv-profil">{{ locale === 'fr'
-          ? "Engineering Manager hands-on avec 13 ans d'expérience en développement logiciel, dont 4+ années à concevoir et scaler une plateforme e-commerce B2B SaaS. Spécialisé dans l'Order Management System (OMS), les paiements multi-PSP (Adyen, Mangopay, Lemonway) et l'architecture modulaire Java/Spring Boot. Je combine leadership technique et management d'équipe (5 personnes : devs + QA) pour livrer des produits fiables à grande échelle. Pionnier dans l'intégration de l'IA générative (Claude Code) dans le workflow de développement quotidien."
-          : "Hands-on Engineering Manager with 13 years of software development experience, including 4+ years designing and scaling a B2B SaaS e-commerce platform. Specialized in Order Management System (OMS), multi-PSP payments (Adyen, Mangopay, Lemonway), and modular Java/Spring Boot architecture. I combine technical leadership and team management (5 people: devs + QA) to deliver reliable products at scale. Pioneer in integrating generative AI (Claude Code) into the daily development workflow."
+          ? "Engineering Manager hands-on avec 13 ans d'expérience en développement logiciel, dont 4+ années à concevoir et scaler une plateforme e-commerce B2B SaaS. Spécialisé dans l'Order Management System (OMS), les paiements multi-PSP (Adyen, Mangopay, Lemonway) et l'architecture modulaire Java/Spring Boot. Je combine leadership technique et management d'équipe (5 personnes : devs + QA) pour livrer des produits fiables à grande échelle. Pionnier dans l'intégration de l'IA générative dans les workflows d'équipe (Claude Code, MCP) et les produits (Vertex AI / Gemini : traduction, correction, transcription audio)."
+          : "Hands-on Engineering Manager with 13 years of software development experience, including 4+ years designing and scaling a B2B SaaS e-commerce platform. Specialized in Order Management System (OMS), multi-PSP payments (Adyen, Mangopay, Lemonway), and modular Java/Spring Boot architecture. I combine technical leadership and team management (5 people: devs + QA) to deliver reliable products at scale. Pioneer in integrating generative AI into team workflows (Claude Code, MCP) and products (Vertex AI / Gemini: translation, correction, audio transcription)."
         }}</p>
       </div>
 
@@ -33,8 +33,8 @@
           <li><strong>Data & Infrastructure :</strong> PostgreSQL, Elasticsearch, MongoDB, Redis, Docker, Kubernetes, GCP, AWS (SQS, S3), GitLab CI/CD, Jenkins, Ansible, Keycloak.</li>
           <li><strong>{{ locale === 'fr' ? 'Domaine métier' : 'Business Domain' }} :</strong> Order Management (OMS), Payments (Adyen, Mangopay, Lemonway, Thunes), Cart & Checkout, E-commerce B2B SaaS.</li>
           <li><strong>Management :</strong> Team Lead (5 : devs + QA), {{ locale === 'fr' ? 'Recrutement' : 'Hiring' }}, People Review, Agile/Scrum, SAFe, Kanban, Incident Management.</li>
-          <li><strong>Frontend & Mobile :</strong> Nuxt 4/Vue.js, TypeScript, Android (Kotlin/Java), iOS (Swift).</li>
-          <li><strong>AI-Augmented Dev :</strong> Claude Code, MCP Servers, Custom AI Skills, Automated Reviews, Google OAuth.</li>
+          <li><strong>Frontend & Mobile :</strong> Nuxt 4/Vue.js, SvelteKit/Svelte 5, TypeScript, Android (Kotlin/Java), iOS (Swift).</li>
+          <li><strong>AI-Augmented Dev :</strong> Claude Code, Vertex AI/Gemini, MCP Servers, Custom AI Skills, Automated Reviews.</li>
         </ul>
       </div>
 

@@ -227,12 +227,14 @@ async function seed() {
     { category: 'Frontend & Mobile', name: 'TypeScript', color: 'purple', sortOrder: 2 },
     { category: 'Frontend & Mobile', name: 'Android (Kotlin/Java)', color: 'purple', sortOrder: 3 },
     { category: 'Frontend & Mobile', name: 'iOS (Swift)', color: 'purple', sortOrder: 4 },
+    { category: 'Frontend & Mobile', name: 'SvelteKit / Svelte 5', color: 'purple', sortOrder: 5 },
     // AI-Augmented Dev
     { category: 'AI-Augmented Dev', name: 'Claude Code', color: 'purple', sortOrder: 1 },
     { category: 'AI-Augmented Dev', name: 'MCP Servers', color: 'purple', sortOrder: 2 },
     { category: 'AI-Augmented Dev', name: 'Custom AI Skills', color: 'purple', sortOrder: 3 },
     { category: 'AI-Augmented Dev', name: 'Automated Reviews', color: 'purple', sortOrder: 4 },
     { category: 'AI-Augmented Dev', name: 'AI-Assisted Testing', color: 'purple', sortOrder: 5 },
+    { category: 'AI-Augmented Dev', name: 'Vertex AI / Gemini', color: 'purple', sortOrder: 6 },
   ]
   await db.insert(skills).values(skillsData)
 
