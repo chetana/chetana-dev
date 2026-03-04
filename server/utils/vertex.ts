@@ -68,6 +68,23 @@ export function isKhmer(text: string): boolean {
   return /[\u1780-\u17FF]/.test(text)
 }
 
+// Contexte commun injecté dans tous les prompts du couple
+function coupleContext(author?: string): string {
+  const normalized = author?.normalize('NFD').replace(/[\u0300-\u036f]/g, '') ?? ''
+  const isChet = author ? /^(chet|chetana)$/i.test(normalized) : null
+  const authorLine = isChet === true
+    ? "Ce message est écrit par CHET (homme)."
+    : isChet === false
+      ? "Ce message est écrit par LYS (femme)."
+      : "" // auteur inconnu : contexte général sans préciser qui écrit
+
+  return `CONTEXTE DU COUPLE (respecter impérativement) :
+- Chet (aussi appelé "Chetana") est un HOMME français. Accord MASCULIN obligatoire pour ses messages (ex : "je suis heureux", jamais "heureuse").
+- Lys (aussi appelée "Vornsok") est une femme cambodgienne.
+- Pronoms khmer : quand Chet écrit → il se dit "bang" (បង), appelle Lys "oun" (អូន). Quand Lys écrit → elle se dit "oun" (អូន), appelle Chet "bang" (បង).
+${authorLine}`.trim()
+}
+
 export interface Translations {
   fr: string
   en: string
@@ -75,8 +92,10 @@ export interface Translations {
 }
 
 // Détecte la langue du message, corrige-la, puis traduit dans les 2 autres langues
-export async function geminiTranslateAll(text: string): Promise<Translations> {
+export async function geminiTranslateAll(text: string, author?: string): Promise<Translations> {
   const prompt = `Tu es un assistant de traduction pour un couple : Chet (français) et Lys (cambodgienne). Ils s'écrivent des messages affectueux en français, khmer ou anglais.
+
+${coupleContext(author)}
 
 Rôle : détecter la langue du message, corriger discrètement les fautes, puis traduire dans les 2 autres langues.
 
@@ -106,9 +125,10 @@ export interface GeminiSuggestion {
 
 // Appelle Gemini Flash pour suggérer une correction + traductions avant envoi
 export async function geminiSuggest(text: string, authorLang: 'fr' | 'kh'): Promise<GeminiSuggestion> {
+  const author = authorLang === 'fr' ? 'Chet' : 'Lys'
   const context = authorLang === 'kh'
-    ? `Lys (cambodgienne) écrit à Chet (français). Elle écrit probablement en khmer, parfois en français ou anglais appris.`
-    : `Chet (français) écrit à Lys (cambodgienne). Il écrit probablement en français, parfois en anglais ou khmer appris.`
+    ? `Lys (femme cambodgienne) écrit à Chet (français). Elle écrit probablement en khmer, parfois en français ou anglais appris.`
+    : `Chet (homme français) écrit à Lys (cambodgienne). Il écrit probablement en français, parfois en anglais ou khmer appris.`
 
   const questionHint = authorLang === 'kh'
     ? `question courte en khmer, commençant par "តើអ្នកចង់និយាយថា"`
@@ -124,6 +144,8 @@ export async function geminiSuggest(text: string, authorLang: 'fr' | 'kh'): Prom
 
   const prompt = `Tu es un assistant de traduction pour un couple : Chet (français) et Lys (cambodgienne).
 ${context}
+
+${coupleContext(author)}
 
 Rôle : détecter la langue réelle du message, corriger discrètement les fautes (orthographe, grammaire, mots manquants), puis traduire dans les 2 autres langues.
 
@@ -152,12 +174,15 @@ export interface TranscriptionResult {
 }
 
 // Transcrit un message audio et traduit en 3 langues en un seul appel Gemini
-export async function geminiTranscribeAndTranslate(audioBase64: string, mimeType: string): Promise<TranscriptionResult> {
+export async function geminiTranscribeAndTranslate(audioBase64: string, mimeType: string, author?: string): Promise<TranscriptionResult> {
   const prompt = `Transcris EXACTEMENT ce qui est dit dans ce message vocal, mot pour mot, sans rien ajouter ni inventer.
 Si le message est court (ex: "bonjour", "hello", "ok"), la transcription doit contenir uniquement ces mots.
 Ne complète pas, ne reformule pas, ne corrige pas.
 Détecte la langue (français, anglais ou khmer).
 Traduis ensuite dans les 2 autres langues (traduction courte et fidèle au message d'origine).
+
+${coupleContext(author)}
+
 Réponds UNIQUEMENT avec un JSON valide (sans markdown) :
 {"text":"transcription exacte","fr":"texte en français","en":"text in English","kh":"អត្ថបទជាភាសាខ្មែរ"}`
 

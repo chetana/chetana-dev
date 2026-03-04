@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
   let kh = body.kh ?? ''
 
   if (text.trim().length >= 2 && (!fr || !en || !kh)) {
-    const translations = await geminiTranslateAll(text).catch(() => ({ fr: '', en: '', kh: '' }))
+    const translations = await geminiTranslateAll(text, body.author).catch(() => ({ fr: '', en: '', kh: '' }))
     if (!fr) fr = translations.fr
     if (!en) en = translations.en
     if (!kh) kh = translations.kh
