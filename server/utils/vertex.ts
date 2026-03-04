@@ -137,9 +137,13 @@ export async function geminiSuggest(text: string, authorLang: 'fr' | 'kh'): Prom
     ? `question courte en khmer, commençant par "តើអ្នកចង់និយាយថា"`
     : `question courte en français, commençant par "Tu voulais dire"`
 
-  const lessonHint = `,"lesson":"explication très courte dans la MÊME LANGUE que le message original (1 phrase max, mots simples)"`
+  const lessonHint = authorLang === 'kh'
+    ? `,"lesson":"explication très courte en khmer (1 phrase max, mots simples et doux) de ce qui a été corrigé et pourquoi"`
+    : `,"lesson":"explication très courte en français (1 phrase max) de ce qui a été corrigé et pourquoi"`
 
-  const lessonRule = '- lesson : explique la règle grammaticale dans la même langue que le message original (pas la langue native de l\'auteur — la langue dans laquelle il/elle écrit)'
+  const lessonRule = authorLang === 'kh'
+    ? '- lesson : explique la règle en khmer simple pour aider Lys à apprendre (ex: "បានប្រើ X ព្រោះ...")'
+    : '- lesson : explique la règle en français simple pour aider Chet à s\'améliorer (ex: "On dit X parce que...")'
 
   const prompt = `Tu es un assistant de traduction pour un couple : Chet (français) et Lys (cambodgienne).
 ${context}
