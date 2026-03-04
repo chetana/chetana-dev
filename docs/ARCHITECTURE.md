@@ -191,11 +191,19 @@ server/
 
 | Fonction | maxTokens | Description |
 |---|---|---|
-| `geminiTranslateAll(text)` | 300 | Detecte langue, corrige, traduit FR/EN/KH |
-| `geminiTranscribeAndTranslate(audio, mime)` | 500 | Transcrit audio + traduit |
-| `geminiSuggest(text, lang)` | 500 | Correction + traductions + `lesson?` |
+| `coupleContext(author?)` | — | Contexte partagé : genre (Chet=homme), pronoms bang/oun, NFD normalization |
+| `geminiTranslateAll(text, author?)` | 300 | Detecte langue, corrige, traduit FR/EN/KH — retourne `lang` |
+| `geminiTranscribeAndTranslate(audio, mime, author?)` | 500 | Transcrit audio + traduit |
+| `geminiSuggest(text, authorLang)` | 500 | Correction + traductions + `lesson?` |
 
-`GeminiSuggestion.lesson` : explication grammaticale dans la langue de l'auteur (FR pour Chet, KH pour Lys) — absent si aucune faute.
+`coupleContext(author?)` est injecté dans les 3 fonctions Gemini pour :
+- Préciser que Chet est un HOMME (accord masculin obligatoire)
+- Définir les pronoms khmer : Chet = "bang" (បង), Lys = "oun" (អូន)
+- Détecter "Chétana" via NFD normalization + regex `/^(chet|chetana)$/i`
+
+`GeminiSuggestion.lesson` : explication grammaticale dans la **langue NATALE** de l'auteur (FR pour Chet, KH pour Lys, quelle que soit la langue du message) — absent si aucune faute.
+
+`authorLang` dans `suggest.post.ts` : déterminé **côté backend** depuis le token Google (`requireAuth`) — même NFD normalization que `coupleContext`.
 
 > ⚠️ `gemini-2.5-flash` thinking activé par défaut → toujours ajouter `thinkingConfig: { thinkingBudget: 0 }` dans `generationConfig`.
 

@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'y, m, d are required' })
   }
 
-  const body = await readBody(event) as { author: string; text?: string; fr?: string; en?: string; kh?: string; lang?: string; image?: string; source?: 'audio' }
+  const body = await readBody(event) as { author: string; text?: string; fr?: string; en?: string; kh?: string; lang?: string; lesson?: string; corrected?: string; image?: string; source?: 'audio' }
 
   if (!body?.author || (!body?.text && !body?.image)) {
     throw createError({ statusCode: 400, statusMessage: 'author and text or image are required' })
@@ -65,6 +65,29 @@ export default defineEventHandler(async (event) => {
 
   messages.push(newMessage)
   await bucket.file(path).save(JSON.stringify(messages), { contentType: 'application/json' })
+
+  // Sauvegarde la leçon si présente
+  if (body.lesson?.trim() && body.corrected) {
+    try {
+      const lessonsPath = 'chat/lessons.json'
+      let lessons: object[] = []
+      try {
+        const [lc] = await bucket.file(lessonsPath).download()
+        lessons = JSON.parse(lc.toString('utf-8'))
+      } catch {}
+      const entry = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        ts: newMessage.ts,
+        author: body.author,
+        original: text,
+        corrected: body.corrected,
+        lesson: body.lesson,
+        lang: lang || 'fr',
+      }
+      lessons.unshift(entry)
+      await bucket.file(lessonsPath).save(JSON.stringify(lessons), { contentType: 'application/json' })
+    } catch {}
+  }
 
   return newMessage
 })
