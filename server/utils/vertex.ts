@@ -1,7 +1,7 @@
 import { createSign } from 'crypto'
 
 // Génère un access token OAuth2 depuis le service account GCS existant
-async function getAccessToken(): Promise<string> {
+export async function getAccessToken(): Promise<string> {
   const raw = process.env.GCS_SERVICE_ACCOUNT_JSON!.trim()
   const creds = JSON.parse(raw)
   creds.private_key = (creds.private_key as string).replace(/\\n/g, '\n').trim() + '\n'
