@@ -21,23 +21,35 @@ defineProps<{
 
 <style scoped>
 .skill-card {
-  padding: 2rem;
+  padding: 1.75rem;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  transition: all 0.3s;
+  border-radius: var(--radius, 14px);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  box-shadow: var(--shadow-sm);
 }
 
-.skill-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+.skill-card:hover {
+  border-color: rgba(196,150,60,0.45);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
 
 .skill-card-title {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
-.icon { font-size: 1.3rem; }
+.icon {
+  font-size: 1.4rem;
+  transition: transform 0.22s ease;
+}
+
+.skill-card:hover .icon {
+  transform: scale(1.15) rotate(-3deg);
+}
 </style>

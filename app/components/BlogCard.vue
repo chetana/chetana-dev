@@ -32,22 +32,47 @@ const excerpt = computed(() => localeField(props.post, 'excerpt'))
 <style scoped>
 .blog-card {
   display: block;
-  padding: 2rem;
+  padding: 1.75rem;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  transition: all 0.3s;
+  border-radius: var(--radius, 14px);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
   text-decoration: none;
   color: var(--text);
+  box-shadow: var(--shadow-sm);
 }
 
-.blog-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+.blog-card:hover {
+  border-color: rgba(196,150,60,0.45);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
 
-.blog-date { font-size: 0.8rem; color: var(--accent-light); margin-bottom: 0.5rem; }
+.blog-date {
+  font-size: 0.78rem;
+  color: var(--accent);
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
 
-h3 { font-size: 1.15rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.15rem; margin-bottom: 0.8rem; font-weight: 700; line-height: 1.35; }
 
-p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.6; }
 
-.read-more { color: var(--accent-light); font-size: 0.85rem; }
+.read-more {
+  color: var(--accent-light);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: gap 0.2s ease, color 0.2s ease;
+}
+
+.blog-card:hover .read-more {
+  color: var(--accent);
+  gap: 0.55rem;
+}
 </style>

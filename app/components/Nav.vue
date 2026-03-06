@@ -110,23 +110,24 @@ const mobileOpen = ref(false)
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 500;
-  border-radius: 8px;
+  border-radius: 10px;
   border-left: 2px solid transparent;
-  transition: background 0.18s, color 0.18s, border-color 0.18s;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
   white-space: nowrap;
 }
 
 .nav-link:hover {
   color: var(--text);
-  background: rgba(196, 150, 60, 0.07);
-  border-left-color: rgba(196, 150, 60, 0.4);
+  background: rgba(196, 150, 60, 0.08);
+  border-left-color: rgba(196, 150, 60, 0.5);
+  transform: translateX(2px);
 }
 
 .nav-link.router-link-active {
   color: var(--accent-light);
-  background: rgba(196, 150, 60, 0.1);
+  background: rgba(196, 150, 60, 0.12);
   border-left-color: var(--accent);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* ─── Footer (lang toggle) ──────────────────────────────────────────────── */
@@ -139,20 +140,22 @@ const mobileOpen = ref(false)
 .lang-btn {
   background: transparent;
   color: var(--accent-light);
-  border: 1px solid var(--accent);
-  border-radius: 6px;
-  padding: 0.35rem 0.8rem;
+  border: 1.5px solid var(--accent);
+  border-radius: 20px;
+  padding: 0.35rem 1rem;
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: all 0.2s ease;
   font-family: inherit;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 .lang-btn:hover {
   background: var(--accent);
   color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(196,150,60,0.3);
 }
 
 /* ─── Mobile top bar ────────────────────────────────────────────────────── */

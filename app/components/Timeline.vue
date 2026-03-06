@@ -69,13 +69,19 @@ function formatDate(d: string): string {
   top: 0;
   bottom: 0;
   width: 2px;
-  background: var(--border);
+  background: linear-gradient(to bottom, var(--accent) 0%, var(--border) 100%);
+  opacity: 0.5;
 }
 
 .timeline-item {
   position: relative;
   padding-left: 3rem;
   margin-bottom: 3rem;
+  transition: transform 0.22s ease;
+}
+
+.timeline-item:hover {
+  transform: translateX(3px);
 }
 
 .timeline-item::before {
@@ -88,28 +94,45 @@ function formatDate(d: string): string {
   border-radius: 50%;
   background: var(--accent);
   border: 3px solid var(--bg);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.timeline-item:hover::before {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(196,150,60,0.25);
 }
 
 .timeline-item.current::before {
   box-shadow: 0 0 0 4px rgba(196, 150, 60, 0.3);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(196,150,60,0.3); }
+  50% { box-shadow: 0 0 0 7px rgba(196,150,60,0.12); }
 }
 
 .timeline-date {
-  font-size: 0.8rem;
-  color: var(--accent-light);
+  font-size: 0.78rem;
+  color: var(--accent);
   margin-bottom: 0.3rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .timeline-company {
   font-size: 0.85rem;
   color: var(--text-dim);
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
 }
 
 .timeline-role {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  color: var(--text);
 }
 
 .timeline-desc { color: var(--text-muted); font-size: 0.9rem; }
@@ -120,14 +143,16 @@ function formatDate(d: string): string {
   position: relative;
   padding-left: 1.2rem;
   margin-bottom: 0.4rem;
+  line-height: 1.6;
 }
 
 .timeline-desc li::before {
-  content: '>';
+  content: '›';
   position: absolute;
   left: 0;
   color: var(--accent);
-  font-family: monospace;
+  font-size: 1.1rem;
+  line-height: 1.55;
   font-weight: bold;
 }
 </style>
