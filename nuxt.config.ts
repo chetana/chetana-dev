@@ -79,7 +79,7 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'vercel',
     externals: {
-      external: ['@google-cloud/storage']
+      external: ['@google-cloud/storage', 'google-auth-library']
     }
   },
   runtimeConfig: {
