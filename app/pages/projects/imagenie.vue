@@ -2,7 +2,7 @@
   <div class="section" style="padding-top: 8rem;">
     <NuxtLink to="/projects" class="back-link">← {{ t('nav.projects') }}</NuxtLink>
     <div class="section-label">{{ t('nav.projects') }}</div>
-    <h1 class="section-title">Imagenie</h1>
+    <h1 class="section-title">ImagiChet</h1>
 
     <div class="tags" style="margin: 1rem 0 2rem;">
       <span v-for="tag in (project?.tags || [])" :key="tag" class="tag">{{ tag }}</span>
@@ -357,7 +357,7 @@ onMounted(async () => {
 })
 
 useSeoMeta({
-  title: 'Imagenie — Générateur d\'images Imagen 3 — Chetana YIN',
+  title: 'ImagiChet — Générateur d\'images Imagen 3 — Chetana YIN',
   description: 'Générateur d\'images personnel propulsé par Imagen 3 de Google via Vertex AI. Styles prédéfinis, galerie GCS, suppression.',
   robots: 'noindex',
 })

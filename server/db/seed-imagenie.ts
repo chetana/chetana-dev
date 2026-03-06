@@ -17,9 +17,9 @@ async function seedImagenie() {
 
   await db.insert(projects).values({
     slug: 'imagenie',
-    titleFr: 'Imagenie',
-    titleEn: 'Imagenie',
-    titleKm: 'Imagenie',
+    titleFr: 'ImagiChet',
+    titleEn: 'ImagiChet',
+    titleKm: 'ImagiChet',
     descriptionFr: `## Qu'est-ce qu'Imagenie ?
 
 Imagenie est un générateur d'images personnel propulsé par **Imagen 3 de Google** via Vertex AI. Contrairement aux interfaces publiques (Gemini, Google AI Studio), Imagenie tourne sur un compte GCP privé — permettant un contrôle total sur les prompts, les styles et la gestion des images générées.

@@ -17,9 +17,9 @@ async function seedBabelDuo() {
 
   await db.insert(projects).values({
     slug: 'babel-duo',
-    titleFr: 'BabelDuo',
-    titleEn: 'BabelDuo',
-    titleKm: 'BabelDuo',
+    titleFr: 'PolyGloChet',
+    titleEn: 'PolyGloChet',
+    titleKm: 'PolyGloChet',
     descriptionFr: `## Qu'est-ce que BabelDuo ?
 
 BabelDuo est une application de messagerie bilingue conçue pour faciliter l'apprentissage du français et du khmer entre deux personnes distantes. Chaque message envoyé est automatiquement analysé, corrigé et traduit dans les trois langues par Gemini AI — sans interrompre la conversation.

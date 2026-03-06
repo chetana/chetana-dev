@@ -2,7 +2,7 @@
   <div class="section" style="padding-top: 8rem;">
     <NuxtLink to="/projects" class="back-link">← {{ t('nav.projects') }}</NuxtLink>
     <div class="section-label">{{ t('nav.projects') }}</div>
-    <h1 class="section-title">BabelDuo</h1>
+    <h1 class="section-title">PolyGloChet</h1>
 
     <div class="tags" style="margin: 1rem 0 2rem;">
       <span v-for="tag in (project?.tags || [])" :key="tag" class="tag">{{ tag }}</span>
@@ -356,8 +356,8 @@ onMounted(async () => {
 
 // SEO
 const title = computed(() => locale.value === 'fr'
-  ? 'BabelDuo — Assistant bilingue FR ↔ KH · Chetana YIN'
-  : 'BabelDuo — FR ↔ KH Bilingual Assistant · Chetana YIN'
+  ? 'PolyGloChet — Assistant bilingue FR ↔ KH · Chetana YIN'
+  : 'PolyGloChet — FR ↔ KH Bilingual Assistant · Chetana YIN'
 )
 const description = computed(() => locale.value === 'fr'
   ? 'Correction grammaticale Gemini en temps réel, traductions FR/EN/KH et historique des leçons pour un couple bilingue.'
