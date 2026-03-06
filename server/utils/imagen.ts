@@ -78,6 +78,66 @@ export async function imagenBgSwap(subjectBase64: string, backgroundPrompt: stri
   }
 }
 
+export type InpaintMode = 'EDIT_MODE_OUTPAINT' | 'EDIT_MODE_INPAINT_INSERTION' | 'EDIT_MODE_INPAINT_REMOVAL'
+
+export async function imagenInpaint(
+  imageBase64: string,
+  maskBase64: string,
+  prompt: string,
+  mode: InpaintMode
+): Promise<ImagenResult> {
+  const token = await getAccessToken()
+  const project = process.env.VERTEX_PROJECT_ID ?? 'cykt-399216'
+  const location = process.env.VERTEX_LOCATION ?? 'us-central1'
+  const model = 'imagen-3.0-capability-001'
+
+  const body = {
+    instances: [{
+      prompt: prompt || 'seamlessly extend the scene',
+      referenceImages: [{
+        referenceType: 'REFERENCE_TYPE_RAW',
+        referenceId: 1,
+        referenceImage: { bytesBase64Encoded: imageBase64 },
+      }],
+      mask: {
+        referenceId: 1,
+        maskMode: { maskType: 'MASK_TYPE_USER_PROVIDED' },
+        dilation: 0.01,
+        userProvidedMask: { bytesBase64Encoded: maskBase64 },
+      },
+    }],
+    parameters: {
+      editConfig: { editMode: mode },
+      sampleCount: 1,
+    },
+  }
+
+  const res = await fetch(
+    `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/publishers/google/models/${model}:predict`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }
+  )
+
+  const data = await res.json() as any
+  if (!res.ok) {
+    console.error(`[imagen-${mode}] error`, res.status, JSON.stringify(data))
+    throw new Error(`Imagen ${mode} ${res.status}: ${data?.error?.message ?? 'unknown'}`)
+  }
+
+  const prediction = data?.predictions?.[0]
+  if (!prediction?.bytesBase64Encoded) {
+    throw new Error(`Imagen ${mode}: no image in response`)
+  }
+
+  return {
+    base64: prediction.bytesBase64Encoded,
+    mimeType: prediction.mimeType ?? 'image/png',
+  }
+}
+
 export async function imagenGenerate(prompt: string, options: ImagenOptions = {}): Promise<ImagenResult> {
   const token = await getAccessToken()
   const project = process.env.VERTEX_PROJECT_ID ?? 'cykt-399216'
