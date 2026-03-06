@@ -9,8 +9,8 @@ config({ path: '.env.local' })
 const sql = neon(process.env.DATABASE_URL!)
 const db = drizzle(sql)
 
-async function seedBabelDuo() {
-  console.log('🗣️  Seeding BabelDuo project...')
+async function seedPolyGloChet() {
+  console.log('🗣️  Seeding PolyGloChet project...')
 
   await db.delete(projects).where(eq(projects.slug, 'babel-duo'))
   console.log('🗑️  Cleared existing babel-duo entry')
@@ -20,9 +20,9 @@ async function seedBabelDuo() {
     titleFr: 'PolyGloChet',
     titleEn: 'PolyGloChet',
     titleKm: 'PolyGloChet',
-    descriptionFr: `## Qu'est-ce que BabelDuo ?
+    descriptionFr: `## Qu'est-ce que PolyGloChet ?
 
-BabelDuo est une application de messagerie bilingue conçue pour faciliter l'apprentissage du français et du khmer entre deux personnes distantes. Chaque message envoyé est automatiquement analysé, corrigé et traduit dans les trois langues par Gemini AI — sans interrompre la conversation.
+PolyGloChet est une application de messagerie bilingue conçue pour faciliter l'apprentissage du français et du khmer entre deux personnes distantes. Chaque message envoyé est automatiquement analysé, corrigé et traduit dans les trois langues par Gemini AI — sans interrompre la conversation.
 
 ## Correction grammaticale en temps réel
 
@@ -36,7 +36,7 @@ Dès que l'utilisateur commence à taper, un debounce d'une seconde déclenche u
 
 ## Leçons granulaires — une entrée par faute
 
-Contrairement à une correction globale, BabelDuo décompose chaque message en **autant de leçons qu'il y a de fautes** :
+Contrairement à une correction globale, PolyGloChet décompose chaque message en **autant de leçons qu'il y a de fautes** :
 
 - Exemple : "je veut manger du riz a la maison" → 2 leçons distinctes : "veut → veux" et "a → à"
 - Chaque leçon contient : l'original, la version corrigée, et l'explication grammaticale
@@ -105,9 +105,9 @@ Une barre d'actions apparaît sur sélection d'un message :
 - **Auth** : Google Identity Services (FedCM) — JWT vérifié stateless côté backend
 - **VAD** : @ricky0123/vad-web + onnxruntime-web (Silero VAD v5)`,
 
-    descriptionEn: `## What is BabelDuo?
+    descriptionEn: `## What is PolyGloChet?
 
-BabelDuo is a bilingual messaging app designed to facilitate French and Khmer learning between two people at a distance. Every message sent is automatically analyzed, corrected and translated into three languages by Gemini AI — without interrupting the conversation.
+PolyGloChet is a bilingual messaging app designed to facilitate French and Khmer learning between two people at a distance. Every message sent is automatically analyzed, corrected and translated into three languages by Gemini AI — without interrupting the conversation.
 
 ## Real-Time Grammar Correction
 
@@ -121,7 +121,7 @@ As soon as the user starts typing, a one-second debounce triggers a Gemini analy
 
 ## Granular Lessons — One Entry Per Error
 
-Unlike a global correction, BabelDuo breaks down each message into **as many lessons as there are errors**:
+Unlike a global correction, PolyGloChet breaks down each message into **as many lessons as there are errors**:
 
 - Example: "je veut manger du riz a la maison" → 2 distinct lessons: "veut → veux" and "a → à"
 - Each lesson contains: the original, the corrected version, and the grammatical explanation
@@ -198,7 +198,7 @@ An action bar appears when a message is selected:
   })
 
   console.log('✅ Inserted babel-duo project')
-  console.log('🎉 BabelDuo seed complete!')
+  console.log('🎉 PolyGloChet seed complete!')
 }
 
-seedBabelDuo().catch(console.error)
+seedPolyGloChet().catch(console.error)

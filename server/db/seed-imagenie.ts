@@ -9,8 +9,8 @@ config({ path: '.env.local' })
 const sql = neon(process.env.DATABASE_URL!)
 const db = drizzle(sql)
 
-async function seedImagenie() {
-  console.log('🎨  Seeding Imagenie project...')
+async function seedImagiChet() {
+  console.log('🎨  Seeding ImagiChet project...')
 
   await db.delete(projects).where(eq(projects.slug, 'imagenie'))
   console.log('🗑️  Cleared existing imagenie entry')
@@ -20,9 +20,9 @@ async function seedImagenie() {
     titleFr: 'ImagiChet',
     titleEn: 'ImagiChet',
     titleKm: 'ImagiChet',
-    descriptionFr: `## Qu'est-ce qu'Imagenie ?
+    descriptionFr: `## Qu'est-ce qu'ImagiChet ?
 
-Imagenie est un générateur d'images personnel propulsé par **Imagen 3 de Google** via Vertex AI. Contrairement aux interfaces publiques (Gemini, Google AI Studio), Imagenie tourne sur un compte GCP privé — permettant un contrôle total sur les prompts, les styles et la gestion des images générées.
+ImagiChet est un générateur d'images personnel propulsé par **Imagen 3 de Google** via Vertex AI. Contrairement aux interfaces publiques (Gemini, Google AI Studio), ImagiChet tourne sur un compte GCP privé — permettant un contrôle total sur les prompts, les styles et la gestion des images générées.
 
 ## Pourquoi Vertex AI plutôt que Gemini public ?
 
@@ -36,7 +36,7 @@ L'API Vertex AI offre plusieurs avantages décisifs pour un usage personnel :
 
 ## Modèle : Imagen 3 Fast
 
-Imagenie utilise \`imagen-3.0-fast-generate-001\`, la variante rapide et économique d'Imagen 3 :
+ImagiChet utilise \`imagen-3.0-fast-generate-001\`, la variante rapide et économique d'Imagen 3 :
 
 - **Qualité remarquable** malgré la vitesse (résolution 1024×1024 en natif)
 - **Génération en ~8 secondes** contre 15-20s pour le modèle full
@@ -87,9 +87,9 @@ Chaque style enrichit automatiquement le prompt avec un suffixe optimisé :
 - **Modal plein écran** : clic sur une image pour l'agrandir
 - **Suppression** : bouton 🗑️ sur chaque carte — supprime le fichier GCS et retire l'entrée de l'index
 - **Métadonnées** : prompt original, style appliqué, date de génération, ratio`,
-    descriptionEn: `## What is Imagenie?
+    descriptionEn: `## What is ImagiChet?
 
-Imagenie is a personal image generator powered by **Google's Imagen 3** via Vertex AI. Unlike public interfaces (Gemini, Google AI Studio), Imagenie runs on a private GCP account — giving complete control over prompts, styles, and generated image management.
+ImagiChet is a personal image generator powered by **Google's Imagen 3** via Vertex AI. Unlike public interfaces (Gemini, Google AI Studio), ImagiChet runs on a private GCP account — giving complete control over prompts, styles, and generated image management.
 
 ## Why Vertex AI instead of public Gemini?
 
@@ -103,7 +103,7 @@ The Vertex AI API offers several key advantages for personal use:
 
 ## Model: Imagen 3 Fast
 
-Imagenie uses \`imagen-3.0-fast-generate-001\`, the fast and cost-effective variant of Imagen 3:
+ImagiChet uses \`imagen-3.0-fast-generate-001\`, the fast and cost-effective variant of Imagen 3:
 
 - **Remarkable quality** despite the speed (native 1024×1024 resolution)
 - **Generation in ~8 seconds** vs 15-20s for the full model
@@ -161,8 +161,8 @@ Each style automatically enriches the prompt with an optimized suffix:
     sortOrder: 4,
   })
 
-  console.log('✅ Imagenie project seeded!')
+  console.log('✅ ImagiChet project seeded!')
   console.log('🎉 Done!')
 }
 
-seedImagenie().catch(console.error)
+seedImagiChet().catch(console.error)
