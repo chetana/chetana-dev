@@ -4,23 +4,6 @@
     <div class="section-label">{{ t('nav.projects') }}</div>
     <h1 class="section-title">PolyGloChet</h1>
 
-    <div class="tags" style="margin: 1rem 0 2rem;">
-      <span v-for="tag in (project?.tags || [])" :key="tag" class="tag">{{ tag }}</span>
-    </div>
-
-    <!-- Description markdown depuis la DB -->
-    <div v-if="renderedDescription" class="project-content" v-html="renderedDescription" />
-
-    <hr class="section-divider">
-    <h2 class="demo-title">
-      🧪 {{ locale === 'fr' ? 'Démo interactive' : 'Interactive demo' }}
-    </h2>
-    <p class="subtitle" style="margin-top: -1rem; margin-bottom: 2rem;">
-      {{ locale === 'fr'
-        ? 'Testez la correction Gemini en temps réel — tapez une phrase et observez l\'analyse'
-        : 'Test real-time Gemini correction — type a sentence and watch the analysis' }}
-    </p>
-
     <!-- Auth gate -->
     <div v-if="!isAuthenticated" class="auth-gate">
       <div class="auth-card">
@@ -176,43 +159,8 @@
 </template>
 
 <script setup lang="ts">
-const { locale, t, localeField } = useLocale()
+const { locale, t } = useLocale()
 const { isAuthenticated, userName, getAuthHeaders, loadFromStorage, initGIS, signOut: authSignOut, handleUnauthorized } = useGoogleAuth()
-
-// ── Description depuis la DB ─────────────────────────────────────────────
-const { data: project } = await useFetch('/api/projects/babel-duo')
-
-const renderedDescription = computed(() => {
-  if (!project.value) return ''
-  const raw = localeField(project.value, 'description') as string
-  if (!raw) return ''
-  let html = raw
-    .replace(/^---$/gm, '<hr>')
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-  html = html.replace(/(^- .+$(\n- .+$)*)/gm, (match: string) => {
-    const items = match.split('\n').map((line: string) => `<li>${line.replace(/^- /, '')}</li>`).join('\n')
-    return `<ul>${items}</ul>`
-  })
-  html = html.replace(/(^\d+\. .+$(\n\d+\. .+$)*)/gm, (match: string) => {
-    const items = match.split('\n').map((line: string) => `<li>${line.replace(/^\d+\. /, '')}</li>`).join('\n')
-    return `<ol>${items}</ol>`
-  })
-  html = html
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-  html = html
-    .split(/\n\n/)
-    .map((block: string) => {
-      const trimmed = block.trim()
-      if (!trimmed) return ''
-      if (/^<(h[23]|ul|ol|hr|blockquote|table)/.test(trimmed)) return trimmed
-      return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`
-    })
-    .join('\n')
-  return html
-})
 
 interface LessonItem {
   original: string
@@ -852,42 +800,6 @@ useSeoMeta({ title, description, ogTitle: title, ogDescription: description, ogT
   font-size: 0.9rem;
   display: inline-block;
   margin-bottom: 2rem;
-}
-
-/* Project description */
-.project-content {
-  color: var(--text-muted);
-  line-height: 1.8;
-  margin-bottom: 2.5rem;
-  max-width: 800px;
-}
-.project-content :deep(h2) { color: var(--text); font-size: 1.4rem; margin: 2rem 0 1rem; }
-.project-content :deep(h3) { color: var(--text); font-size: 1.2rem; margin: 1.5rem 0 0.8rem; }
-.project-content :deep(p) { margin-bottom: 1rem; }
-.project-content :deep(strong) { color: var(--text); }
-.project-content :deep(em) { font-style: italic; }
-.project-content :deep(code) {
-  font-family: monospace;
-  font-size: 0.88em;
-  background: rgba(196, 150, 60, 0.1);
-  border: 1px solid rgba(196, 150, 60, 0.2);
-  border-radius: 4px;
-  padding: 0.1em 0.4em;
-  color: var(--accent-light);
-}
-.project-content :deep(ul), .project-content :deep(ol) { padding-left: 1.5rem; margin-bottom: 1rem; }
-.project-content :deep(li) { margin-bottom: 0.4rem; }
-.project-content :deep(hr) { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
-
-.section-divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 3rem 0 2.5rem;
-}
-
-.demo-title {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
 }
 
 /* Animations */

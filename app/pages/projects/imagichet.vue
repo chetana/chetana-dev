@@ -4,23 +4,6 @@
     <div class="section-label">{{ t('nav.projects') }}</div>
     <h1 class="section-title">ImagiChet</h1>
 
-    <div class="tags" style="margin: 1rem 0 2rem;">
-      <span v-for="tag in (project?.tags || [])" :key="tag" class="tag">{{ tag }}</span>
-    </div>
-
-    <!-- Description markdown depuis la DB -->
-    <div v-if="renderedDescription" class="project-content" v-html="renderedDescription" />
-
-    <hr class="section-divider">
-    <h2 class="demo-title">
-      🎨 {{ locale === 'fr' ? 'Démo interactive' : 'Interactive demo' }}
-    </h2>
-    <p class="subtitle" style="margin-top: -1rem; margin-bottom: 2rem;">
-      {{ locale === 'fr'
-        ? 'Générez des images avec Imagen 3 — choisissez un style, un ratio, et laissez l\'IA créer'
-        : 'Generate images with Imagen 3 — choose a style, a ratio, and let AI create' }}
-    </p>
-
     <!-- Auth gate -->
     <div v-if="!isAuthenticated" class="auth-gate">
       <div class="auth-card">
@@ -178,36 +161,8 @@
 </template>
 
 <script setup lang="ts">
-const { locale, t, localeField } = useLocale()
+const { locale, t } = useLocale()
 const { isAuthenticated, userName, signOut, getAuthHeaders, handleUnauthorized, loadFromStorage, initGIS } = useGoogleAuth()
-
-const { data: project } = await useFetch('/api/projects/imagenie')
-
-const renderedDescription = computed(() => {
-  const raw = project.value ? localeField(project.value, 'description') : ''
-  if (!raw) return ''
-  let html = raw
-    .replace(/^---$/gm, '<hr>')
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-  html = html.replace(/(^- .+$(\n- .+$)*)/gm, (match) => {
-    const items = match.split('\n').map(line => `<li>${line.replace(/^- /, '')}</li>`).join('\n')
-    return `<ul>${items}</ul>`
-  })
-  html = html
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-  html = html
-    .split(/\n\n/)
-    .map(block => {
-      const trimmed = block.trim()
-      if (!trimmed) return ''
-      if (/^<(h[23]|ul|ol|hr|blockquote)/.test(trimmed)) return trimmed
-      return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`
-    })
-    .join('\n')
-  return html
-})
 
 // ─── Generator state ────────────────────────────────────────────────────────
 
@@ -365,18 +320,6 @@ useSeoMeta({
 
 <style scoped>
 .back-link { color: var(--accent-light); text-decoration: none; font-size: 0.9rem; display: inline-block; margin-bottom: 1rem; }
-.section-divider { border: none; border-top: 1px solid var(--border); margin: 3rem 0 2rem; }
-.demo-title { font-size: 1.5rem; margin-bottom: 0.5rem; }
-.subtitle { color: var(--text-muted); font-size: 0.95rem; }
-
-.project-content { color: var(--text-muted); line-height: 1.8; margin-bottom: 2rem; max-width: 800px; }
-.project-content :deep(h2) { color: var(--text); font-size: 1.4rem; margin: 2rem 0 1rem; }
-.project-content :deep(h3) { color: var(--text); font-size: 1.2rem; margin: 1.5rem 0 0.8rem; }
-.project-content :deep(p) { margin-bottom: 1rem; }
-.project-content :deep(strong) { color: var(--text); }
-.project-content :deep(code) { background: var(--card-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.85em; }
-.project-content :deep(ul) { padding-left: 1.5rem; margin-bottom: 1rem; }
-.project-content :deep(li) { margin-bottom: 0.4rem; }
 
 /* Auth gate */
 .auth-gate { display: flex; justify-content: center; padding: 2rem 0; }

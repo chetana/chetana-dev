@@ -155,7 +155,7 @@ Each style automatically enriches the prompt with an optimized suffix:
 - **Deletion**: 🗑️ button on each card — deletes the GCS file and removes the index entry
 - **Metadata**: original prompt, applied style, generation date, ratio`,
     tags: ['Vertex AI', 'Imagen 3', 'TypeScript', 'GCS', 'Vue.js', 'Nuxt 3'],
-    demoUrl: 'https://chetana.dev/projects/imagenie',
+    demoUrl: 'https://chetana.dev/projects/imagichet',
     githubUrl: null,
     featured: true,
     sortOrder: 4,

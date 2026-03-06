@@ -191,7 +191,7 @@ An action bar appears when a message is selected:
 - **VAD**: @ricky0123/vad-web + onnxruntime-web (Silero VAD v5)`,
 
     tags: ['SvelteKit', 'Svelte 5', 'Gemini AI', 'TypeScript', 'GCS', 'PWA', 'VAD', 'Web Speech'],
-    demoUrl: 'https://chetana.dev/projects/babel-duo',
+    demoUrl: 'https://chetana.dev/projects/polyglochet',
     githubUrl: null,
     type: 'project',
     featured: true
