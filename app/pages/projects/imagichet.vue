@@ -24,8 +24,22 @@
         <button class="btn-signout" @click="signOut">{{ locale === 'fr' ? 'Déconnexion' : 'Sign out' }}</button>
       </div>
 
+      <!-- Mode tabs -->
+      <div class="mode-tabs">
+        <button class="mode-tab" :class="{ active: activeMode === 'generate' }" @click="activeMode = 'generate'">
+          ✨ {{ locale === 'fr' ? 'Génération' : 'Generate' }}
+        </button>
+        <button class="mode-tab" :class="{ active: activeMode === 'bgswap' }" @click="activeMode = 'bgswap'">
+          🔄 BGSWAP
+        </button>
+      </div>
+
       <!-- Generator form -->
-      <div class="generator-card">
+      <div v-if="activeMode === 'generate'" class="generator-card">
+        <p class="mode-desc">{{ locale === 'fr'
+          ? 'Génère une image originale à partir d\'un prompt. Choisis un style et un ratio.'
+          : 'Generate an original image from a text prompt. Choose a style and aspect ratio.' }}</p>
+
         <div class="field">
           <label class="field-label">{{ locale === 'fr' ? 'Prompt' : 'Prompt' }}</label>
           <textarea
@@ -86,12 +100,72 @@
         <p v-if="genError" class="error-msg">{{ genError }}</p>
       </div>
 
+      <!-- BGSWAP form -->
+      <div v-else class="generator-card">
+        <p class="mode-desc">{{ locale === 'fr'
+          ? 'Remplace le fond d\'une photo en gardant le sujet intact. Upload ta photo, décris ou choisis un nouveau fond.'
+          : 'Replace the background of a photo while keeping the subject. Upload your photo, then describe or pick a new background.' }}</p>
+
+        <div class="field">
+          <label class="field-label">{{ locale === 'fr' ? 'Photo sujet' : 'Subject photo' }}</label>
+          <div
+            class="upload-zone"
+            :class="{ 'has-image': subjectPreviewUrl }"
+            @click="subjectInputRef?.click()"
+            @dragover.prevent
+            @drop.prevent="onDrop"
+          >
+            <img v-if="subjectPreviewUrl" :src="subjectPreviewUrl" class="upload-preview" alt="subject" />
+            <div v-else class="upload-placeholder">
+              <span class="upload-icon">📷</span>
+              <span>{{ locale === 'fr' ? 'Cliquer ou glisser une image' : 'Click or drag an image' }}</span>
+            </div>
+          </div>
+          <input ref="subjectInputRef" type="file" accept="image/*" style="display:none" @change="onFileChange" />
+        </div>
+
+        <div class="field">
+          <label class="field-label">{{ locale === 'fr' ? 'Fond (preset)' : 'Background (preset)' }}</label>
+          <div class="btn-group">
+            <button
+              v-for="bg in BG_PRESETS"
+              :key="bg.label"
+              class="style-btn"
+              :class="{ active: selectedBgPreset === bg.label }"
+              @click="selectBgPreset(bg)"
+            >{{ bg.label }}</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">{{ locale === 'fr' ? 'Ou décrire le fond' : 'Or describe the background' }}</label>
+          <textarea
+            v-model="bgPrompt"
+            class="text-input"
+            :placeholder="locale === 'fr' ? 'Ex: une plage tropicale au coucher du soleil...' : 'e.g. a tropical beach at sunset...'"
+            rows="2"
+            @input="selectedBgPreset = ''"
+          />
+        </div>
+
+        <button class="btn-generate" :disabled="generating || !subjectBase64 || !bgPrompt.trim()" @click="bgswap">
+          <span v-if="generating" class="spinner">⏳</span>
+          <span v-else>🔄</span>
+          {{ generating
+            ? (locale === 'fr' ? 'Traitement en cours...' : 'Processing...')
+            : (locale === 'fr' ? 'Changer le fond' : 'Swap background') }}
+        </button>
+
+        <p v-if="genError" class="error-msg">{{ genError }}</p>
+      </div>
+
       <!-- Result -->
       <div v-if="lastResult" class="result-card">
-        <img :src="`data:${lastResult.mimeType};base64,${lastResult.base64}`" class="result-img" :alt="prompt" />
+        <img :src="`data:${lastResult.mimeType};base64,${lastResult.base64}`" class="result-img" :alt="lastResult.entry.prompt" />
         <div class="result-meta">
-          <span class="result-style">{{ lastResult.entry.style || (locale === 'fr' ? 'Aucun style' : 'No style') }}</span>
-          <span class="result-ratio">{{ lastResult.entry.aspectRatio }}</span>
+          <span v-if="lastResult.entry.mode === 'bgswap'" class="badge-bgswap">BGSWAP</span>
+          <span v-else-if="lastResult.entry.style" class="result-style">{{ lastResult.entry.style }}</span>
+          <span v-if="lastResult.entry.mode !== 'bgswap'" class="result-ratio">{{ lastResult.entry.aspectRatio }}</span>
           <button class="btn-delete-result" @click="deleteEntry(lastResult!.entry.id)">🗑️</button>
         </div>
       </div>
@@ -124,7 +198,8 @@
           <div class="gallery-card-meta">
             <span class="gallery-prompt">{{ entry.prompt.length > 60 ? entry.prompt.slice(0, 60) + '…' : entry.prompt }}</span>
             <div class="gallery-card-row">
-              <span v-if="entry.style" class="gallery-style-badge">{{ entry.style }}</span>
+              <span v-if="entry.mode === 'bgswap'" class="badge-bgswap badge-sm">BGSWAP</span>
+              <span v-else-if="entry.style" class="gallery-style-badge">{{ entry.style }}</span>
               <span class="gallery-date">{{ formatDate(entry.ts) }}</span>
               <button class="btn-delete-small" @click.stop="deleteEntry(entry.id)">🗑️</button>
             </div>
@@ -149,8 +224,9 @@
           <div class="modal-meta">
             <p class="modal-prompt">{{ modalEntry.prompt }}</p>
             <div class="modal-tags">
-              <span v-if="modalEntry.style" class="gallery-style-badge">{{ modalEntry.style }}</span>
-              <span class="result-ratio">{{ modalEntry.aspectRatio }}</span>
+              <span v-if="modalEntry.mode === 'bgswap'" class="badge-bgswap">BGSWAP</span>
+              <span v-else-if="modalEntry.style" class="gallery-style-badge">{{ modalEntry.style }}</span>
+              <span v-if="modalEntry.mode !== 'bgswap'" class="result-ratio">{{ modalEntry.aspectRatio }}</span>
               <span class="gallery-date">{{ formatDate(modalEntry.ts) }}</span>
             </div>
           </div>
@@ -164,16 +240,37 @@
 const { locale, t } = useLocale()
 const { isAuthenticated, userName, signOut, getAuthHeaders, handleUnauthorized, loadFromStorage, initGIS } = useGoogleAuth()
 
-// ─── Generator state ────────────────────────────────────────────────────────
+// ─── Mode ────────────────────────────────────────────────────────────────────
+
+const activeMode = ref<'generate' | 'bgswap'>('generate')
+
+// ─── Generator state ─────────────────────────────────────────────────────────
 
 const STYLE_LABELS = ['', 'Aquarelle', 'Cinématique', 'Manga', 'Illustration', 'Photo réaliste']
 const RATIOS = ['1:1', '16:9', '9:16']
+
+const BG_PRESETS = [
+  { label: 'Aucun', prompt: '' },
+  { label: 'Plage', prompt: 'tropical beach at golden hour, turquoise water, palm trees' },
+  { label: 'Forêt', prompt: 'lush green forest, soft sunlight through trees, moss ground' },
+  { label: 'Ville nuit', prompt: 'city at night, bokeh lights, rain reflections on pavement' },
+  { label: 'Studio', prompt: 'professional photo studio, white seamless background, soft lighting' },
+  { label: 'Montagne', prompt: 'mountain landscape, dramatic clouds, snow peaks, golden hour' },
+]
 
 const prompt = ref('')
 const selectedStyle = ref('')
 const selectedRatio = ref('1:1')
 const negativePrompt = ref('')
 const showNeg = ref(false)
+
+// BGSWAP state
+const subjectInputRef = ref<HTMLInputElement | null>(null)
+const subjectBase64 = ref('')
+const subjectPreviewUrl = ref('')
+const bgPrompt = ref('')
+const selectedBgPreset = ref('')
+
 const generating = ref(false)
 const genError = ref('')
 const lastResult = ref<{ base64: string; mimeType: string; entry: GalleryEntry } | null>(null)
@@ -186,6 +283,7 @@ interface GalleryEntry {
   style: string
   aspectRatio: string
   path: string
+  mode?: 'generate' | 'bgswap'
 }
 
 const gallery = ref<GalleryEntry[]>([])
@@ -193,6 +291,36 @@ const signedUrls = ref<Record<string, string>>({})
 const galleryLoaded = ref(false)
 const galleryLoading = ref(false)
 const modalEntry = ref<GalleryEntry | null>(null)
+
+// ─── File upload ──────────────────────────────────────────────────────────────
+
+function onFileChange(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (file) loadSubjectFile(file)
+}
+
+function onDrop(e: DragEvent) {
+  const file = e.dataTransfer?.files?.[0]
+  if (file && file.type.startsWith('image/')) loadSubjectFile(file)
+}
+
+function loadSubjectFile(file: File) {
+  const reader = new FileReader()
+  reader.onload = (ev) => {
+    const result = ev.target?.result as string
+    subjectPreviewUrl.value = result
+    // Strip the data:image/xxx;base64, prefix
+    subjectBase64.value = result.split(',')[1] ?? ''
+  }
+  reader.readAsDataURL(file)
+}
+
+function selectBgPreset(bg: { label: string; prompt: string }) {
+  selectedBgPreset.value = bg.label
+  bgPrompt.value = bg.prompt
+}
+
+// ─── Actions ──────────────────────────────────────────────────────────────────
 
 async function generate() {
   if (!prompt.value.trim() || generating.value) return
@@ -205,6 +333,7 @@ async function generate() {
       method: 'POST',
       headers: getAuthHeaders(),
       body: {
+        mode: 'generate',
         prompt: prompt.value.trim(),
         style: selectedStyle.value,
         aspectRatio: selectedRatio.value,
@@ -212,10 +341,8 @@ async function generate() {
       },
     })
     lastResult.value = data
-    // Prepend to gallery
     gallery.value.unshift(data.entry)
     if (galleryLoaded.value) {
-      // Signed URL not needed for just-generated image (base64 available)
       signedUrls.value[data.id] = `data:${data.mimeType};base64,${data.base64}`
     }
   } catch (err: any) {
@@ -223,6 +350,37 @@ async function generate() {
     genError.value = locale.value === 'fr'
       ? `Erreur : ${err?.statusMessage ?? 'génération échouée'}`
       : `Error: ${err?.statusMessage ?? 'generation failed'}`
+  } finally {
+    generating.value = false
+  }
+}
+
+async function bgswap() {
+  if (!subjectBase64.value || !bgPrompt.value.trim() || generating.value) return
+  generating.value = true
+  genError.value = ''
+  lastResult.value = null
+
+  try {
+    const data = await $fetch<{ id: string; base64: string; mimeType: string; entry: GalleryEntry }>('/api/imagenie/generate', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: {
+        mode: 'bgswap',
+        subjectBase64: subjectBase64.value,
+        backgroundPrompt: bgPrompt.value.trim(),
+      },
+    })
+    lastResult.value = data
+    gallery.value.unshift(data.entry)
+    if (galleryLoaded.value) {
+      signedUrls.value[data.id] = `data:${data.mimeType};base64,${data.base64}`
+    }
+  } catch (err: any) {
+    if (err?.statusCode === 401) { handleUnauthorized(); return }
+    genError.value = locale.value === 'fr'
+      ? `Erreur : ${err?.statusMessage ?? 'BGSWAP échoué'}`
+      : `Error: ${err?.statusMessage ?? 'BGSWAP failed'}`
   } finally {
     generating.value = false
   }
@@ -236,7 +394,6 @@ async function loadGallery() {
       headers: getAuthHeaders(),
     })
     gallery.value = data
-    // Load signed URLs
     await Promise.all(data.map(entry => loadSignedUrl(entry)))
   } catch (err: any) {
     if (err?.statusCode === 401) handleUnauthorized()
@@ -283,7 +440,7 @@ function formatDate(ts: string) {
   })
 }
 
-// ─── Auth + init ─────────────────────────────────────────────────────────────
+// ─── Auth + init ──────────────────────────────────────────────────────────────
 
 const googleBtnRef = ref<HTMLElement | null>(null)
 
@@ -313,7 +470,7 @@ onMounted(async () => {
 
 useSeoMeta({
   title: 'ImagiChet — Générateur d\'images Imagen 3 — Chetana YIN',
-  description: 'Générateur d\'images personnel propulsé par Imagen 3 de Google via Vertex AI. Styles prédéfinis, galerie GCS, suppression.',
+  description: 'Générateur d\'images personnel propulsé par Imagen 3 de Google via Vertex AI. Styles prédéfinis, BGSWAP, galerie GCS.',
   robots: 'noindex',
 })
 </script>
@@ -335,8 +492,15 @@ useSeoMeta({
 .btn-signout { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
 .btn-signout:hover { border-color: var(--text-muted); }
 
+/* Mode tabs */
+.mode-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+.mode-tab { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 8px 20px; border-radius: 24px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.15s; }
+.mode-tab:hover { border-color: var(--accent-light); color: var(--text); }
+.mode-tab.active { background: var(--accent-light); border-color: var(--accent-light); color: #000; font-weight: 700; }
+
 /* Generator */
 .generator-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; max-width: 640px; margin-bottom: 2rem; }
+.mode-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
 .field { margin-bottom: 1.2rem; }
 .field-label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 .text-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; color: var(--text); font-family: inherit; font-size: 0.95rem; resize: vertical; box-sizing: border-box; }
@@ -356,6 +520,18 @@ useSeoMeta({
 .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .error-msg { color: #ff6b6b; font-size: 0.875rem; margin-top: 0.75rem; }
+
+/* Upload zone */
+.upload-zone { border: 2px dashed var(--border); border-radius: 12px; min-height: 160px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; transition: border-color 0.15s; position: relative; }
+.upload-zone:hover { border-color: var(--accent-light); }
+.upload-zone.has-image { border-style: solid; min-height: 0; }
+.upload-placeholder { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.9rem; }
+.upload-icon { font-size: 2rem; }
+.upload-preview { width: 100%; max-height: 280px; object-fit: contain; display: block; }
+
+/* BGSWAP badge */
+.badge-bgswap { background: #7c3aed22; border: 1px solid #7c3aed88; color: #a78bfa; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+.badge-bgswap.badge-sm { font-size: 0.72rem; padding: 2px 8px; }
 
 /* Result */
 .result-card { max-width: 640px; margin-bottom: 2rem; }

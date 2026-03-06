@@ -1,6 +1,6 @@
 import { requireAuth } from '../../utils/auth'
 import { getGcsBucket } from '../../utils/gcs'
-import { imagenGenerate, STYLES } from '../../utils/imagen'
+import { imagenGenerate, imagenBgSwap, STYLES } from '../../utils/imagen'
 
 interface GalleryEntry {
   id: string
@@ -10,37 +10,70 @@ interface GalleryEntry {
   style: string
   aspectRatio: string
   path: string
+  mode?: 'generate' | 'bgswap'
 }
 
 export default defineEventHandler(async (event) => {
   const user = await requireAuth(event)
 
   const body = await readBody(event) as {
-    prompt: string
+    mode?: 'generate' | 'bgswap'
+    // generate fields
+    prompt?: string
     style?: string
     aspectRatio?: string
     negativePrompt?: string
+    // bgswap fields
+    subjectBase64?: string
+    backgroundPrompt?: string
   }
 
-  if (!body?.prompt?.trim()) {
-    throw createError({ statusCode: 400, statusMessage: 'prompt is required' })
-  }
+  const mode = body?.mode === 'bgswap' ? 'bgswap' : 'generate'
 
-  const style = body.style && STYLES[body.style] !== undefined ? body.style : ''
-  const aspectRatio = ['1:1', '16:9', '9:16', '4:3', '3:4'].includes(body.aspectRatio ?? '')
-    ? body.aspectRatio!
-    : '1:1'
+  let result: { base64: string; mimeType: string }
+  let prompt: string
+  let style: string
+  let aspectRatio: string
 
-  let result
-  try {
-    result = await imagenGenerate(body.prompt.trim(), {
-      style,
-      aspectRatio,
-      negativePrompt: body.negativePrompt,
-    })
-  } catch (err: any) {
-    console.error('[imagenie/generate] imagenGenerate failed:', err?.message)
-    throw createError({ statusCode: 502, statusMessage: err?.message ?? 'Imagen generation failed' })
+  if (mode === 'bgswap') {
+    if (!body?.subjectBase64?.trim()) {
+      throw createError({ statusCode: 400, statusMessage: 'subjectBase64 is required for BGSWAP' })
+    }
+    if (!body?.backgroundPrompt?.trim()) {
+      throw createError({ statusCode: 400, statusMessage: 'backgroundPrompt is required for BGSWAP' })
+    }
+
+    prompt = body.backgroundPrompt.trim()
+    style = ''
+    aspectRatio = '1:1'
+
+    try {
+      result = await imagenBgSwap(body.subjectBase64.trim(), prompt)
+    } catch (err: any) {
+      console.error('[imagenie/generate] imagenBgSwap failed:', err?.message)
+      throw createError({ statusCode: 502, statusMessage: err?.message ?? 'Imagen BGSWAP failed' })
+    }
+  } else {
+    if (!body?.prompt?.trim()) {
+      throw createError({ statusCode: 400, statusMessage: 'prompt is required' })
+    }
+
+    style = body.style && STYLES[body.style] !== undefined ? body.style : ''
+    aspectRatio = ['1:1', '16:9', '9:16', '4:3', '3:4'].includes(body.aspectRatio ?? '')
+      ? body.aspectRatio!
+      : '1:1'
+    prompt = body.prompt.trim()
+
+    try {
+      result = await imagenGenerate(prompt, {
+        style,
+        aspectRatio,
+        negativePrompt: body.negativePrompt,
+      })
+    } catch (err: any) {
+      console.error('[imagenie/generate] imagenGenerate failed:', err?.message)
+      throw createError({ statusCode: 502, statusMessage: err?.message ?? 'Imagen generation failed' })
+    }
   }
 
   // Save image to GCS
@@ -69,10 +102,11 @@ export default defineEventHandler(async (event) => {
     id,
     ts: now.toISOString(),
     author: user.name.split(' ')[0],
-    prompt: body.prompt.trim(),
+    prompt,
     style,
     aspectRatio,
     path: imagePath,
+    mode,
   }
 
   gallery.unshift(entry)
