@@ -31,11 +31,17 @@ export default defineEventHandler(async (event) => {
     ? body.aspectRatio!
     : '1:1'
 
-  const result = await imagenGenerate(body.prompt.trim(), {
-    style,
-    aspectRatio,
-    negativePrompt: body.negativePrompt,
-  })
+  let result
+  try {
+    result = await imagenGenerate(body.prompt.trim(), {
+      style,
+      aspectRatio,
+      negativePrompt: body.negativePrompt,
+    })
+  } catch (err: any) {
+    console.error('[imagenie/generate] imagenGenerate failed:', err?.message)
+    throw createError({ statusCode: 502, statusMessage: err?.message ?? 'Imagen generation failed' })
+  }
 
   // Save image to GCS
   const now = new Date()
