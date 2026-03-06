@@ -1,8 +1,10 @@
 <template>
   <div>
     <Nav />
-    <NuxtPage />
-    <Footer />
+    <div class="app-content">
+      <NuxtPage />
+      <Footer />
+    </div>
   </div>
 </template>
 

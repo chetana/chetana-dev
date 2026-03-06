@@ -9,6 +9,19 @@
   --text-dim: #7a6d62;
   --border: #d4c9ba;
   --gradient: linear-gradient(135deg, #c4963c 0%, #8b2e3b 100%);
+  --sidebar-width: 220px;
+  --mobile-bar-height: 56px;
+}
+
+/* ── Layout sidebar ──────────────────────────────────────────── */
+.app-content {
+  margin-left: var(--sidebar-width);
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    margin-left: 0;
+  }
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
