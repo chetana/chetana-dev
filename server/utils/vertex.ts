@@ -33,30 +33,39 @@ async function getAccessToken(): Promise<string> {
   return data.access_token
 }
 
+const GEMINI_MODELS = ['gemini-3.1-flash-lite', 'gemini-2.5-flash'] as const
+
 async function geminiRequest(parts: object[], maxTokens = 300): Promise<string> {
   const token = await getAccessToken()
   const project = process.env.VERTEX_PROJECT_ID ?? 'cykt-399216'
   const location = process.env.VERTEX_LOCATION ?? 'us-central1'
-  const model = 'gemini-2.5-flash'
 
-  const res = await fetch(
-    `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/publishers/google/models/${model}:generateContent`,
-    {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: maxTokens, thinkingConfig: { thinkingBudget: 0 } },
-      }),
+  let lastError: Error | null = null
+  for (const model of GEMINI_MODELS) {
+    const res = await fetch(
+      `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/publishers/google/models/${model}:generateContent`,
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts }],
+          generationConfig: { temperature: 0.2, maxOutputTokens: maxTokens, thinkingConfig: { thinkingBudget: 0 } },
+        }),
+      }
+    )
+    const data = await res.json() as any
+    if (!res.ok) {
+      console.warn(`[vertex] ${model} failed (${res.status}): ${data?.error?.message ?? 'unknown'}`)
+      lastError = new Error(`Gemini ${res.status}: ${data?.error?.message ?? 'unknown'}`)
+      continue
     }
-  )
-  const data = await res.json() as any
-  if (!res.ok) {
-    console.error('[vertex] Gemini error', res.status, JSON.stringify(data))
-    throw new Error(`Gemini ${res.status}: ${data?.error?.message ?? 'unknown'}`)
+    if (model !== GEMINI_MODELS[0]) {
+      console.warn(`[vertex] fallback used: ${model}`)
+    }
+    const raw: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}'
+    return raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
   }
-  const raw: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}'
-  return raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+  throw lastError ?? new Error('All Gemini models failed')
 }
 
 async function callGemini(prompt: string, maxTokens = 300): Promise<string> {
