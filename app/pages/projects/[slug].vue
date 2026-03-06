@@ -59,6 +59,7 @@ const renderedDescription = computed(() => {
     return `<ol>${items}</ol>`
   })
   html = html
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
   html = html
@@ -99,6 +100,15 @@ h1 { font-size: 2rem; margin-bottom: 1rem; }
 .project-content :deep(p) { margin-bottom: 1rem; }
 .project-content :deep(strong) { color: var(--text); }
 .project-content :deep(em) { font-style: italic; }
+.project-content :deep(code) {
+  font-family: monospace;
+  font-size: 0.88em;
+  background: rgba(196, 150, 60, 0.1);
+  border: 1px solid rgba(196, 150, 60, 0.2);
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+  color: var(--accent-light);
+}
 .project-content :deep(ul), .project-content :deep(ol) { padding-left: 1.5rem; margin-bottom: 1rem; }
 .project-content :deep(li) { margin-bottom: 0.4rem; }
 .project-content :deep(hr) { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
