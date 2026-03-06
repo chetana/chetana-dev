@@ -480,7 +480,7 @@ useSeoMeta({
 
 /* Auth gate */
 .auth-gate { display: flex; justify-content: center; padding: 2rem 0; }
-.auth-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; text-align: center; max-width: 480px; width: 100%; }
+.auth-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; text-align: center; max-width: 480px; width: 100%; }
 .auth-icon { font-size: 3rem; margin-bottom: 1rem; }
 .auth-card h2 { font-size: 1.3rem; margin-bottom: 0.75rem; }
 .auth-card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6; }
@@ -494,12 +494,12 @@ useSeoMeta({
 
 /* Mode tabs */
 .mode-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
-.mode-tab { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 8px 20px; border-radius: 24px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.15s; }
+.mode-tab { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); padding: 8px 20px; border-radius: 24px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.15s; }
 .mode-tab:hover { border-color: var(--accent-light); color: var(--text); }
 .mode-tab.active { background: var(--accent-light); border-color: var(--accent-light); color: #000; font-weight: 700; }
 
 /* Generator */
-.generator-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; max-width: 640px; margin-bottom: 2rem; }
+.generator-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; max-width: 640px; margin-bottom: 2rem; }
 .mode-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
 .field { margin-bottom: 1.2rem; }
 .field-label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -537,8 +537,8 @@ useSeoMeta({
 .result-card { max-width: 640px; margin-bottom: 2rem; }
 .result-img { width: 100%; border-radius: 12px; display: block; }
 .result-meta { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; }
-.result-style { background: var(--card-bg); border: 1px solid var(--border); padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; color: var(--text-muted); }
-.result-ratio { background: var(--card-bg); border: 1px solid var(--border); padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; color: var(--text-muted); }
+.result-style { background: var(--bg-card); border: 1px solid var(--border); padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; color: var(--text-muted); }
+.result-ratio { background: var(--bg-card); border: 1px solid var(--border); padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; color: var(--text-muted); }
 .btn-delete-result { background: none; border: none; cursor: pointer; font-size: 1rem; margin-left: auto; opacity: 0.6; }
 .btn-delete-result:hover { opacity: 1; }
 
@@ -546,28 +546,28 @@ useSeoMeta({
 .gallery-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
 .gallery-title { font-size: 1.2rem; font-weight: 600; margin: 0; }
 .gallery-count { color: var(--text-muted); font-weight: 400; font-size: 1rem; }
-.btn-load-gallery { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+.btn-load-gallery { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
 .btn-load-gallery:hover { border-color: var(--accent-light); }
 .gallery-loading { color: var(--text-muted); padding: 1rem 0; }
 .gallery-empty { color: var(--text-dim); padding: 2rem; text-align: center; }
 
 .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 3rem; }
-.gallery-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.gallery-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 .gallery-img-wrap { aspect-ratio: 1; overflow: hidden; cursor: pointer; background: var(--bg); }
 .gallery-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
 .gallery-img-wrap:hover .gallery-img { transform: scale(1.03); }
 .gallery-img-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
 .gallery-card-meta { padding: 0.75rem; }
-.gallery-prompt { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem; line-height: 1.4; }
+.gallery-prompt { display: block; font-size: 0.8rem; color: var(--text); margin-bottom: 0.4rem; line-height: 1.4; }
 .gallery-card-row { display: flex; align-items: center; gap: 0.5rem; }
 .gallery-style-badge { background: var(--bg); border: 1px solid var(--border); padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; color: var(--text-muted); }
-.gallery-date { font-size: 0.75rem; color: var(--text-dim); margin-left: auto; }
+.gallery-date { font-size: 0.75rem; color: var(--text-muted); margin-left: auto; }
 .btn-delete-small { background: none; border: none; cursor: pointer; font-size: 0.9rem; opacity: 0.5; padding: 0; }
 .btn-delete-small:hover { opacity: 1; }
 
 /* Modal */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
-.modal-content { background: var(--card-bg); border-radius: 16px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; }
+.modal-content { background: var(--bg-card); border-radius: 16px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; }
 .modal-close { position: absolute; top: 1rem; right: 1rem; background: var(--bg); border: 1px solid var(--border); color: var(--text); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; z-index: 1; }
 .modal-img { width: 100%; border-radius: 16px 16px 0 0; display: block; }
 .modal-meta { padding: 1rem 1.25rem; }
