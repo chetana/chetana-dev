@@ -307,10 +307,25 @@ function onDrop(e: DragEvent) {
 function loadSubjectFile(file: File) {
   const reader = new FileReader()
   reader.onload = (ev) => {
-    const result = ev.target?.result as string
-    subjectPreviewUrl.value = result
-    // Strip the data:image/xxx;base64, prefix
-    subjectBase64.value = result.split(',')[1] ?? ''
+    const dataUrl = ev.target?.result as string
+    subjectPreviewUrl.value = dataUrl
+
+    // Resize to max 1024px before sending — Vertex AI rejects large images
+    const img = new Image()
+    img.onload = () => {
+      const MAX = 1024
+      let { width, height } = img
+      if (width > MAX || height > MAX) {
+        if (width > height) { height = Math.round(height * MAX / width); width = MAX }
+        else { width = Math.round(width * MAX / height); height = MAX }
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      canvas.getContext('2d')!.drawImage(img, 0, 0, width, height)
+      subjectBase64.value = canvas.toDataURL('image/jpeg', 0.85).split(',')[1] ?? ''
+    }
+    img.src = dataUrl
   }
   reader.readAsDataURL(file)
 }

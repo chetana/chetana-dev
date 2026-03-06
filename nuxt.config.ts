@@ -80,6 +80,9 @@ export default defineNuxtConfig({
     preset: 'vercel',
     externals: {
       external: ['@google-cloud/storage', 'google-auth-library']
+    },
+    routeRules: {
+      '/api/imagenie/generate': { bodySize: '5mb' }
     }
   },
   runtimeConfig: {
