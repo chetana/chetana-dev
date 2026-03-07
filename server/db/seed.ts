@@ -32,24 +32,27 @@ async function seed() {
       location: 'Paris',
       bulletsFr: [
         "Management de l'équipe OMS (5 personnes : devs + QA) : recrutement, évaluations, montée en compétences",
-        "Responsable du périmètre Order Management, Payments, Cart sur une plateforme B2B SaaS",
-        "Lead technique : architecture des modules, code reviews, décisions techniques structurantes",
-        "Pilotage des MEP hebdomadaires, gestion des incidents prod, coordination avec les équipes Catalog, Infra et Intégration",
-        "Intégration de l'IA (Claude Code) dans le workflow de l'équipe : +40% de productivité sur les tâches répétitives"
+        "EM orienté produit et business value : implication dans les avant-ventes techniques (grands comptes B2B), arbitrages make vs. buy, alignement architecture ↔ roadmap",
+        "API design-first : spec OpenAPI avant le code, CI de validation de contrat, outillage de détection de breaking changes pour les équipes consommatrices",
+        "Architecture PSP : consolidation sur Adyen pour paiements classiques et marketplace (split interne) — décision issue d'une analyse réglementaire, partenariale et business",
+        "Pilotage des MEP hebdomadaires, gestion des incidents prod, coordination Back/FOC et équipes Catalog, Infra, Intégration",
+        "Intégration de l'IA (Claude Code + MCP) dans le workflow : +40% de productivité sur les reviews, tests E2E et tâches répétitives"
       ],
       bulletsEn: [
         "Managing the OMS team (5 people: devs + QA): hiring, performance reviews, skill development",
-        "Responsible for Order Management, Payments, Cart on a B2B SaaS platform",
-        "Technical lead: module architecture, code reviews, key technical decisions",
-        "Weekly production releases, production incident management, coordination with Catalog, Infra and Integration teams",
-        "Integrated AI (Claude Code) into the team's workflow: +40% productivity on repetitive tasks"
+        "Product and business value-driven EM: involvement in technical pre-sales (major B2B accounts), make vs. buy decisions, architecture-to-roadmap alignment",
+        "API design-first: OpenAPI spec before code, contract validation CI, breaking change detection tooling for consuming teams",
+        "PSP architecture: consolidated on Adyen for classic payments and marketplace (internal split) — decision driven by regulatory, partnership and business analysis",
+        "Weekly production releases, incident management, Back/FOC and cross-team coordination (Catalog, Infra, Integration)",
+        "AI integration (Claude Code + MCP) into team workflow: +40% productivity on reviews, E2E tests and repetitive tasks"
       ],
       bulletsKm: [
         "ដឹកនាំក្រុម OMS (៥ នាក់៖ devs + QA)៖ ការជ្រើសរើស ការវាយតម្លៃ ការអភិវឌ្ឍជំនាញ",
-        "ទទួលខុសត្រូវលើ Order Management, Payments, Cart នៅលើវេទិកា B2B SaaS",
-        "Lead technique៖ ស្ថាបត្យកម្មម៉ូឌុល code reviews ការសម្រេចចិត្តបច្ចេកទេorg សំខាន់ៗ",
-        "ដឹកនាំ releases ប្រចាំសប្តាហ៍ ការគ្រប់គ្រង incidents production ការសម្របសម្រួលជាមួយក្រុម Catalog Infra និង Integration",
-        "រួមបញ្ចូល AI (Claude Code) ក្នុង workflow របស់ក្រុម៖ +40% ផលិតភាពលើកិច្ចការដដែលៗ"
+        "EM ផ្តោតលើផលិតផល និងតម្លៃអាជីវកម្ម៖ ចូលរួមក្នុងការលក់ជាមុន (គ្រឹះស្ថានធំ B2B) ការសម្រេចចិត្ត make vs. buy ការតម្រឹម architecture ↔ roadmap",
+        "API design-first៖ OpenAPI spec មុនកូដ CI ផ្ទៀងផ្ទាត់កិច្ចសន្យា ឧបករណ៍រកឃើញ breaking changes",
+        "ស្ថាបត្យកម្ម PSP៖ បង្រួបបង្រួមនៅ Adyen សម្រាប់ការទូទាត់ទូទៅ និង marketplace (split ផ្ទៃក្នុង) — ការសម្រេចចិត្តមកពីការវិភាគច្បាប់ ភាពជាដៃគូ និងអាជីវកម្ម",
+        "ដឹកនាំ releases ប្រចាំសប្តាហ៍ ការគ្រប់គ្រង incidents ការសម្របសម្រួល Back/FOC និងក្រុម Catalog Infra Integration",
+        "រួមបញ្ចូល AI (Claude Code + MCP) ក្នុង workflow៖ +40% ផលិតភាពលើ reviews tests E2E និងកិច្ចការដដែលៗ"
       ],
       sortOrder: 1
     },
