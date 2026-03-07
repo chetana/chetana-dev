@@ -1,5 +1,13 @@
-import { getDB } from '../utils/db'
+import { neon } from '@neondatabase/serverless'
+import { drizzle } from 'drizzle-orm/neon-http'
 import { skills } from './schema'
+import { and, eq } from 'drizzle-orm'
+import 'dotenv/config'
+import { config } from 'dotenv'
+config({ path: '.env.local' })
+
+const sql = neon(process.env.DATABASE_URL!)
+const db = drizzle(sql)
 
 const advancedSkills = [
   { category: 'Frontend Advanced', name: 'Web Push API', color: 'blue', sortOrder: 1 },
@@ -25,16 +33,12 @@ const advancedSkills = [
   { category: 'DevOps', name: 'Database Migrations', color: 'orange', sortOrder: 5 }
 ]
 
-export default async function seedAdvancedSkills() {
-  const db = getDB()
-
+async function seedAdvancedSkills() {
   console.log('🎯 Seeding advanced skills...')
 
   for (const skill of advancedSkills) {
     const existing = await db.select().from(skills)
-      .where((s) => {
-        return s.category === skill.category && s.name === skill.name
-      })
+      .where(and(eq(skills.category, skill.category), eq(skills.name, skill.name)))
 
     if (existing.length === 0) {
       await db.insert(skills).values(skill)

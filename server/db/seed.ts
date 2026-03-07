@@ -9,6 +9,7 @@ const sql = neon(process.env.DATABASE_URL!)
 const db = drizzle(sql)
 
 async function seed() {
+  console.log('⚠️  seed.ts efface toutes les tables. Utilise npm run db:seed (seed-all.ts) pour tout restaurer.')
   console.log('🌱 Seeding database...')
 
   // Clear existing data to avoid duplicates on re-run
