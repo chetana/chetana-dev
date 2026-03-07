@@ -7,13 +7,13 @@
     </div>
 
     <nav class="sidebar-nav">
-      <NuxtLink to="/#about"      class="nav-link" @click="mobileOpen = false">{{ t('nav.about') }}</NuxtLink>
-      <NuxtLink to="/#experience" class="nav-link" @click="mobileOpen = false">{{ t('nav.experience') }}</NuxtLink>
-      <NuxtLink to="/#skills"     class="nav-link" @click="mobileOpen = false">{{ t('nav.skills') }}</NuxtLink>
-      <NuxtLink to="/#education"  class="nav-link" @click="mobileOpen = false">{{ t('nav.education') }}</NuxtLink>
-      <NuxtLink to="/projects"    class="nav-link" @click="mobileOpen = false">{{ t('nav.projects') }}</NuxtLink>
-      <NuxtLink to="/blog"        class="nav-link" @click="mobileOpen = false">{{ t('nav.blog') }}</NuxtLink>
-      <NuxtLink to="/contact"     class="nav-link" @click="mobileOpen = false">{{ t('nav.contact') }}</NuxtLink>
+      <a href="/#about"      class="nav-link" :class="{ 'scrollspy-active': activeSection === 'about' }"      @click.prevent="scrollToSection('about')">{{ t('nav.about') }}</a>
+      <a href="/#experience" class="nav-link" :class="{ 'scrollspy-active': activeSection === 'experience' }" @click.prevent="scrollToSection('experience')">{{ t('nav.experience') }}</a>
+      <a href="/#skills"     class="nav-link" :class="{ 'scrollspy-active': activeSection === 'skills' }"     @click.prevent="scrollToSection('skills')">{{ t('nav.skills') }}</a>
+      <a href="/#education"  class="nav-link" :class="{ 'scrollspy-active': activeSection === 'education' }"  @click.prevent="scrollToSection('education')">{{ t('nav.education') }}</a>
+      <NuxtLink to="/projects" class="nav-link" @click="mobileOpen = false">{{ t('nav.projects') }}</NuxtLink>
+      <NuxtLink to="/blog"     class="nav-link" @click="mobileOpen = false">{{ t('nav.blog') }}</NuxtLink>
+      <NuxtLink to="/contact"  class="nav-link" @click="mobileOpen = false">{{ t('nav.contact') }}</NuxtLink>
     </nav>
 
     <div class="sidebar-footer">
@@ -48,6 +48,43 @@
 <script setup lang="ts">
 const { locale, t, toggleLocale } = useLocale()
 const mobileOpen = ref(false)
+const route = useRoute()
+const router = useRouter()
+
+const sectionIds = ['about', 'experience', 'skills', 'education'] as const
+const activeSection = ref<string>('')
+
+function updateActiveSection() {
+  if (route.path !== '/') { activeSection.value = ''; return }
+  const offset = 120
+  let current = sectionIds[0] as string
+  for (const id of sectionIds) {
+    const el = document.getElementById(id)
+    if (!el) continue
+    if (el.getBoundingClientRect().top <= offset) current = id
+  }
+  activeSection.value = current
+}
+
+function scrollToSection(id: string) {
+  mobileOpen.value = false
+  if (route.path === '/') {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  } else {
+    router.push(`/#${id}`)
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', updateActiveSection, { passive: true })
+  updateActiveSection()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', updateActiveSection)
+})
+
+watch(() => route.path, () => nextTick(updateActiveSection))
 </script>
 
 <style scoped>
@@ -123,7 +160,8 @@ const mobileOpen = ref(false)
   transform: translateX(2px);
 }
 
-.nav-link.router-link-active {
+.nav-link.router-link-active,
+.nav-link.scrollspy-active {
   color: var(--accent-light);
   background: rgba(196, 150, 60, 0.12);
   border-left-color: var(--accent);
