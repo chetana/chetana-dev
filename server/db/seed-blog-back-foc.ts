@@ -114,7 +114,7 @@ Le principe : toute évolution technique qui touche le comportement de nos APIs 
 Six mois après cette réunion, voici ce qu'on observe :
 
 **Ce qui marche mieux :**
-- Le projet Carte Achat de Niveau 3 (ITS / Socoda) a été le premier test du nouveau process. Un message formel a été envoyé à l'équipe FOC en amont pour les informer de l'impact API et leur demander des retours préliminaires. Le Head of FOC a confirmé l'importance de la démarche immédiatement.
+- Le projet Carte Achat de Niveau 3 a été le premier test du nouveau process. Un message formel a été envoyé à l'équipe FOC en amont pour les informer de l'impact API et leur demander des retours préliminaires. Le Head of FOC a confirmé l'importance de la démarche immédiatement.
 - Les breaking changes sont maintenant communiqués en amont via nos release notes. Le FOC sait quoi préparer avant la release du jeudi.
 
 **Ce qui reste difficile :**
@@ -248,7 +248,7 @@ The principle: any technical evolution affecting API behavior must be presented 
 Six months after this meeting, here's what we observe:
 
 **What's working better:**
-- The Level 3 Purchase Card project (ITS / Socoda) was the first test of the new process. A formal message was sent to the FOC team in advance to inform them of API impact and request preliminary feedback. The Head of FOC confirmed the importance of the approach immediately.
+- The Level 3 Purchase Card project was the first test of the new process. A formal message was sent to the FOC team in advance to inform them of API impact and request preliminary feedback. The Head of FOC confirmed the importance of the approach immediately.
 - Breaking changes are now communicated in advance via release notes. The FOC knows what to prepare before Thursday's release.
 
 **What remains difficult:**

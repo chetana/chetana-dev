@@ -19,9 +19,9 @@ Chez DJUST, on a vécu cet âge d'or. Puis la réalité du marché B2B nous a ra
 
 ## La complexité du paiement B2B
 
-Le B2B, c'est différent du B2C. Nos clients (Franprix, Eiffage, VEJA, Socoda, Manutan) ont des besoins de paiement très spécifiques :
+Le B2B, c'est différent du B2C. Nos clients (grands distributeurs, groupes industriels, enseignes de mode) ont des besoins de paiement très spécifiques :
 
-- **Les cartes d'achat** — des cartes corporate de niveau 2 ou 3 (ITS Group) avec des données enrichies (tax, line items détaillés) que les PSPs classiques ne gèrent pas
+- **Les cartes d'achat** — des cartes corporate de niveau 2 ou 3 (via notre prestataire cartes d'achat) avec des données enrichies (tax, line items détaillés) que les PSPs classiques ne gèrent pas
 - **Le paiement classique** — cartes bancaires, virements, SEPA, gérés via Adyen
 - **Le paiement marketplace** — quand notre plateforme orchestre des paiements entre un acheteur, un vendeur et DJUST, avec des règles de commission et de reversement fournisseur (Adyen for Platforms, gestion interne des splits)
 - **Le SEPA automatisé** — pour les cas de paiement fractionné ou d'abonnement, via mandat signé une fois
@@ -66,9 +66,9 @@ Ce n'est pas un modèle Stripe Connect où la plateforme délègue la gestion de
 
 ## Le vrai problème : un contrat API commun pour des PSPs incompatibles
 
-Quand on jongle avec plusieurs PSPs (MangoPay, LemonWay, Adyen, ITS), chaque PSP expose des APIs différentes, avec des modèles de données différents, des webhooks différents, des comportements différents.
+Quand on jongle avec plusieurs PSPs (MangoPay, LemonWay, Adyen, notre PSP cartes d'achat), chaque PSP expose des APIs différentes, avec des modèles de données différents, des webhooks différents, des comportements différents.
 
-L'action "autoriser un paiement" ne prend pas les mêmes paramètres chez Adyen que chez ITS. Le webhook de confirmation d'un paiement n'a pas la même structure. Les codes d'erreur sont différents.
+L'action "autoriser un paiement" ne prend pas les mêmes paramètres chez Adyen que chez notre PSP cartes d'achat. Le webhook de confirmation d'un paiement n'a pas la même structure. Les codes d'erreur sont différents.
 
 Comment exposer une API de paiement cohérente à nos clients et partenaires intégrateurs quand les PSPs en dessous sont si différents ?
 
@@ -119,7 +119,7 @@ POST /payments/marketplace/author      # Adyen marketplace
 Après discussion avec notre PM, on a convergé vers une approche intermédiaire :
 
 - Une base commune \`/payments\` pour les opérations génériques
-- Des sous-resources pour les cas vraiment différents (\`/payments/purchase-cards\` pour ITS)
+- Des sous-resources pour les cas vraiment différents (\`/payments/purchase-cards\` pour les cartes d'achat)
 - L'utilisation de \`oneOf\` dans OpenAPI pour les cas où les bodies varient mais restent proches
 - Une documentation soignée qui explique quel endpoint s'applique à quel PSP / quel tenant
 
@@ -173,7 +173,7 @@ Dans un contexte multi-PSP, la documentation de votre API de paiement doit expli
 
 *Chetana YIN — Octobre 2025*
 *Engineering Manager chez DJUST. OMS, Payments, Cart.*
-*PSPs actifs : Adyen (paiements classiques + marketplace via split configurations), ITS (cartes d'achat niveau 3).*`
+*PSPs actifs : Adyen (paiements classiques + marketplace via split configurations), prestataire cartes d'achat (niveau 3).*`
 
 const contentEn = `## The Luxury of a Bygone Era: A Single PSP
 
@@ -185,9 +185,9 @@ At DJUST, we lived that golden age. Then the B2B market reality caught up with u
 
 ## The Complexity of B2B Payment
 
-B2B is different from B2C. Our clients (Franprix, Eiffage, VEJA, Socoda, Manutan) have very specific payment needs:
+B2B is different from B2C. Our clients (major distributors, industrial groups, fashion brands) have very specific payment needs:
 
-- **Purchase cards** — level 2 or 3 corporate cards (ITS Group) with enriched data (tax, detailed line items) that standard PSPs don't handle
+- **Purchase cards** — level 2 or 3 corporate cards (via our purchase card provider) with enriched data (tax, detailed line items) that standard PSPs don't handle
 - **Classic payment** — bank cards, transfers, SEPA, managed via Adyen
 - **Marketplace payment** — when our platform orchestrates payments between buyer, seller, and DJUST, with commission and vendor payout rules (Adyen for Platforms, internal split architecture)
 - **Automated SEPA** — for fractional payment or subscription cases, via a mandate signed once
@@ -232,9 +232,9 @@ This isn't a Stripe Connect model where the platform delegates flow management t
 
 ## The Real Problem: A Common API Contract for Incompatible PSPs
 
-When juggling multiple PSPs (MangoPay, LemonWay, Adyen, ITS), each PSP exposes different APIs, with different data models, different webhooks, different behaviors.
+When juggling multiple PSPs (MangoPay, LemonWay, Adyen, our purchase card PSP), each PSP exposes different APIs, with different data models, different webhooks, different behaviors.
 
-The "authorize a payment" action doesn't take the same parameters at Adyen as at ITS. The payment confirmation webhook doesn't have the same structure. Error codes are different.
+The "authorize a payment" action doesn't take the same parameters at Adyen as at our purchase card PSP. The payment confirmation webhook doesn't have the same structure. Error codes are different.
 
 How do you expose a coherent payment API to your clients and partner integrators when the underlying PSPs are so different?
 
@@ -285,7 +285,7 @@ POST /payments/marketplace/author      # Adyen marketplace
 After discussion with our PM, we converged on an intermediate approach:
 
 - A common base \`/payments\` for generic operations
-- Sub-resources for truly different cases (\`/payments/purchase-cards\` for ITS)
+- Sub-resources for truly different cases (\`/payments/purchase-cards\` for purchase cards)
 - Use of \`oneOf\` in OpenAPI for cases where bodies vary but remain close
 - Careful documentation explaining which endpoint applies to which PSP / which tenant
 
@@ -343,13 +343,13 @@ The marketplace case taught us something important: the real cost isn't integrat
 
 *Chetana YIN — October 2025*
 *Engineering Manager at DJUST. OMS, Payments, Cart.*
-*Active PSPs: Adyen (classic payments + marketplace via split configurations), ITS (level 3 purchase cards).*`
+*Active PSPs: Adyen (classic payments + marketplace via split configurations), purchase card provider (level 3).*`
 
 const contentKm = `## ជម្លោះ PSP ក្នុង OMS B2B
 
-នៅ DJUST យើងជួប PSPs (Payment Service Providers) ៖ LemonWay, MangoPay, Adyen, ITS ។ ករណី use cases ៣ ធំ ៖
+នៅ DJUST យើងជួប PSPs (Payment Service Providers) ៖ LemonWay, MangoPay, Adyen, PSP cartes d'achat ។ ករណី use cases ៣ ធំ ៖
 
-1. **Cartes d'achat** (ITS) — level 3 corporate cards
+1. **Cartes d'achat** (PSP cartes d'achat) — level 3 corporate cards
 2. **Paiements classiques** (Adyen) — CB, virement, SEPA
 3. **Marketplace** (Adyen for Platforms + architecture interne split configurations) — commissions + payouts
 
@@ -359,7 +359,7 @@ LemonWay/MangoPay ច្រានចេញ non-marketplace → Adyen ជាច�
 
 ## បញ្ហា API ៖ Contract ដូចគ្នា PSPs ផ្សេង ?
 
-Action "autoriser paiement" ≠ parameters ដូចគ្នា Adyen vs ITS ។
+Action "autoriser paiement" ≠ parameters ដូចគ្នា Adyen vs PSP cartes d'achat ។
 
 **ជម្លោះ Architecture** ៖
 - Polymorphisme \`/payments\` ⟶ \`oneOf\` → ស្មុគ្រស្មាញ doc

@@ -12,9 +12,9 @@ const contentFr = `## Introduction
 
 En 2024, Google Cloud nous a invités, mon équipe et moi chez DJUST, à une série d'événements exclusifs. Le pitch était clair : **"Vous êtes sur AWS depuis 4 ans. Venez chez nous, on vous accompagne dans la migration, et on vous offre des crédits cloud conséquents."**
 
-Google ne faisait pas ça par charité. DJUST est une plateforme e-commerce B2B SaaS qui gère des commandes pour des clients comme Franprix, Eiffage (via Blueon, leur plateforme e-commerce décarbonée) ou VEJA. C'est exactement le type de workload que GCP veut attirer : du Java/Spring Boot, du Kubernetes, du PostgreSQL, de l'Elasticsearch — tout ce que Google Cloud sait faire.
+Google ne faisait pas ça par charité. DJUST est une plateforme e-commerce B2B SaaS qui gère des commandes pour des clients dans la grande distribution, la construction et la mode. C'est exactement le type de workload que GCP veut attirer : du Java/Spring Boot, du Kubernetes, du PostgreSQL, de l'Elasticsearch — tout ce que Google Cloud sait faire.
 
-Moi, j'étais totalement pour. Je voyais dans cette migration une opportunité unique : non seulement économiser sur les coûts cloud, mais surtout **moderniser notre codebase** en travaillant main dans la main avec des ingénieurs Google et Theodo Cloud. C'était l'occasion rêvée de rembourser de la dette technique tout en étant accompagné par des experts.
+Moi, j'étais totalement pour. Je voyais dans cette migration une opportunité unique : non seulement économiser sur les coûts cloud, mais surtout **moderniser notre codebase** en travaillant main dans la main avec des ingénieurs Google et un cabinet cloud partenaire. C'était l'occasion rêvée de rembourser de la dette technique tout en étant accompagné par des experts.
 
 Mais la direction de DJUST a dit non. Et avec le recul, je comprends pourquoi — même si une part de moi regrette encore l'opportunité manquée.
 
@@ -80,7 +80,7 @@ Pour DJUST, ça s'est concrétisé par :
 
 - **Invitations à des événements Google Cloud** : workshops techniques, présentations de cas clients, networking avec des décideurs tech. J'y ai assisté avec d'autres membres de l'équipe
 - **Engagement technique** : des ingénieurs Google Cloud prêts à travailler avec nous sur un plan de migration détaillé
-- **Partenariat avec Theodo Cloud** : un cabinet français spécialisé dans le cloud (ex-Padok), qui aurait assuré l'accompagnement opérationnel de la migration
+- **Partenariat avec un cabinet cloud partenaire** : spécialisé dans les migrations cloud, qui aurait assuré l'accompagnement opérationnel de la migration
 - **Crédits GCP** : des crédits cloud conséquents pour couvrir la période de migration et au-delà (souvent 100K-300K$ sur 1-2 ans pour ce type de deal)
 
 ### Ce que GCP mettait sur la table
@@ -131,13 +131,13 @@ C'est ce point qui m'excitait le plus. Une migration cloud, c'est l'occasion de 
 - **Moderniser le CI/CD** : passer de notre pipeline GitLab custom à quelque chose de plus streamlined
 - **Rembourser de la dette technique** : profiter du "mouvement" pour nettoyer ce qui traîne depuis 3 ans
 
-Et on n'aurait pas été seuls. Les ingénieurs Google + Theodo Cloud auraient apporté leur expertise. C'est rare d'avoir accès à ce niveau d'accompagnement technique.
+Et on n'aurait pas été seuls. Les ingénieurs Google + le cabinet partenaire auraient apporté leur expertise. C'est rare d'avoir accès à ce niveau d'accompagnement technique.
 
 ## Chapitre 3 : Pourquoi la direction a dit non
 
 ### L'argument du risque client
 
-DJUST sert des clients enterprise : Franprix (grande distribution), Eiffage via Blueon (plateforme e-commerce décarbonée), VEJA (mode). Ces clients ont des **SLA contractuels**. Un downtime de 2 heures, c'est pas juste un incident technique — c'est une pénalité financière et une perte de confiance.
+DJUST sert des clients enterprise dans la distribution, la construction et la mode. Ces clients ont des **SLA contractuels**. Un downtime de 2 heures, c'est pas juste un incident technique — c'est une pénalité financière et une perte de confiance.
 
 La direction a posé la question fondamentale : **"Quel est le risque d'une migration cloud pour nos clients ?"**
 
@@ -159,14 +159,14 @@ Avec **2 DevOps**, on n'avait pas le bandwidth pour :
 1. Maintenir la plateforme AWS en production (le quotidien)
 2. ET piloter une migration vers GCP (le projet)
 
-Il aurait fallu soit embaucher des DevOps supplémentaires (coût), soit dégrader temporairement le support de la production (risque). Theodo Cloud aurait aidé, mais la connaissance de notre stack spécifique restait chez nos 2 DevOps.
+Il aurait fallu soit embaucher des DevOps supplémentaires (coût), soit dégrader temporairement le support de la production (risque). Le cabinet partenaire aurait aidé, mais la connaissance de notre stack spécifique restait chez nos 2 DevOps.
 
 ### L'argument du coût à court terme
 
 Paradoxalement, migrer pour économiser coûte cher à court terme :
 - **Double run** pendant la migration : on paie AWS ET GCP pendant 3-6 mois
 - **Temps humain** : les DevOps travaillent sur la migration au lieu d'améliorer la prod
-- **Theodo Cloud** : même avec des crédits Google, le consulting a un coût
+- **Le cabinet cloud partenaire** : même avec des crédits Google, le consulting a un coût
 - **Formation** : toute l'équipe (pas juste les DevOps) doit apprendre les services GCP
 
 L'estimation : **6-12 mois avant de voir un ROI positif** sur la migration. Pour une startup qui brûle du cash, c'est long.
@@ -292,7 +292,7 @@ Sur le papier, GCP gagne. Mais le score ne capture pas le **coût du changement*
 
 ### Le scénario optimiste
 
-Avec le support de Google et Theodo Cloud :
+Avec le support de Google et du cabinet partenaire :
 
 **Mois 1-2** : audit, plan de migration, POC sur GKE Autopilot
 **Mois 3-4** : migration des services non-critiques, double run
@@ -318,7 +318,7 @@ Résultat : les bénéfices arrivent, mais **après 9-12 mois au lieu de 6**. Le
 
 ### Le vrai risque : la réputation
 
-Le pire scénario n'est pas technique. C'est un **incident client** pendant la migration. Un downtime de 4 heures sur le système de commandes de Franprix un vendredi après-midi, avec comme root cause "on était en train de migrer de cloud"... C'est le genre d'événement qui peut coûter un contrat.
+Le pire scénario n'est pas technique. C'est un **incident client** pendant la migration. Un downtime de 4 heures sur le système de commandes d'un client clé un vendredi après-midi, avec comme root cause "on était en train de migrer de cloud"... C'est le genre d'événement qui peut coûter un contrat.
 
 Pour une startup B2B qui se bat pour gagner la confiance de grands comptes, la stabilité perçue est aussi importante que la stabilité réelle.
 
@@ -423,9 +423,9 @@ const contentEn = `## Introduction
 
 In 2024, Google Cloud invited my team and me at DJUST to a series of exclusive events. The pitch was clear: **"You've been on AWS for 4 years. Come to us, we'll support your migration, and we'll offer you substantial cloud credits."**
 
-Google wasn't doing this out of charity. DJUST is a B2B SaaS e-commerce platform processing orders for clients like Franprix, Eiffage (via Blueon, their low-carbon e-commerce platform), and VEJA. It's exactly the type of workload GCP wants to attract: Java/Spring Boot, Kubernetes, PostgreSQL, Elasticsearch — everything Google Cloud excels at.
+Google wasn't doing this out of charity. DJUST is a B2B SaaS e-commerce platform processing orders for clients in food distribution, construction, and fashion. It's exactly the type of workload GCP wants to attract: Java/Spring Boot, Kubernetes, PostgreSQL, Elasticsearch — everything Google Cloud excels at.
 
-I was completely in favor. I saw this migration as a unique opportunity: not just saving on cloud costs, but above all **modernizing our codebase** by working hand-in-hand with Google engineers and Theodo Cloud. It was the perfect chance to pay down technical debt while being supported by experts.
+I was completely in favor. I saw this migration as a unique opportunity: not just saving on cloud costs, but above all **modernizing our codebase** by working hand-in-hand with Google engineers and a partner cloud consulting firm. It was the perfect chance to pay down technical debt while being supported by experts.
 
 But DJUST's leadership said no. And in hindsight, I understand why — even though part of me still regrets the missed opportunity.
 
@@ -491,7 +491,7 @@ For DJUST, this materialized as:
 
 - **Invitations to Google Cloud events**: technical workshops, client case presentations, networking with tech decision-makers
 - **Technical engagement**: Google Cloud engineers ready to work with us on a detailed migration plan
-- **Partnership with Theodo Cloud**: a French firm specializing in cloud (formerly Padok), which would have provided operational migration support
+- **Partnership with a partner cloud consulting firm**: specializing in cloud migrations, which would have provided operational migration support
 - **GCP credits**: substantial cloud credits to cover the migration period and beyond (often $100K-300K over 1-2 years for this type of deal)
 
 ### What GCP was putting on the table
@@ -512,7 +512,7 @@ We had no data warehouse. BigQuery would have opened the door to advanced analyt
 
 ### The hidden opportunity: modernizing the codebase
 
-This was what excited me most. A cloud migration is an opportunity to **review everything**: microservice architecture, FinOps, CI/CD, technical debt. And we wouldn't have been alone — Google engineers + Theodo Cloud would have brought their expertise.
+This was what excited me most. A cloud migration is an opportunity to **review everything**: microservice architecture, FinOps, CI/CD, technical debt. And we wouldn't have been alone — Google engineers + the partner firm would have brought their expertise.
 
 ## Chapter 3: Why Leadership Said No
 
@@ -626,7 +626,7 @@ const contentKm = `## សេចក្តីផ្តើម
 
 ក្នុងឆ្នាំ 2024 Google Cloud បានអញ្ជើញក្រុមរបស់ខ្ញុំនៅ DJUST ទៅព្រឹត្តិការណ៍ផ្តាច់មុខជាច្រើន។ សំណើច្បាស់៖ **"អ្នកនៅលើ AWS អស់ ៤ ឆ្នាំហើយ។ មកជាមួយយើង យើងនឹងជួយក្នុងការផ្លាស់ប្តូរ ហើយយើងផ្តល់ credit cloud ច្រើន។"**
 
-ខ្ញុំយល់ស្របទាំងស្រុង។ ខ្ញុំមើលឃើញក្នុងការផ្លាស់ប្តូរនេះជាឱកាសពិសេស៖ មិនត្រឹមតែសន្សំថ្លៃ cloud ប៉ុណ្ណោះទេ ថែមទាំង **ទំនើបកម្ម codebase** របស់យើងដោយធ្វើការជាមួយវិស្វករ Google និង Theodo Cloud។
+ខ្ញុំយល់ស្របទាំងស្រុង។ ខ្ញុំមើលឃើញក្នុងការផ្លាស់ប្តូរនេះជាឱកាសពិសេស៖ មិនត្រឹមតែសន្សំថ្លៃ cloud ប៉ុណ្ណោះទេ ថែមទាំង **ទំនើបកម្ម codebase** របស់យើងដោយធ្វើការជាមួយវិស្វករ Google និងក្រុមហ៊ុនពិគ្រោះ cloud ដៃគូ។
 
 ប៉ុន្តែថ្នាក់ដឹកនាំ DJUST បាននិយាយថាទេ។ ហើយនៅពេលមើលថយក្រោយ ខ្ញុំយល់ពីមូលហេតុ។
 

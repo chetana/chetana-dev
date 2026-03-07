@@ -21,7 +21,7 @@ Ce n'est pas un article promotionnel. C'est un retour d'expérience honnête —
 
 ### DJUST en 2024
 
-DJUST est une plateforme e-commerce B2B SaaS. Mon périmètre en tant qu'Engineering Manager couvre l'Order Management System (OMS), les Payments et le Cart. C'est le cœur transactionnel de la plateforme — là où passent les commandes de clients comme Franprix, Eiffage (Blueon) ou VEJA.
+DJUST est une plateforme e-commerce B2B SaaS. Mon périmètre en tant qu'Engineering Manager couvre l'Order Management System (OMS), les Payments et le Cart. C'est le cœur transactionnel de la plateforme — là où passent les commandes de clients enterprise dans la grande distribution, la construction et la mode.
 
 L'équipe :
 - 5 personnes : 2 développeurs seniors, 1 mid-level, 1 junior, et 1 QA senior
@@ -267,7 +267,7 @@ This isn't a promotional article. It's an honest experience report — with earl
 
 ### DJUST in 2024
 
-DJUST is a B2B SaaS e-commerce platform. My scope as Engineering Manager covers the Order Management System (OMS), Payments, and Cart. It's the transactional core of the platform — where orders flow for clients like Franprix, Eiffage (Blueon), and VEJA.
+DJUST is a B2B SaaS e-commerce platform. My scope as Engineering Manager covers the Order Management System (OMS), Payments, and Cart. It's the transactional core of the platform — where orders flow for enterprise clients in food distribution, construction, and fashion.
 
 The team:
 - 5 people: 2 senior developers, 1 mid-level, 1 junior, and 1 senior QA
@@ -513,7 +513,7 @@ const contentKm = `## សេចក្តីផ្តើម
 
 ### DJUST ក្នុងឆ្នាំ ២០២៤
 
-DJUST គឺជាវេទិកា e-commerce B2B SaaS។ វិសាលភាពរបស់ខ្ញុំក្នុងនាមជា Engineering Manager គ្របដណ្តប់ Order Management System (OMS), Payments និង Cart។ វាជាស្នូលប្រតិបត្តិការរបស់វេទិកា — កន្លែងដែលការបញ្ជាទិញហូរសម្រាប់អតិថិជនដូចជា Franprix, Eiffage (Blueon) និង VEJA។
+DJUST គឺជាវេទិកា e-commerce B2B SaaS។ វិសាលភាពរបស់ខ្ញុំក្នុងនាមជា Engineering Manager គ្របដណ្តប់ Order Management System (OMS), Payments និង Cart។ វាជាស្នូលប្រតិបត្តិការរបស់វេទិកា — កន្លែងដែលការបញ្ជាទិញហូរសម្រាប់អតិថិជន enterprise ក្នុងការចែកចាយ ការសាងសង់ និងម៉ូដ។
 
 ក្រុម៖
 - ៥ នាក់ (២ senior devs, ១ mid, ១ junior, ១ QA senior)
