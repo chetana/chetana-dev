@@ -39,8 +39,11 @@ const seeds = [
   'seed-skills-new.ts',
   'seed-skills-advanced.ts',
 
-  // 5. Traductions Khmer en dernier (updates sur données existantes)
+  // 5. Traductions Khmer (updates sur données existantes)
   'seed-km.ts',
+
+  // 6. Dates des articles de blog (vendredi soir, 1 semaine d'intervalle)
+  'seed-blog-dates.ts',
 ]
 
 console.log(`\n🌱 Running ${seeds.length} seed files...\n`)
