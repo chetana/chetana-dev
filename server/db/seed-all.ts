@@ -17,7 +17,7 @@ const seeds = [
   'seed.ts',
 
   // 2. Projets additionnels
-  'seed-health.ts',
+  // ⚠️  seed-health.ts est EXCLU intentionnellement — il efface les vraies données utilisateur
   'seed-imagenie.ts',
   'seed-babelduo.ts',
 

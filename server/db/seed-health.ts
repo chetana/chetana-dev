@@ -18,14 +18,18 @@ async function seedHealth() {
   console.log('🗑️  Cleared existing health data')
 
   const start = new Date('2026-01-01')
-  const end = new Date('2026-02-21')
-  const entries: { date: string; pushups: number; validated: boolean; validatedAt: Date }[] = []
+  const end = new Date('2026-03-06')
+  const entries: { userId: number; date: string; pushups: number; validated: boolean; validatedAt: Date }[] = []
 
   const d = new Date(start)
   while (d <= end) {
     const dateStr = d.toISOString().slice(0, 10)
-    const pushups = dateStr >= '2026-02-17' ? 25 : 20
+    let pushups: number
+    if (dateStr >= '2026-03-01') pushups = 30
+    else if (dateStr >= '2026-02-17') pushups = 25
+    else pushups = 20
     entries.push({
+      userId: 1, // Chétana Yin (chetana.yin@gmail.com)
       date: dateStr,
       pushups,
       validated: true,
@@ -35,7 +39,7 @@ async function seedHealth() {
   }
 
   await db.insert(healthEntries).values(entries)
-  console.log(`✅ Inserted ${entries.length} health entries (Jan 1 - Feb 21, 2026)`)
+  console.log(`✅ Inserted ${entries.length} health entries (Jan 1 - Mar 6, 2026) — total: ${entries.reduce((s, e) => s + e.pushups, 0)} pompes`)
 
   await db.insert(projects).values({
     slug: 'chet-health-strong',
