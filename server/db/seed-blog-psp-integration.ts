@@ -23,10 +23,10 @@ Le B2B, c'est différent du B2C. Nos clients (Franprix, Eiffage, VEJA, Socoda, M
 
 - **Les cartes d'achat** — des cartes corporate de niveau 2 ou 3 (ITS Group) avec des données enrichies (tax, line items détaillés) que les PSPs classiques ne gèrent pas
 - **Le paiement classique** — cartes bancaires, virements, SEPA, gérés via Adyen
-- **Le paiement marketplace** — quand notre plateforme orchestre des paiements entre un acheteur, un vendeur et DJUST, avec des règles de commission et de payout (Stripe Connect)
+- **Le paiement marketplace** — quand notre plateforme orchestre des paiements entre un acheteur, un vendeur et DJUST, avec des règles de commission et de reversement fournisseur (Adyen for Platforms, gestion interne des splits)
 - **Le SEPA automatisé** — pour les cas de paiement fractionné ou d'abonnement, via mandat signé une fois
 
-Chaque cas a son PSP, ses webhooks, ses particularités techniques. Et tous doivent coexister sur la même plateforme.
+Chaque cas a ses APIs, ses webhooks, ses particularités techniques. Et tous doivent coexister sur la même plateforme.
 
 ---
 
@@ -42,15 +42,33 @@ Puis la réalité économique a frappé :
 
 Le message entre les lignes est limpide : les pure players du paiement B2B non-marketplace vont vers Stripe et Adyen.
 
-Cette réalité a déclenché une question architecturale fondamentale.
+Cette réalité a déclenché deux questions architecturales fondamentales : quel PSP pour la marketplace ? Et comment exposer une API cohérente par-dessus des PSPs incompatibles ?
+
+---
+
+## Le cas marketplace : plusieurs mois d'aller-retour
+
+Le cas marketplace a été le plus long à trancher.
+
+Stripe Connect était la première option naturelle — le produit marketplace le plus connu, le mieux documenté. Mais deux problèmes ont émergé rapidement :
+
+**La réglementation** : pour opérer Stripe Connect en mode plateforme en France, une accréditation IOBSP (Intermédiaire en Opérations de Banque et Services de Paiement) semblait nécessaire. Une contrainte réglementaire lourde qu'Adyen évitait grâce à son modèle Balance Platform existant.
+
+**Le pricing** : Stripe était significativement plus cher qu'Adyen. DJUST avait déjà un partenariat privilégié avec Adyen — utiliser Stripe Connect pour la marketplace aurait rompu cette économie sans gain fonctionnel suffisant.
+
+Du côté Adyen, autre obstacle temporaire : les petites marketplaces (faibles volumes) se heurtaient à un refus dans un premier temps. Ce verrou a fini par se débloquer.
+
+**La décision finale : rester sur Adyen pour tout**, y compris la marketplace. Mais sans feature "marketplace" packagée — avec une **architecture interne** : DJUST gère la logique de split (commissions, reversements fournisseurs) dans son OMS et envoie les split configurations à Adyen au moment de chaque appel de paiement.
+
+Ce n'est pas un modèle Stripe Connect où la plateforme délègue la gestion des flux à un tiers. C'est DJUST qui orchestre, Adyen qui exécute.
 
 ---
 
 ## Le vrai problème : un contrat API commun pour des PSPs incompatibles
 
-Quand on jongle avec plusieurs PSPs (MangoPay, LemonWay, Adyen, Stripe, ITS), chaque PSP expose des APIs différentes, avec des modèles de données différents, des webhooks différents, des comportements différents.
+Quand on jongle avec plusieurs PSPs (MangoPay, LemonWay, Adyen, ITS), chaque PSP expose des APIs différentes, avec des modèles de données différents, des webhooks différents, des comportements différents.
 
-L'action "autoriser un paiement" ne prend pas les mêmes paramètres chez Adyen que chez Stripe que chez ITS. Le webhook de confirmation d'un paiement n'a pas la même structure. Les codes d'erreur sont différents.
+L'action "autoriser un paiement" ne prend pas les mêmes paramètres chez Adyen que chez ITS. Le webhook de confirmation d'un paiement n'a pas la même structure. Les codes d'erreur sont différents.
 
 Comment exposer une API de paiement cohérente à nos clients et partenaires intégrateurs quand les PSPs en dessous sont si différents ?
 
@@ -65,7 +83,7 @@ L'idée : un seul endpoint \`/payments\` qui accepte des payloads différents se
 \`\`\`
 POST /payments
 {
-  "type": "adyen_card" | "stripe_marketplace" | "its_purchase_card",
+  "type": "adyen_card" | "adyen_marketplace" | "its_purchase_card",
   ...
 }
 \`\`\`
@@ -85,7 +103,7 @@ L'idée : des routes distinctes pour chaque cas de figure :
 \`\`\`
 POST /payments/author                  # Adyen classique
 POST /payments/purchase-cards/author   # ITS cartes d'achat
-POST /payments/marketplace/author      # Stripe marketplace
+POST /payments/marketplace/author      # Adyen marketplace
 \`\`\`
 
 **Arguments pour** : on voit immédiatement de quoi on parle avec l'endpoint. La flexibilité est maximale pour chaque PSP sans faire des endpoints surchargés.
@@ -155,7 +173,7 @@ Dans un contexte multi-PSP, la documentation de votre API de paiement doit expli
 
 *Chetana YIN — Octobre 2025*
 *Engineering Manager chez DJUST. OMS, Payments, Cart.*
-*PSPs actifs : Adyen (paiements classiques + marketplace), Stripe (marketplace), ITS (cartes d'achat niveau 3).*`
+*PSPs actifs : Adyen (paiements classiques + marketplace via split configurations), ITS (cartes d'achat niveau 3).*`
 
 const contentEn = `## The Luxury of a Bygone Era: A Single PSP
 
@@ -171,7 +189,7 @@ B2B is different from B2C. Our clients (Franprix, Eiffage, VEJA, Socoda, Manutan
 
 - **Purchase cards** — level 2 or 3 corporate cards (ITS Group) with enriched data (tax, detailed line items) that standard PSPs don't handle
 - **Classic payment** — bank cards, transfers, SEPA, managed via Adyen
-- **Marketplace payment** — when our platform orchestrates payments between buyer, seller, and DJUST, with commission and payout rules (Stripe Connect)
+- **Marketplace payment** — when our platform orchestrates payments between buyer, seller, and DJUST, with commission and vendor payout rules (Adyen for Platforms, internal split architecture)
 - **Automated SEPA** — for fractional payment or subscription cases, via a mandate signed once
 
 Each case has its PSP, its webhooks, its technical particularities. And all must coexist on the same platform.
@@ -190,15 +208,33 @@ Then economic reality hit:
 
 The message between the lines is clear: pure B2B non-marketplace payment players are moving toward Stripe and Adyen.
 
-This reality triggered a fundamental architectural question.
+This reality triggered two fundamental architectural questions: which PSP for the marketplace? And how to expose a coherent API on top of incompatible PSPs?
+
+---
+
+## The Marketplace Case: Months of Back-and-Forth
+
+The marketplace case was the longest to settle.
+
+Stripe Connect was the natural first option — the most well-known marketplace product, the best documented. But two problems quickly emerged:
+
+**Regulation**: operating Stripe Connect in platform mode in France potentially required an IOBSP accreditation (financial intermediary license). A heavy regulatory constraint that Adyen avoided thanks to its existing Balance Platform model.
+
+**Pricing**: Stripe was significantly more expensive than Adyen. DJUST already had a privileged partnership with Adyen — switching to Stripe Connect for marketplace would have broken that economics without sufficient functional gain.
+
+On the Adyen side, another temporary obstacle: small marketplaces (low volumes) initially hit a refusal. That blocker eventually lifted.
+
+**The final decision: stay on Adyen for everything**, including marketplace. But not using a packaged "marketplace" feature — through an **internal architecture**: DJUST manages the split logic (commissions, vendor payouts) in its OMS and sends split configurations to Adyen at the moment of each payment call.
+
+This isn't a Stripe Connect model where the platform delegates flow management to a third party. DJUST orchestrates, Adyen executes.
 
 ---
 
 ## The Real Problem: A Common API Contract for Incompatible PSPs
 
-When juggling multiple PSPs (MangoPay, LemonWay, Adyen, Stripe, ITS), each PSP exposes different APIs, with different data models, different webhooks, different behaviors.
+When juggling multiple PSPs (MangoPay, LemonWay, Adyen, ITS), each PSP exposes different APIs, with different data models, different webhooks, different behaviors.
 
-The "authorize a payment" action doesn't take the same parameters at Adyen as at Stripe as at ITS. The payment confirmation webhook doesn't have the same structure. Error codes are different.
+The "authorize a payment" action doesn't take the same parameters at Adyen as at ITS. The payment confirmation webhook doesn't have the same structure. Error codes are different.
 
 How do you expose a coherent payment API to your clients and partner integrators when the underlying PSPs are so different?
 
@@ -213,7 +249,7 @@ The idea: a single \`/payments\` endpoint accepting different payloads depending
 \`\`\`
 POST /payments
 {
-  "type": "adyen_card" | "stripe_marketplace" | "its_purchase_card",
+  "type": "adyen_card" | "adyen_marketplace" | "its_purchase_card",
   ...
 }
 \`\`\`
@@ -233,7 +269,7 @@ The idea: distinct routes for each use case:
 \`\`\`
 POST /payments/author                  # Classic Adyen
 POST /payments/purchase-cards/author   # ITS purchase cards
-POST /payments/marketplace/author      # Stripe marketplace
+POST /payments/marketplace/author      # Adyen marketplace
 \`\`\`
 
 **Arguments for**: immediately clear what the endpoint is about. Maximum flexibility for each PSP without overloaded endpoints.
@@ -297,29 +333,33 @@ The synchronous API is the easy part. Webhooks — asynchronous notifications PS
 
 ### 4. Documentation Is a Product
 
-In a multi-PSP context, your payment API documentation must explicitly say: "if you're an Adyen tenant, use this endpoint. If you're on Stripe Connect, use that one." This level of clarity requires real editorial effort — but it's what differentiates an API partners love from one they avoid.
+In a multi-PSP context, your payment API documentation must explicitly say: "if you're on Adyen classic, use this endpoint. If you're on Adyen marketplace, use that one." This level of clarity requires real editorial effort — but it's what differentiates an API partners love from one they avoid.
+
+### 5. Building Internally Beats Changing PSP
+
+The marketplace case taught us something important: the real cost isn't integration complexity, it's switching costs. Choosing Stripe Connect would have meant a new PSP, a new contract, new webhooks, regulatory overhead, and higher pricing — all for features we could build ourselves on top of our existing Adyen partnership. The internal architecture required more upfront work. It gave us more control.
 
 ---
 
 *Chetana YIN — October 2025*
 *Engineering Manager at DJUST. OMS, Payments, Cart.*
-*Active PSPs: Adyen (classic payments + marketplace), Stripe (marketplace), ITS (level 3 purchase cards).*`
+*Active PSPs: Adyen (classic payments + marketplace via split configurations), ITS (level 3 purchase cards).*`
 
 const contentKm = `## ជម្លោះ PSP ក្នុង OMS B2B
 
-នៅ DJUST យើងជួប PSPs (Payment Service Providers) ជាច្រើន ៖ LemonWay, MangoPay, Adyen, Stripe, ITS ។ ករណី use cases ៣ ធំ ៖
+នៅ DJUST យើងជួប PSPs (Payment Service Providers) ៖ LemonWay, MangoPay, Adyen, ITS ។ ករណី use cases ៣ ធំ ៖
 
 1. **Cartes d'achat** (ITS) — level 3 corporate cards
 2. **Paiements classiques** (Adyen) — CB, virement, SEPA
-3. **Marketplace** (Stripe Connect) — commissions + payouts
+3. **Marketplace** (Adyen for Platforms + architecture interne split configurations) — commissions + payouts
 
-LemonWay/MangoPay បានច្រានចេញ non-marketplace use cases → Adyen/Stripe ជាចំណាប់ ។
+LemonWay/MangoPay ច្រានចេញ non-marketplace → Adyen ជាចំណាប់ ។ Stripe Connect ត្រូវបានវាយតម្លៃ ប៉ុន្តែ ថ្លៃជាង + regulatory constraints → Adyen ជ្រើសរើសសម្រាប់ marketplace ដែរ ។
 
 ---
 
 ## បញ្ហា API ៖ Contract ដូចគ្នា PSPs ផ្សេង ?
 
-Action "autoriser paiement" ≠ parameters ដូចគ្នា Adyen vs Stripe vs ITS ។
+Action "autoriser paiement" ≠ parameters ដូចគ្នា Adyen vs ITS ។
 
 **ជម្លោះ Architecture** ៖
 - Polymorphisme \`/payments\` ⟶ \`oneOf\` → ស្មុគ្រស្មាញ doc
@@ -350,16 +390,16 @@ async function seedBlogPspIntegration() {
 
   await db.insert(blogPosts).values({
     slug: 'stripe-adyen-oms-integration',
-    titleFr: "Intégrer Stripe et Adyen dans un OMS B2B : le casse-tête des API de paiement",
-    titleEn: "Integrating Stripe and Adyen into a B2B OMS: The Payment API Puzzle",
-    titleKm: "ការ Integrate Stripe និង Adyen ក្នុង OMS B2B",
+    titleFr: "PSP et OMS B2B : pourquoi on a tout gardé sur Adyen (y compris la marketplace)",
+    titleEn: "PSP and B2B OMS: Why We Kept Everything on Adyen (Including Marketplace)",
+    titleKm: "PSP និង OMS B2B ៖ ហេតុអ្វីបានជាយើងរក្សាគ្រប់យ៉ាងនៅលើ Adyen",
     contentFr,
     contentEn,
     contentKm,
-    excerptFr: "LemonWay et MangoPay ne conviennent plus pour le non-marketplace. On se retrouve avec Adyen, Stripe et ITS en parallèle — et la question architecturale qui tue : comment exposer une API de paiement cohérente quand les PSPs sont si différents ?",
-    excerptEn: "LemonWay and MangoPay no longer fit non-marketplace needs. We ended up with Adyen, Stripe, and ITS in parallel — and the killer architectural question: how do you expose a coherent payment API when PSPs are so different?",
-    excerptKm: "LemonWay/MangoPay non-marketplace → Adyen/Stripe ។ Question archi ៖ API payment cohérente pour PSPs ខុសគ្នា ?",
-    tags: ['Payment', 'Stripe', 'Adyen', 'API', 'OMS', 'Architecture'],
+    excerptFr: "LemonWay et MangoPay hors jeu. Stripe Connect envisagé pour la marketplace, mais écarté pour des raisons réglementaires et de partenariat Adyen. Retour sur plusieurs mois d'aller-retour pour finir avec Adyen pour tout — et une architecture interne pour la marketplace.",
+    excerptEn: "LemonWay and MangoPay out of the picture. Stripe Connect considered for marketplace, rejected for regulatory and partnership reasons. A look back at months of back-and-forth before landing on Adyen for everything — with an internal split architecture for marketplace.",
+    excerptKm: "LemonWay/MangoPay ចេញ ។ Stripe Connect វាយតម្លៃ marketplace ប៉ុន្តែបដិសេធ ។ Adyen សម្រាប់គ្រប់ use cases + architecture interne split ។",
+    tags: ['Payment', 'Adyen', 'API', 'OMS', 'Architecture'],
     published: true
   })
 
