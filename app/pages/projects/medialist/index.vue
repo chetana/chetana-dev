@@ -222,6 +222,20 @@ function closeEdit() {
   editEntry.value = null
 }
 
+async function deleteEntry(entry: MediaEntry) {
+  if (!confirm(`Supprimer "${entry.title}" définitivement ?`)) return
+  try {
+    await $fetch(`/api/medialist/${entry.id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    })
+    await refreshList()
+    await refreshStats()
+  } catch (e: any) {
+    alert(e?.data?.statusMessage ?? 'Erreur lors de la suppression')
+  }
+}
+
 async function saveEdit() {
   if (!editEntry.value) return
   saving.value = true
@@ -595,6 +609,7 @@ useSeoMeta({
               {{ entry.platform }}
             </span>
             <button v-if="isOwner" class="edit-btn" @click.prevent.stop="openEdit(entry)" title="Modifier">✏️</button>
+            <button v-if="isOwner" class="edit-btn delete-btn" @click.prevent.stop="deleteEntry(entry)" title="Supprimer">🗑️</button>
           </div>
         </div>
       </NuxtLink>
@@ -1268,7 +1283,9 @@ useSeoMeta({
   transition: opacity 0.15s;
   line-height: 1;
 }
+.edit-btn + .edit-btn { margin-left: 0.1rem; }
 .media-card:hover .edit-btn { opacity: 1; }
+.delete-btn:hover { background: rgba(239, 68, 68, 0.15); }
 
 .field-hint { font-weight: 400; color: var(--text-dim); margin-left: 0.3rem; }
 
