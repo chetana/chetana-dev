@@ -42,6 +42,42 @@
         </div>
       </NuxtLink>
 
+      <!-- Natation — live -->
+      <NuxtLink to="/passions/natation" class="tcg-card natation">
+        <div class="card-shine" />
+        <div class="card-inner">
+          <div class="card-icon">🏊</div>
+          <div class="card-content">
+            <span class="card-badge live">Live</span>
+            <h2 class="card-title">Natation</h2>
+            <p class="card-desc">Sessions en piscine et en eau libre — distance, allure et progressions.</p>
+            <div class="card-tags">
+              <span class="tag">Strava API</span>
+              <span class="tag">Charts</span>
+            </div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </NuxtLink>
+
+      <!-- Course — live -->
+      <NuxtLink to="/passions/course" class="tcg-card course">
+        <div class="card-shine" />
+        <div class="card-inner">
+          <div class="card-icon">🏃</div>
+          <div class="card-content">
+            <span class="card-badge live">Live</span>
+            <h2 class="card-title">Course</h2>
+            <p class="card-desc">Runs sur route et trail — allure, dénivelé et évolution des performances.</p>
+            <div class="card-tags">
+              <span class="tag">Strava API</span>
+              <span class="tag">Charts</span>
+            </div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </NuxtLink>
+
       <!-- Voyage — bientôt -->
       <div class="tcg-card voyage disabled">
         <div class="card-shine" />
@@ -64,7 +100,7 @@
     <!-- Dots — mobile slideshow only -->
     <div class="slide-dots" aria-hidden="true">
       <button
-        v-for="(_, i) in 3"
+        v-for="(_, i) in 5"
         :key="i"
         :class="['dot', { active: activeIdx === i }]"
         @click="scrollToCard(i)"
@@ -202,8 +238,12 @@ onMounted(() => {
 /* ── Grid — desktop ───────────────────────────────────────────────── */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 1.5rem;
+}
+
+@media (max-width: 1200px) and (min-width: 641px) {
+  .cards-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 900px) and (min-width: 641px) {
@@ -259,6 +299,8 @@ onMounted(() => {
 /* ── Color accents per card ───────────────────────────────────────── */
 .tcg-card.medialist { --card-accent: var(--accent); --card-accent-rgb: 196, 150, 60; }
 .tcg-card.velo      { --card-accent: #3b82f6;       --card-accent-rgb: 59, 130, 246; }
+.tcg-card.natation  { --card-accent: #06b6d4;       --card-accent-rgb: 6, 182, 212; }
+.tcg-card.course    { --card-accent: #f97316;       --card-accent-rgb: 249, 115, 22; }
 .tcg-card.voyage    { --card-accent: #10b981;        --card-accent-rgb: 16, 185, 129; }
 
 .tcg-card:not(.disabled):hover {
