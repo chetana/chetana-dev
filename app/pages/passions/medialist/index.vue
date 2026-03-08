@@ -161,6 +161,14 @@ function scoreBarWidth(count: number, dist: ScoreCount[]) {
 
 const creatorsTab = ref<'anime' | 'game' | 'movie' | 'series'>('anime')
 const scoreDistTab = ref<'anime' | 'game' | 'movie' | 'series'>('anime')
+const statsOpen = ref(false)
+
+// Auto-ouvre avec animation une fois les stats chargées
+watch(stats, (val) => {
+  if (val && !statsOpen.value) {
+    setTimeout(() => { statsOpen.value = true }, 150)
+  }
+})
 const STATUS_LABEL_FR: Record<string, string> = {
   completed: 'Terminés', watching: 'En cours', playing: 'En cours',
   planned: 'Prévus', plan_to_watch: 'Prévus', plan_to_play: 'Prévus', dropped: 'Abandonnés',
@@ -414,6 +422,11 @@ useSeoMeta({
 
     <!-- ── Profil ── -->
     <div v-if="stats" class="profile-section">
+      <button class="stats-toggle" @click="statsOpen = !statsOpen">
+        <span class="stats-toggle-label">📊 Mon profil média</span>
+        <span class="stats-toggle-chevron" :class="{ open: statsOpen }">›</span>
+      </button>
+      <div class="stats-body" :class="{ open: statsOpen }">
 
       <!-- Chips de stats -->
       <div class="stats-strip">
@@ -530,6 +543,7 @@ useSeoMeta({
         </div>
 
       </div>
+      </div><!-- /stats-body -->
     </div>
 
     <!-- Search -->
@@ -859,10 +873,56 @@ useSeoMeta({
 
 /* ── Profile section ── */
 .profile-section {
+  margin-bottom: 2.5rem;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.stats-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text);
+  transition: background 0.15s;
+}
+.stats-toggle:hover { background: rgba(255,255,255,0.03); }
+
+.stats-toggle-label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.stats-toggle-chevron {
+  font-size: 1.2rem;
+  color: var(--text-dim);
+  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+  transform: rotate(0deg);
+  line-height: 1;
+}
+.stats-toggle-chevron.open { transform: rotate(90deg); }
+
+.stats-body {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  margin-bottom: 2.5rem;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+              padding 0.3s ease;
+  padding: 0 1.25rem;
+}
+.stats-body.open {
+  max-height: 3000px;
+  padding: 0 1.25rem 1.25rem;
 }
 
 .stats-strip {
