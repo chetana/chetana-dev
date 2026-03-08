@@ -4,7 +4,7 @@
     <h1 class="section-title">Ce qui m'anime</h1>
     <p class="page-subtitle">Des projets personnels nés de vraies passions — chacun avec sa propre histoire.</p>
 
-    <div class="cards-grid">
+    <div class="cards-grid" ref="gridRef">
       <!-- Médiathèque — live -->
       <NuxtLink to="/passions/medialist" class="tcg-card medialist">
         <div class="card-shine" />
@@ -60,6 +60,16 @@
         </div>
       </div>
     </div>
+
+    <!-- Dots — mobile slideshow only -->
+    <div class="slide-dots" aria-hidden="true">
+      <button
+        v-for="(_, i) in 3"
+        :key="i"
+        :class="['dot', { active: activeIdx === i }]"
+        @click="scrollToCard(i)"
+      />
+    </div>
   </div>
 </template>
 
@@ -68,6 +78,10 @@ const { t } = useLocale()
 
 useHead({ title: 'Passions — Chetana YIN' })
 
+const gridRef = ref<HTMLElement | null>(null)
+const activeIdx = ref(0)
+
+// ── Tilt helpers ────────────────────────────────────────────────────
 function applyTilt(card: HTMLElement, x: number, y: number) {
   const rect = card.getBoundingClientRect()
   const cx = rect.width / 2
@@ -88,19 +102,18 @@ function resetTilt(card: HTMLElement) {
   if (shine) shine.style.opacity = '0'
 }
 
+// ── Entrance animation (tilt-in → reset, half sine wave) ────────────
 function playEntranceAnim(card: HTMLElement) {
-  // Quick tilt-in then back to neutral — gives mobile users a taste of the effect
   const rect = card.getBoundingClientRect()
   const cx = rect.width / 2
   const cy = rect.height / 2
-  let t = 0
-  const dur = 900
+  let elapsed = 0
+  const dur = 800
   const step = () => {
-    t += 16
-    const progress = t / dur
-    if (progress >= 1) { resetTilt(card); return }
-    // Half sine wave: ramp up then back down
-    const wave = Math.sin(progress * Math.PI)
+    elapsed += 16
+    const p = elapsed / dur
+    if (p >= 1) { resetTilt(card); return }
+    const wave = Math.sin(p * Math.PI)
     const rotY = wave * 10
     const rotX = wave * -4
     card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(${wave * -6}px)`
@@ -114,49 +127,61 @@ function playEntranceAnim(card: HTMLElement) {
   requestAnimationFrame(step)
 }
 
-onMounted(() => {
-  const cards = document.querySelectorAll<HTMLElement>('.tcg-card:not(.disabled)')
+// ── Scroll to card (for dot clicks) ─────────────────────────────────
+function scrollToCard(i: number) {
+  const grid = gridRef.value
+  const card = grid?.querySelectorAll<HTMLElement>('.tcg-card')[i]
+  card?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+}
 
-  cards.forEach(card => {
-    // ── Desktop: mouse ──────────────────────────────────────────────
+// ── Mount ────────────────────────────────────────────────────────────
+onMounted(() => {
+  const grid = gridRef.value
+  if (!grid) return
+  const allCards = Array.from(grid.querySelectorAll<HTMLElement>('.tcg-card'))
+  const isMobile = () => window.innerWidth < 640
+
+  allCards.forEach((card, idx) => {
+    // ── Desktop: mouse tilt ────────────────────────────────────────
     card.addEventListener('mousemove', (e: MouseEvent) => {
       const rect = card.getBoundingClientRect()
       applyTilt(card, e.clientX - rect.left, e.clientY - rect.top)
     })
     card.addEventListener('mouseleave', () => resetTilt(card))
 
-    // ── Mobile: touch ───────────────────────────────────────────────
-    card.addEventListener('touchstart', (e: TouchEvent) => {
-      e.preventDefault()
-      const t = e.touches[0]
-      const rect = card.getBoundingClientRect()
-      applyTilt(card, t.clientX - rect.left, t.clientY - rect.top)
-    }, { passive: false })
-
-    card.addEventListener('touchmove', (e: TouchEvent) => {
-      e.preventDefault()
-      const t = e.touches[0]
-      const rect = card.getBoundingClientRect()
-      applyTilt(card, t.clientX - rect.left, t.clientY - rect.top)
-    }, { passive: false })
-
-    card.addEventListener('touchend', () => {
-      // Small delay so user sees the tilt before it resets
-      setTimeout(() => resetTilt(card), 120)
-    })
-
-    // ── Mobile: entrance animation via IntersectionObserver ─────────
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          // Stagger per card index
-          const idx = Array.from(cards).indexOf(card)
-          setTimeout(() => playEntranceAnim(card), idx * 150)
-          observer.unobserve(card)
-        }
+    // ── IntersectionObserver ───────────────────────────────────────
+    // Desktop: observe relative to viewport, fire once (staggered on load)
+    // Mobile:  observe relative to scroll container, fire on every snap
+    const buildObserver = () => {
+      const mobile = isMobile()
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return
+          playEntranceAnim(card)
+          activeIdx.value = idx
+          if (!mobile) obs.unobserve(card) // desktop: once only
+        })
+      }, {
+        root: mobile ? grid : null,
+        threshold: mobile ? 0.65 : 0.35,
       })
-    }, { threshold: 0.4 })
-    observer.observe(card)
+      obs.observe(card)
+      return obs
+    }
+
+    let obs = buildObserver()
+
+    // Rebuild observer on resize (desktop ↔ mobile switch)
+    let resizeTimer: ReturnType<typeof setTimeout>
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(() => { obs.disconnect(); obs = buildObserver() }, 200)
+    }, { passive: true })
+
+    // Stagger desktop entrance (don't stagger mobile — each card animates on snap)
+    if (!isMobile()) {
+      // Desktop: slight stagger on initial load handled by observer threshold
+    }
   })
 })
 </script>
@@ -174,18 +199,38 @@ onMounted(() => {
   max-width: 560px;
 }
 
-/* ── Grid ─────────────────────────────────────────────────────────── */
+/* ── Grid — desktop ───────────────────────────────────────────────── */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 900px) and (min-width: 641px) {
   .cards-grid { grid-template-columns: 1fr 1fr; }
 }
-@media (max-width: 560px) {
-  .cards-grid { grid-template-columns: 1fr; }
+
+/* ── Slideshow — mobile ───────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .cards-grid {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    /* side padding to peek at adjacent cards */
+    padding: 0.5rem 12% 1rem;
+    scrollbar-width: none;
+    /* extend beyond page to avoid clipping */
+    margin: 0 -1.5rem;
+  }
+  .cards-grid::-webkit-scrollbar { display: none; }
+
+  .tcg-card {
+    flex: 0 0 76vw;
+    scroll-snap-align: center;
+  }
 }
 
 /* ── TCG Card ─────────────────────────────────────────────────────── */
@@ -204,11 +249,6 @@ onMounted(() => {
   cursor: pointer;
   will-change: transform;
   aspect-ratio: 2/3;
-}
-
-.tcg-card:not(.disabled):hover {
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.18), 0 4px 12px rgba(196, 150, 60, 0.15);
-  border-color: var(--accent);
 }
 
 .tcg-card.disabled {
@@ -334,5 +374,36 @@ onMounted(() => {
 
 .tcg-card:not(.disabled):hover .card-arrow {
   transform: translateX(4px);
+}
+
+/* ── Dots ─────────────────────────────────────────────────────────── */
+.slide-dots {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .slide-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+  }
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--border);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.25s;
+}
+
+.dot.active {
+  background: var(--accent);
+  transform: scale(1.4);
 }
 </style>
