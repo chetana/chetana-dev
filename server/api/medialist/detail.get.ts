@@ -53,6 +53,41 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // ── Movie ───────────────────────────────────────────────────────────────────
+  if (type === 'movie') {
+    const [movieRes, creditsRes] = await Promise.allSettled([
+      $fetch<any>(`https://api.themoviedb.org/3/movie/${externalId}?api_key=${config.tmdbApiKey}&language=fr-FR`),
+      $fetch<any>(`https://api.themoviedb.org/3/movie/${externalId}/credits?api_key=${config.tmdbApiKey}`),
+    ])
+    const movie = movieRes.status === 'fulfilled' ? movieRes.value : null
+    const credits = creditsRes.status === 'fulfilled' ? creditsRes.value : null
+    const director = credits?.crew?.find((c: any) => c.job === 'Director')?.name ?? null
+    return {
+      entry,
+      type: 'movie',
+      overview: movie?.overview ?? null,
+      tmdb_score: movie?.vote_average ? Math.round(movie.vote_average * 10) / 10 : null,
+      director,
+      tagline: movie?.tagline ?? null,
+      runtime: movie?.runtime ?? null,
+    }
+  }
+
+  // ── Series ───────────────────────────────────────────────────────────────────
+  if (type === 'series') {
+    const tv = await $fetch<any>(`https://api.themoviedb.org/3/tv/${externalId}?api_key=${config.tmdbApiKey}&language=fr-FR`).catch(() => null)
+    return {
+      entry,
+      type: 'series',
+      overview: tv?.overview ?? null,
+      tmdb_score: tv?.vote_average ? Math.round(tv.vote_average * 10) / 10 : null,
+      creator: tv?.created_by?.[0]?.name ?? null,
+      tagline: tv?.tagline ?? null,
+      number_of_seasons: tv?.number_of_seasons ?? null,
+      number_of_episodes: tv?.number_of_episodes ?? null,
+    }
+  }
+
   // ── Game ────────────────────────────────────────────────────────────────────
   const [gameRes, screenshotsRes] = await Promise.allSettled([
     $fetch<any>(`https://api.rawg.io/api/games/${externalId}?key=${config.rawgApiKey}`),

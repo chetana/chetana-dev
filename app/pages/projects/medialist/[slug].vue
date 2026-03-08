@@ -15,7 +15,7 @@ interface Episode {
 
 interface MediaEntry {
   id: number
-  media_type: 'anime' | 'game'
+  media_type: 'anime' | 'game' | 'movie' | 'series'
   external_id: number
   title: string
   title_original: string | null
@@ -57,7 +57,28 @@ interface GameDetail {
   screenshots: string[]
 }
 
-type Detail = AnimeDetail | GameDetail
+interface MovieDetail {
+  entry: MediaEntry
+  type: 'movie'
+  overview: string | null
+  tmdb_score: number | null
+  director: string | null
+  tagline: string | null
+  runtime: number | null
+}
+
+interface SeriesDetail {
+  entry: MediaEntry
+  type: 'series'
+  overview: string | null
+  tmdb_score: number | null
+  creator: string | null
+  tagline: string | null
+  number_of_seasons: number | null
+  number_of_episodes: number | null
+}
+
+type Detail = AnimeDetail | GameDetail | MovieDetail | SeriesDetail
 
 const route = useRoute()
 const slug = route.params.slug as string
@@ -79,6 +100,8 @@ const STATUS_LABEL: Record<string, string> = {
   watching: 'En cours',
   playing: 'En cours',
   planned: 'Prévu',
+  plan_to_watch: 'Prévu',
+  plan_to_play: 'Prévu',
   dropped: 'Abandonné',
 }
 
@@ -118,11 +141,22 @@ const currentArc = computed(() => {
   }) ?? null
 })
 
-// Synopsis truncation
+// Synopsis / overview text (anime synopsis, game description, movie/series overview)
 const synopsisExpanded = ref(false)
 const synopsisText = computed(() => {
-  if (detail.value?.type !== 'anime') return null
-  return (detail.value as AnimeDetail).synopsis
+  const d = detail.value
+  if (!d) return null
+  if (d.type === 'anime') return (d as AnimeDetail).synopsis
+  if (d.type === 'game') return (d as GameDetail).description
+  if (d.type === 'movie') return (d as MovieDetail).overview
+  if (d.type === 'series') return (d as SeriesDetail).overview
+  return null
+})
+const synopsisLabel = computed(() => {
+  const t = detail.value?.type
+  if (t === 'anime') return 'Synopsis'
+  if (t === 'movie' || t === 'series') return 'Synopsis'
+  return 'Description'
 })
 const synopsisShort = computed(() => {
   const s = synopsisText.value
@@ -130,16 +164,9 @@ const synopsisShort = computed(() => {
   return s.slice(0, 350) + '…'
 })
 
-const descriptionText = computed(() => {
-  if (detail.value?.type !== 'game') return null
-  return (detail.value as GameDetail).description
-})
+const descriptionText = computed(() => null) // kept for compat, unused
 const descriptionExpanded = ref(false)
-const descriptionShort = computed(() => {
-  const s = descriptionText.value
-  if (!s || s.length <= 400) return s
-  return s.slice(0, 400) + '…'
-})
+const descriptionShort = computed(() => null)
 
 // Arc expand state
 const expandedArc = ref<number | null>(null)
@@ -176,9 +203,11 @@ const chatScrollRef = ref<HTMLElement | null>(null)
 
 const suggestedQuestions = computed(() => {
   if (!entry.value) return []
-  return detail.value?.type === 'anime'
-    ? ['Quels sont les meilleurs arcs ?', 'Qui sont les personnages principaux ?', 'Y a-t-il une suite ?', 'Que regarder ensuite ?']
-    : ['Combien de temps pour finir ?', 'Est-ce que le jeu est difficile ?', 'Y a-t-il des DLC ?', 'Que jouer ensuite ?']
+  const t = detail.value?.type
+  if (t === 'anime') return ['Quels sont les meilleurs arcs ?', 'Qui sont les personnages principaux ?', 'Y a-t-il une suite ?', 'Que regarder ensuite ?']
+  if (t === 'movie') return ['Qui a réalisé ce film ?', 'Y a-t-il une suite ?', 'Des films similaires ?', 'Anecdotes de tournage ?']
+  if (t === 'series') return ['Combien de saisons ?', 'Y a-t-il une suite ?', 'Des séries similaires ?', 'Est-ce annulée ?']
+  return ['Combien de temps pour finir ?', 'Est-ce que le jeu est difficile ?', 'Y a-t-il des DLC ?', 'Que jouer ensuite ?']
 })
 
 function buildMediaContext() {
@@ -190,16 +219,19 @@ function buildMediaContext() {
     type: e.media_type,
     year: e.year,
     genres: e.genres,
-    synopsis: d.type === 'anime' ? (d as any).synopsis : (d as any).description,
+    synopsis: synopsisText.value,
     status: e.status,
     score: e.score,
     episodes_watched: e.episodes_watched,
     episodes_total: e.episodes_total,
     mal_score: d.type === 'anime' ? (d as any).mal_score : null,
     metacritic: d.type === 'game' ? (d as any).metacritic : null,
+    tmdb_score: (d.type === 'movie' || d.type === 'series') ? (d as any).tmdb_score : null,
     platform: e.platform,
     studios: d.type === 'anime' ? (d as any).studios : null,
     developers: d.type === 'game' ? (d as any).developers : null,
+    director: d.type === 'movie' ? (d as any).director : null,
+    creator: d.type === 'series' ? (d as any).creator : null,
   }
 }
 
@@ -277,14 +309,14 @@ async function sendChatMessage() {
               class="hero-cover"
             />
             <div v-else class="hero-cover-placeholder">
-              {{ entry.media_type === 'anime' ? '🎌' : '🎮' }}
+              {{ entry.media_type === 'anime' ? '🎌' : entry.media_type === 'game' ? '🎮' : entry.media_type === 'movie' ? '🎬' : '📺' }}
             </div>
           </div>
 
           <!-- Info -->
           <div class="hero-info">
             <div class="hero-type-label" :class="entry.media_type">
-              {{ entry.media_type === 'anime' ? '🎌 Animé' : '🎮 Jeu' }}
+              {{ entry.media_type === 'anime' ? '🎌 Animé' : entry.media_type === 'game' ? '🎮 Jeu' : entry.media_type === 'movie' ? '🎬 Film' : '📺 Série' }}
             </div>
 
             <h1 class="hero-title">{{ entry.title }}</h1>
@@ -296,10 +328,18 @@ async function sendChatMessage() {
               <template v-if="detail.type === 'anime'">
                 <span v-for="s in (detail as any).studios" :key="s" class="chip">{{ s }}</span>
               </template>
-              <template v-else>
+              <template v-else-if="detail.type === 'game'">
                 <span v-for="d in (detail as any).developers" :key="d" class="chip">{{ d }}</span>
               </template>
+              <template v-else-if="detail.type === 'movie' && (detail as any).director">
+                <span class="chip">{{ (detail as any).director }}</span>
+              </template>
+              <template v-else-if="detail.type === 'series' && (detail as any).creator">
+                <span class="chip">{{ (detail as any).creator }}</span>
+              </template>
               <span v-if="entry.platform" class="chip chip-platform">{{ entry.platform }}</span>
+              <span v-if="detail.type === 'movie' && (detail as any).runtime" class="chip">{{ (detail as any).runtime }} min</span>
+              <span v-if="detail.type === 'series' && (detail as any).number_of_seasons" class="chip">{{ (detail as any).number_of_seasons }} saison{{ (detail as any).number_of_seasons > 1 ? 's' : '' }}</span>
             </div>
 
             <!-- Genres -->
@@ -328,6 +368,13 @@ async function sendChatMessage() {
               >
                 🎮 Metacritic {{ (detail as any).metacritic }}
               </span>
+              <span
+                v-if="(detail.type === 'movie' || detail.type === 'series') && (detail as any).tmdb_score"
+                class="ext-score tmdb"
+                title="Score TMDB"
+              >
+                ⭐ TMDB {{ (detail as any).tmdb_score }}
+              </span>
             </div>
 
             <!-- Our score progress bar -->
@@ -341,8 +388,8 @@ async function sendChatMessage() {
               </div>
             </div>
 
-            <!-- Episodes progress bar (anime) -->
-            <div v-if="entry.media_type === 'anime' && entry.episodes_total" class="progress-block">
+            <!-- Episodes progress bar (anime / series) -->
+            <div v-if="(entry.media_type === 'anime' || entry.media_type === 'series') && entry.episodes_total" class="progress-block">
               <div class="progress-label">
                 <span>Épisodes vus</span>
                 <span class="progress-value">{{ entry.episodes_watched ?? 0 }}/{{ entry.episodes_total }}</span>
@@ -379,17 +426,15 @@ async function sendChatMessage() {
         </div>
       </div>
 
-      <!-- ── Synopsis / Description ── -->
-      <section v-if="synopsisText || descriptionText" class="content-section">
-        <h2 class="section-heading">{{ detail.type === 'anime' ? 'Synopsis' : 'Description' }}</h2>
+      <!-- ── Synopsis / Overview ── -->
+      <section v-if="synopsisText" class="content-section">
+        <h2 class="section-heading">{{ synopsisLabel }}</h2>
         <div class="synopsis-block">
           <p class="synopsis-text">
-            {{ synopsisExpanded
-              ? (synopsisText || descriptionText)
-              : (synopsisShort || descriptionShort) }}
+            {{ synopsisExpanded ? synopsisText : synopsisShort }}
           </p>
           <button
-            v-if="(synopsisText ?? descriptionText ?? '').length > 350"
+            v-if="(synopsisText ?? '').length > 350"
             class="read-more-btn"
             @click="synopsisExpanded = !synopsisExpanded"
           >
@@ -675,8 +720,10 @@ async function sendChatMessage() {
   gap: 0.4rem;
   width: fit-content;
 }
-.hero-type-label.anime { background: rgba(139, 46, 59, 0.6); color: #fca5a5; }
-.hero-type-label.game  { background: rgba(30, 80, 160, 0.6);  color: #93c5fd; }
+.hero-type-label.anime   { background: rgba(139, 46, 59, 0.6);  color: #fca5a5; }
+.hero-type-label.game    { background: rgba(30, 80, 160, 0.6);  color: #93c5fd; }
+.hero-type-label.movie   { background: rgba(180, 30, 30, 0.6);  color: #fca5a5; }
+.hero-type-label.series  { background: rgba(100, 30, 160, 0.6); color: #d8b4fe; }
 
 .hero-title {
   font-size: clamp(1.5rem, 4vw, 2.4rem);
@@ -752,6 +799,7 @@ async function sendChatMessage() {
   border-radius: 6px;
 }
 .ext-score.metacritic { color: #fbbf24; }
+.ext-score.tmdb       { color: #34d399; }
 
 /* Progress bars in hero */
 .progress-block {
