@@ -218,10 +218,10 @@ export async function geminiChatWithSearch(
     systemInstruction: { parts: [{ text: systemInstruction }] },
     contents,
     ...(withSearch ? { tools: [{ googleSearch: {} }] } : {}),
-    generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
+    generationConfig: { temperature: 0.7, maxOutputTokens: 1024, thinkingConfig: { thinkingBudget: 0 } },
   })
 
-  const endpoint = `https://${location}-aiplatform.googleapis.com/v1beta/projects/${project}/locations/${location}/publishers/google/models/${model}:generateContent`
+  const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/publishers/google/models/${model}:generateContent`
 
   for (const withSearch of [true, false]) {
     const res = await fetch(endpoint, {
