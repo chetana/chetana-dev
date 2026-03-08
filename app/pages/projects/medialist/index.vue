@@ -18,6 +18,11 @@ interface MediaEntry {
   notes: string | null
 }
 
+interface GenreStat { genre: string; count: number; avg_score: number; love_score: number }
+interface ScoreCount { score: number; count: number }
+interface StatusCount { status: string; count: number }
+interface CreatorStat { creator: string; count: number; avg_score: number | null }
+
 interface Stats {
   total_anime: number
   total_games: number
@@ -25,7 +30,19 @@ interface Stats {
   games_completed: number
   anime_watching: number
   games_playing: number
+  average_anime_score: number | null
+  average_game_score: number | null
+  total_episodes_watched: number
+  total_playtime_hours: number
   top_genres: Array<{ genre: string; count: number }>
+  top_anime_genres: GenreStat[]
+  top_game_genres: GenreStat[]
+  anime_score_distribution: ScoreCount[]
+  game_score_distribution: ScoreCount[]
+  anime_status: StatusCount[]
+  game_status: StatusCount[]
+  top_anime_studios: CreatorStat[]
+  top_game_developers: CreatorStat[]
 }
 
 interface SearchResult {
@@ -58,6 +75,50 @@ const filtered = computed(() => {
     return true
   })
 })
+
+// ── Profil stats helpers ─────────────────────────────────────────────────────
+interface MergedGenre {
+  genre: string; love: number; hasAnime: boolean; hasGame: boolean
+  animeAvg: number; gameAvg: number; count: number
+}
+
+const mergedGenres = computed<MergedGenre[]>(() => {
+  if (!stats.value) return []
+  const map = new Map<string, MergedGenre>()
+  for (const g of stats.value.top_anime_genres) {
+    map.set(g.genre, { genre: g.genre, love: g.love_score, hasAnime: true, hasGame: false, animeAvg: g.avg_score, gameAvg: 0, count: g.count })
+  }
+  for (const g of stats.value.top_game_genres) {
+    const ex = map.get(g.genre)
+    if (ex) { ex.love += g.love_score; ex.hasGame = true; ex.gameAvg = g.avg_score; ex.count += g.count }
+    else map.set(g.genre, { genre: g.genre, love: g.love_score, hasAnime: false, hasGame: true, animeAvg: 0, gameAvg: g.avg_score, count: g.count })
+  }
+  return [...map.values()].sort((a, b) => b.love - a.love).slice(0, 10)
+})
+
+const maxLove = computed(() => Math.max(...mergedGenres.value.map(g => g.love), 1))
+
+function genreBarWidth(g: MergedGenre) { return `${(g.love / maxLove.value) * 100}%` }
+function genreBarColor(g: MergedGenre) {
+  if (g.hasAnime && g.hasGame) return 'linear-gradient(90deg, var(--accent), #3b82f6)'
+  if (g.hasGame) return '#3b82f6'
+  return 'var(--gradient)'
+}
+function genreAvgScore(g: MergedGenre) {
+  if (g.hasAnime && g.hasGame) return ((g.animeAvg + g.gameAvg) / 2).toFixed(1)
+  return (g.hasAnime ? g.animeAvg : g.gameAvg).toFixed(1)
+}
+
+function scoreBarWidth(count: number, dist: ScoreCount[]) {
+  const max = Math.max(...dist.map(s => s.count), 1)
+  return `${(count / max) * 100}%`
+}
+
+const creatorsTab = ref<'anime' | 'game'>('anime')
+const scoreDistTab = ref<'anime' | 'game'>('anime')
+const STATUS_LABEL_FR: Record<string, string> = {
+  completed: 'Terminés', watching: 'En cours', playing: 'En cours', planned: 'Prévus', dropped: 'Abandonnés',
+}
 
 const STATUS_LABEL: Record<string, string> = {
   completed: 'Terminé',
@@ -269,23 +330,112 @@ useSeoMeta({
     <h1 class="section-title">Animés & Jeux</h1>
     <p class="page-subtitle">Ma liste personnelle — ce que j'ai regardé, joué, ou prévu.</p>
 
-    <!-- Stats -->
-    <div v-if="stats" class="stats-strip">
-      <div class="stat-item">
-        <span class="stat-value">{{ stats.total_anime }}</span>
-        <span class="stat-label">Animés</span>
+    <!-- ── Profil ── -->
+    <div v-if="stats" class="profile-section">
+
+      <!-- Chips de stats -->
+      <div class="stats-strip">
+        <div class="stat-item">
+          <span class="stat-value">{{ stats.total_anime }}</span>
+          <span class="stat-label">🎌 Animés</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ stats.total_games }}</span>
+          <span class="stat-label">🎮 Jeux</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ stats.total_episodes_watched.toLocaleString('fr-FR') }}</span>
+          <span class="stat-label">Épisodes vus</span>
+        </div>
+        <div v-if="stats.average_anime_score" class="stat-item">
+          <span class="stat-value" :style="{ color: scoreColor(Math.round(stats.average_anime_score)) }">
+            {{ stats.average_anime_score.toFixed(1) }}
+          </span>
+          <span class="stat-label">Score moyen animé</span>
+        </div>
+        <div v-if="stats.average_game_score" class="stat-item">
+          <span class="stat-value" :style="{ color: scoreColor(Math.round(stats.average_game_score)) }">
+            {{ stats.average_game_score.toFixed(1) }}
+          </span>
+          <span class="stat-label">Score moyen jeu</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ stats.anime_completed + stats.games_completed }}</span>
+          <span class="stat-label">Terminés</span>
+        </div>
       </div>
-      <div class="stat-item">
-        <span class="stat-value">{{ stats.total_games }}</span>
-        <span class="stat-label">Jeux</span>
+
+      <!-- ADN genres -->
+      <div v-if="mergedGenres.length" class="profile-block">
+        <h3 class="profile-block-title">🧬 ADN — Genres préférés</h3>
+        <div class="genre-dna">
+          <div v-for="g in mergedGenres" :key="g.genre" class="genre-row">
+            <div class="genre-meta">
+              <span class="genre-name">{{ g.genre }}</span>
+              <span class="genre-icons">
+                <span v-if="g.hasAnime">🎌</span>
+                <span v-if="g.hasGame">🎮</span>
+              </span>
+            </div>
+            <div class="genre-bar-track">
+              <div class="genre-bar-fill" :style="{ width: genreBarWidth(g), background: genreBarColor(g) }" />
+            </div>
+            <div class="genre-score-info">
+              <span class="genre-avg" :style="{ color: scoreColor(Math.round(+genreAvgScore(g))) }">{{ genreAvgScore(g) }}</span>
+              <span class="genre-count">×{{ g.count }}</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="stat-item">
-        <span class="stat-value">{{ stats.anime_completed + stats.games_completed }}</span>
-        <span class="stat-label">Terminés</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">{{ stats.anime_watching + stats.games_playing }}</span>
-        <span class="stat-label">En cours</span>
+
+      <!-- Distribution scores + Studios -->
+      <div class="profile-row">
+
+        <!-- Distribution des scores -->
+        <div class="profile-block profile-block-half">
+          <h3 class="profile-block-title">📊 Distribution des notes</h3>
+          <div class="score-tabs">
+            <button :class="['score-tab', scoreDistTab === 'anime' && 'active']" @click="scoreDistTab = 'anime'">🎌 Animés</button>
+            <button :class="['score-tab', scoreDistTab === 'game' && 'active']" @click="scoreDistTab = 'game'">🎮 Jeux</button>
+          </div>
+          <div class="score-dist">
+            <template v-for="s in (scoreDistTab === 'anime' ? stats.anime_score_distribution : stats.game_score_distribution)" :key="s.score">
+              <span class="score-label" :style="{ color: scoreColor(s.score) }">{{ s.score }}</span>
+              <div class="score-bar-track">
+                <div class="score-bar-fill"
+                  :style="{
+                    width: scoreBarWidth(s.count, scoreDistTab === 'anime' ? stats.anime_score_distribution : stats.game_score_distribution),
+                    background: scoreColor(s.score)
+                  }"
+                />
+              </div>
+              <span class="score-count">{{ s.count }}</span>
+            </template>
+          </div>
+        </div>
+
+        <!-- Studios / Devs favoris -->
+        <div class="profile-block profile-block-half">
+          <h3 class="profile-block-title">🏆 Créateurs favoris</h3>
+          <div class="score-tabs">
+            <button :class="['score-tab', creatorsTab === 'anime' && 'active']" @click="creatorsTab = 'anime'">🎌 Studios</button>
+            <button :class="['score-tab', creatorsTab === 'game' && 'active']" @click="creatorsTab = 'game'">🎮 Devs</button>
+          </div>
+          <div class="creator-list">
+            <div
+              v-for="c in (creatorsTab === 'anime' ? stats.top_anime_studios : stats.top_game_developers)"
+              :key="c.creator"
+              class="creator-row"
+            >
+              <span class="creator-name">{{ c.creator }}</span>
+              <span class="creator-meta">
+                <span v-if="c.avg_score" class="creator-score" :style="{ color: scoreColor(Math.round(c.avg_score)) }">★ {{ c.avg_score.toFixed(1) }}</span>
+                <span class="creator-count">{{ c.count }} titre{{ c.count > 1 ? 's' : '' }}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -590,30 +740,36 @@ useSeoMeta({
   max-width: 560px;
 }
 
-/* ── Stats strip ── */
+/* ── Profile section ── */
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
 .stats-strip {
   display: flex;
-  gap: 1rem;
+  gap: 0.875rem;
   flex-wrap: wrap;
-  margin-bottom: 2.5rem;
 }
 
 .stat-item {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 1.25rem 2rem;
+  padding: 1rem 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.2rem;
   flex: 1;
-  min-width: 100px;
+  min-width: 90px;
   box-shadow: var(--shadow-sm);
 }
 
 .stat-value {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
   background: var(--gradient);
   -webkit-background-clip: text;
@@ -622,12 +778,200 @@ useSeoMeta({
   line-height: 1;
 }
 
+.stat-item .stat-value[style] {
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+}
+
 .stat-label {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  text-align: center;
 }
+
+/* Profile blocks */
+.profile-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-block-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 1rem;
+}
+
+/* Genre DNA */
+.genre-dna {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.genre-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 80px;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.genre-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.genre-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.genre-icons { font-size: 0.75rem; flex-shrink: 0; opacity: 0.8; }
+
+.genre-bar-track {
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.genre-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+.genre-score-info {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.genre-avg {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.genre-count {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* Profile row — two halves */
+.profile-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.profile-block-half { /* inherits .profile-block */ }
+
+/* Score tabs / creator tabs */
+.score-tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.score-tab {
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.score-tab:hover { border-color: var(--accent); color: var(--accent); }
+.score-tab.active { background: var(--gradient); border-color: transparent; color: #fff; }
+
+/* Score distribution */
+.score-dist {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr 1.5rem;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+}
+
+.score-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.score-bar-track {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.score-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.score-count {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* Creator list */
+.creator-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.creator-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.creator-row:last-child { border-bottom: none; }
+
+.creator-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+.creator-meta {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.creator-score { font-size: 0.82rem; font-weight: 700; }
+.creator-count { font-size: 0.75rem; color: var(--text-dim); }
 
 /* ── Filters ── */
 .filters {
@@ -1182,8 +1526,11 @@ useSeoMeta({
 
 /* Responsive */
 @media (max-width: 768px) {
-  .stats-strip { gap: 0.75rem; }
-  .stat-item { padding: 1rem 1.25rem; }
+  .stats-strip { gap: 0.5rem; }
+  .stat-item { padding: 0.875rem 1rem; min-width: 80px; }
+  .stat-value { font-size: 1.4rem; }
+  .genre-row { grid-template-columns: 130px 1fr 64px; gap: 0.5rem; }
+  .profile-row { grid-template-columns: 1fr; }
   .media-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.875rem; }
   .card-cover { height: 200px; }
   .filters { gap: 0.75rem; }
