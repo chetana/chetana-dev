@@ -1,7 +1,1 @@
-{
-  "functions": {
-    "server/api/medialist/chat.post.ts": {
-      "maxDuration": 30
-    }
-  }
-}
+{}
