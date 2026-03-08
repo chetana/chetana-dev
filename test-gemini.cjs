@@ -4,7 +4,8 @@
  * Usage : node test-gemini.cjs
  */
 const { createSign } = require('crypto')
-require('dotenv').config({ path: '.env.local' })
+require('dotenv').config({ path: '.env.local' });
+require('dotenv').config({ path: '.env.production' })
 
 const PROJECT = process.env.VERTEX_PROJECT_ID ?? 'cykt-399216'
 const LOCATION = process.env.VERTEX_LOCATION ?? 'us-central1'
@@ -13,7 +14,12 @@ const MODELS = ['gemini-3.1-flash-lite', 'gemini-2.5-flash']
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 async function getAccessToken() {
-  const creds = JSON.parse(process.env.GCS_SERVICE_ACCOUNT_JSON.trim())
+  // Le JSON peut avoir des vrais \n dans les valeurs (private_key) — on les échappe
+  const raw = process.env.GCS_SERVICE_ACCOUNT_JSON.trim()
+  const fixed = raw.replace(/"((?:[^"\\]|\\.)*)"/g, (match) =>
+    match.replace(/\n/g, '\\n')
+  )
+  const creds = JSON.parse(fixed)
   creds.private_key = creds.private_key.replace(/\\n/g, '\n').trim() + '\n'
 
   const now = Math.floor(Date.now() / 1000)

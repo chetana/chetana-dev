@@ -16,6 +16,11 @@ export NVM_DIR="$HOME/.nvm"
 
 cd "$CLAUDE_PROJECT_DIR" || exit 0
 
+# Nuxt ne charge pas .env.production automatiquement — injecter GOOGLE_CLIENT_ID
+if [ -f ".env.production" ]; then
+  export GOOGLE_CLIENT_ID=$(grep 'GOOGLE_CLIENT_ID=' .env.production | sed 's/GOOGLE_CLIENT_ID="\(.*\)"/\1/')
+fi
+
 if ! npm run build > /dev/null 2>&1; then
   echo "Build failed. Fix errors before committing." >&2
   exit 2

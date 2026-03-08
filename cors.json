@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://chetlys.vercel.app", "https://www.chetana.dev", "https://chetana.dev", "http://localhost"],
+    "method": ["PUT", "GET", "OPTIONS"],
+    "responseHeader": ["Content-Type", "Authorization"],
+    "maxAgeSeconds": 3600
+  }
+]
