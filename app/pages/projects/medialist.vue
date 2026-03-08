@@ -332,6 +332,7 @@ useSeoMeta({
             <span v-if="entry.media_type === 'game' && entry.platform" class="extra-info">
               {{ entry.platform }}
             </span>
+            <span v-if="entry.score" class="score-badge">★ {{ entry.score }}/10</span>
             <button v-if="isOwner" class="edit-btn" @click.stop="openEdit(entry)" title="Modifier">✏️</button>
           </div>
         </div>
@@ -758,6 +759,15 @@ useSeoMeta({
 .status-badge.gray   { background: rgba(107, 114, 128, 0.15); color: #6b7280; }
 
 .extra-info { font-size: 0.75rem; color: var(--text-dim); }
+
+.score-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(196, 150, 60, 0.12);
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
 
 .edit-btn {
   margin-left: auto;
