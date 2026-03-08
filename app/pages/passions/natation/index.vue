@@ -124,6 +124,7 @@
           <div class="ride-card-tags">
             <span class="ride-tag type">{{ SPORT_LABEL[a.sport_type] ?? a.sport_type }}</span>
           </div>
+          <button v-if="a.map_polyline" class="map-btn" @click="mapActivity = a">🗺️ Carte</button>
         </div>
       </div>
 
@@ -139,6 +140,13 @@
     </div>
 
   </div>
+
+  <MapModal
+    v-if="mapActivity?.map_polyline"
+    :polyline="mapActivity.map_polyline"
+    :name="mapActivity.name"
+    @close="mapActivity = null"
+  />
 </template>
 
 <script setup lang="ts">
@@ -164,7 +172,7 @@ interface Activity {
   average_speed_ms: number | null; average_heartrate: number | null
   max_heartrate: number | null; average_watts: number | null
   average_cadence: number | null; kudos_count: number; pr_count: number
-  trainer: boolean; commute: boolean
+  trainer: boolean; commute: boolean; map_polyline?: string
 }
 
 const { data: stats, pending: statsPending } = useFetch<SwimStats>(`${API_BASE}/strava/stats?sport=swimming`)
@@ -174,6 +182,8 @@ const statsOpen = ref(false)
 watch(stats, (val) => {
   if (val && !statsOpen.value) setTimeout(() => { statsOpen.value = true }, 150)
 })
+
+const mapActivity = ref<Activity | null>(null)
 
 const PAGE_SIZE = 20
 const displayedCount = ref(PAGE_SIZE)
@@ -496,6 +506,20 @@ function formatMonth(ym: string) {
   font-weight: 500;
 }
 .ride-tag.type { background: rgba(6,182,212,0.1); color: #22d3ee; border: 1px solid rgba(6,182,212,0.2); }
+
+.map-btn {
+  margin-top: 0.5rem;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  transition: border-color 0.2s, color 0.2s;
+}
+.map-btn:hover { border-color: var(--accent); color: var(--text); }
 
 .loading-state {
   display: flex;
