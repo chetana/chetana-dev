@@ -76,18 +76,25 @@ const config = useRuntimeConfig()
 // ── List & filters ──────────────────────────────────────────────────────────
 const typeFilter = ref<'' | 'anime' | 'game' | 'movie' | 'series'>('')
 const statusFilter = ref<'' | 'completed' | 'ongoing' | 'planned' | 'dropped'>('')
+const searchQuery = ref('')
 
 const { data: allMedia, pending, refresh: refreshList } = useFetch<MediaEntry[]>(`${API_BASE}/media`)
 const { data: stats, refresh: refreshStats } = useFetch<Stats>(`${API_BASE}/stats`)
 
 const filtered = computed(() => {
   if (!allMedia.value) return []
+  const q = searchQuery.value.trim().toLowerCase()
   return allMedia.value.filter(m => {
     if (typeFilter.value && m.media_type !== typeFilter.value) return false
     if (statusFilter.value === 'ongoing') return ['watching', 'playing'].includes(m.status)
     if (statusFilter.value === 'planned') return ['planned', 'plan_to_watch', 'plan_to_play'].includes(m.status)
     if (statusFilter.value === 'dropped') return m.status === 'dropped'
     if (statusFilter.value && m.status !== statusFilter.value) return false
+    if (q) {
+      const inTitle = m.title.toLowerCase().includes(q)
+      const inOrig = m.title_original?.toLowerCase().includes(q) ?? false
+      if (!inTitle && !inOrig) return false
+    }
     return true
   })
 })
@@ -525,6 +532,20 @@ useSeoMeta({
       </div>
     </div>
 
+    <!-- Search -->
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input
+        v-model="searchQuery"
+        class="search-input"
+        type="text"
+        placeholder="Rechercher un titre…"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button v-if="searchQuery" class="search-clear" @click="searchQuery = ''">✕</button>
+    </div>
+
     <!-- Filters -->
     <div class="filters">
       <div class="filter-group">
@@ -619,7 +640,11 @@ useSeoMeta({
 
     <!-- Empty -->
     <div v-else class="empty-state">
-      <p>Aucune entrée pour ces filtres.</p>
+      <template v-if="searchQuery.trim()">
+        <p class="empty-title">Pas dans la liste</p>
+        <p class="empty-sub">« {{ searchQuery.trim() }} » n'a pas encore été ajouté.</p>
+      </template>
+      <p v-else>Aucune entrée pour ces filtres.</p>
     </div>
 
     <!-- FAB : owner only -->
@@ -1064,6 +1089,54 @@ useSeoMeta({
 
 .creator-score { font-size: 0.82rem; font-weight: 700; }
 .creator-count { font-size: 0.75rem; color: var(--text-dim); }
+
+/* ── Search ── */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 0.55rem 0.9rem;
+  margin-bottom: 1.25rem;
+  transition: border-color 0.2s;
+  max-width: 480px;
+}
+
+.search-bar:focus-within {
+  border-color: var(--accent);
+}
+
+.search-icon { font-size: 0.95rem; flex-shrink: 0; }
+
+.search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.search-input::placeholder { color: var(--text-dim); }
+
+.search-clear {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+.search-clear:hover { color: var(--text); }
+
+.empty-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+.empty-sub { font-size: 0.88rem; color: var(--text-dim); }
 
 /* ── Filters ── */
 .filters {
