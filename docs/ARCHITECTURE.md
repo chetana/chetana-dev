@@ -62,12 +62,12 @@
        └───────────────┘  │   media_entries  │  │ gallery.json     │
                           └────────┬─────────┘  └──────────────────┘
                                    │
-                        ┌──────────┴──────────┐
-                        ▼                     ▼
-                   ┌──────────┐          ┌──────────┐
-                   │  Jikan   │          │   RAWG   │
-                   │ (MAL v4) │          │ (games)  │
-                   └──────────┘          └──────────┘
+                        ┌──────────┴──────────────────┐
+                        ▼             ▼                ▼
+                   ┌──────────┐  ┌──────────┐  ┌──────────┐
+                   │  Jikan   │  │   RAWG   │  │   TMDB   │
+                   │ (MAL v4) │  │ (games)  │  │  (v3)    │
+                   └──────────┘  └──────────┘  └──────────┘
 ```
 
 ## Stack technique
@@ -107,9 +107,12 @@ chetana-dev/
 │   │   ├── health/             # Protected — pushup tracker
 │   │   ├── coffre/             # Protected — GCS file manager
 │   │   ├── chat/               # Protected — chat chet_lys (GCS + Gemini)
-│   │   ├── medialist/          # Protected — proxy chetaku-rs + chat IA
-│   │   │   ├── sync.post.ts
+│   │   ├── medialist/          # Protected — proxy chetaku-rs + enrichissement TMDB
+│   │   │   ├── search.get.ts
+│   │   │   ├── add.post.ts
 │   │   │   ├── update.post.ts
+│   │   │   ├── [id].delete.ts
+│   │   │   ├── detail.get.ts
 │   │   │   └── chat.post.ts
 │   │   └── imagenie/           # Protected — Vertex AI Imagen 3
 │   │       └── generate.post.ts
@@ -280,14 +283,16 @@ Deux niveaux :
 
 ### chetaku-rs (Rust/Axum — Cloud Run)
 
-Service dédié à la médiathèque (animés + jeux), hébergé sur Cloud Run (`europe-west1`).
+Service dédié à la médiathèque (animés + jeux + films + séries), hébergé sur Cloud Run (`europe-west1`).
 
-- **URL** : `https://chetaku-rs-mef67kip3a-ew.a.run.app`
+- **URL** : `https://chetaku-rs-267131866578.europe-west1.run.app`
 - **Auth** : header `x-api-key` sur les endpoints d'écriture
 - **DB** : `media_entries` — table PostgreSQL dans Neon (même cluster)
-- **Sources** : Jikan API v4 (MyAnimeList) + RAWG API v1 (jeux)
+- **Sources** : Jikan API v4 (MyAnimeList) + RAWG API v1 (jeux) + TMDB API v3 (films/séries)
 
 Nuxt appelle chetaku-rs via les proxies `server/api/medialist/` — l'API key n'est jamais exposée au client.
+
+Les métadonnées enrichies (cast, synopsis détaillé, saisons/épisodes) sont fetched directement depuis TMDB par `detail.get.ts` au moment de l'affichage — elles ne sont pas stockées dans `media_entries`.
 
 > Voir [docs/MEDIALIST.md](MEDIALIST.md) et le [README chetaku-rs](https://github.com/chetana/chetaku-rs).
 

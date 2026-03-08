@@ -26,7 +26,9 @@
     "db:seed-blog-coffre": "npx tsx server/db/seed-blog-coffre-photo.ts",
     "db:seed-babelduo": "npx tsx server/db/seed-babelduo.ts",
     "db:seed-skills-new": "npx tsx server/db/seed-skills-new.ts",
-    "db:seed-imagenie": "npx tsx server/db/seed-imagenie.ts"
+    "db:seed-imagenie": "npx tsx server/db/seed-imagenie.ts",
+    "db:seed-medialist": "npx tsx server/db/seed-medialist.ts",
+    "db:seed-blog-medialist": "npx tsx server/db/seed-blog-medialist.ts"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.19.0",

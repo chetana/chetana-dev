@@ -21,8 +21,8 @@ Portfolio dynamique, blog technique et projets personnels de **Chetana YIN** —
 | `/` | Homepage — hero, stats, about, experience timeline, skills, education, contact |
 | `/projects` | Liste des projets personnels |
 | `/projects/health` | Suivi quotidien de pompes (streak, calendrier, validation) |
-| `/projects/medialist` | Médiathèque — animés et jeux avec stats pondérées par note |
-| `/projects/medialist/[slug]` | Détail d'un animé ou jeu + chat IA (Gemini) |
+| `/projects/medialist` | Médiathèque — animés, jeux, films et séries avec stats pondérées par note |
+| `/projects/medialist/[slug]` | Détail d'un animé, jeu, film ou série + chat IA (Gemini) |
 | `/projects/imagichet` | Génération et édition d'images avec Vertex AI Imagen 3 |
 | `/blog` | Articles techniques et retours d'experience |
 | `/blog/[slug]` | Article complet avec rendu markdown et commentaires |
@@ -77,6 +77,8 @@ Toutes les pages sont optimisees pour mobile (320px+) :
 │  /api/messages           /api/medialist/*            │
 │                          /api/imagenie/*             │
 │                                                       │
+│  medialist: search, add, update, delete, detail       │
+│                                                       │
 │              requireAuth() → google-auth-library     │
 └──────┬─────────────────────────┬─────────────────────┘
        │ Drizzle ORM             │ x-api-key
@@ -87,10 +89,10 @@ Toutes les pages sont optimisees pour mobile (320px+) :
 │  (9 tables)  │       │  media_entries table  │
 └──────────────┘       └──────────┬────────────┘
                                   │
-                    ┌─────────────┴──────────────┐
-                    │ Jikan API v4   RAWG API v1  │
-                    │ (MyAnimeList)  (jeux vidéo) │
-                    └────────────────────────────┘
+                    ┌─────────────┴──────────────────────┐
+                    │ Jikan (MAL)  RAWG (games)  TMDB   │
+                    │                  (films/séries)    │
+                    └────────────────────────────────────┘
 ```
 
 > Voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) et [docs/DATABASE.md](docs/DATABASE.md) pour les details.
@@ -131,7 +133,8 @@ npm run dev
 | `GCS_BUCKET_NAME` | Nom du bucket Google Cloud Storage (coffre chet_lys) |
 | `GCS_SERVICE_ACCOUNT_JSON` | JSON stringifie du service account GCS (Storage Object Admin) |
 | `RAWG_API_KEY` | Clé API rawg.io (medialist — sync jeux) |
-| `CHETAKU_API_URL` | URL de chetaku-rs (défaut: `https://chetaku-rs-mef67kip3a-ew.a.run.app`) |
+| `TMDB_API_KEY` | Clé API themoviedb.org (medialist — sync films/séries) |
+| `CHETAKU_API_URL` | URL de chetaku-rs (défaut: `https://chetaku-rs-267131866578.europe-west1.run.app`) |
 | `CHETAKU_API_KEY` | Clé secrète partagée avec chetaku-rs |
 | `MEDIALIST_OWNER_EMAIL` | Email du propriétaire (seul autorisé à ajouter/éditer) |
 | `VERTEX_PROJECT_ID` | Projet GCP pour Vertex AI Imagen (imagichet) |
@@ -164,8 +167,8 @@ app/
     projects/
       health.vue         # Health tracker (pompes)
       medialist/
-        index.vue        # Médiathèque + section profil stats
-        [slug].vue       # Detail animé/jeu + chat IA Gemini
+        index.vue        # Médiathèque + section profil stats (4 types)
+        [slug].vue       # Detail animé/jeu/film/série + chat IA Gemini
       imagichet.vue      # Génération d'images Imagen 3
 server/
   api/                   # Routes REST
@@ -173,9 +176,12 @@ server/
     coffre/              # Endpoints proteges (Google OAuth) — coffre a souvenirs chet_lys
     chat/                # Chat chet_lys (messages GCS + traductions Gemini)
     medialist/
-      sync.post.ts       # Proxy POST /sync vers chetaku-rs (protege, owner only)
+      search.get.ts      # Recherche TMDB/Jikan/RAWG par titre (4 types)
+      add.post.ts        # Ajout d'une entrée via sync chetaku-rs (protege, owner only)
       update.post.ts     # Proxy PATCH /media/{id} vers chetaku-rs (protege)
-      chat.post.ts       # Chat IA sur un animé/jeu (Gemini + Google Search)
+      [id].delete.ts     # Suppression d'une entrée via chetaku-rs (protege, owner only)
+      detail.get.ts      # Métadonnées enrichies (cast, synopsis, saisons) depuis TMDB
+      chat.post.ts       # Chat IA sur un animé/jeu/film/série (Gemini + Google Search)
     imagenie/
       generate.post.ts   # Génération image Imagen 3 (generate, bgswap)
   middleware/
@@ -244,19 +250,24 @@ Requierent `Authorization: Bearer <google_id_token>` :
 | `/api/chat/messages?y=&m=&d=&id=` | DELETE | Supprime un message (auteur uniquement) |
 | `/api/chat/transcribe` | POST | Transcrit un audio base64 → texte + 3 traductions (Gemini) |
 | `/api/chat/suggest` | POST | Suggestion/correction + traductions + lecon grammaticale (Gemini) |
-| `/api/medialist/sync` | POST | Sync anime/game vers chetaku-rs (owner only) |
+| `/api/medialist/search` | GET | Recherche par titre sur Jikan/RAWG/TMDB (4 types) |
+| `/api/medialist/add` | POST | Ajoute une entrée via sync chetaku-rs (owner only) |
 | `/api/medialist/update` | POST | Met à jour une entrée dans chetaku-rs (owner only) |
-| `/api/medialist/chat` | POST | Chat IA Gemini sur un animé/jeu avec Google Search |
+| `/api/medialist/[id]` | DELETE | Supprime une entrée dans chetaku-rs (owner only) |
+| `/api/medialist/detail` | GET | Métadonnées enrichies TMDB (cast, saisons, synopsis) |
+| `/api/medialist/chat` | POST | Chat IA Gemini sur un animé/jeu/film/série avec Google Search |
 | `/api/imagenie/generate` | POST | Génère ou édite une image via Vertex AI Imagen 3 |
 
 ## Médiathèque (medialist)
 
-Suivi d'animés et de jeux vidéo consommant l'API [chetaku-rs](https://github.com/chetana/chetaku-rs).
+Suivi d'animés, jeux vidéo, films et séries consommant l'API [chetaku-rs](https://github.com/chetana/chetaku-rs).
 
-- **Liste** filtrée par type/statut, ajout et édition (owner only via Google OAuth)
-- **Sync auto** depuis Jikan (MyAnimeList) et RAWG — métadonnées, cover, genres, studio
-- **Section Profil** : genres pondérés par `love_score = count × avg_score`, distribution des notes, statuts, studios/devs favoris
-- **Page détail** : chat IA contextuel (Gemini + Google Search grounding)
+- **Liste** filtrée par type/statut, ajout et suppression (owner only via Google OAuth)
+- **Sync auto** depuis Jikan (MyAnimeList), RAWG (jeux) et TMDB (films/séries) — métadonnées, cover, genres, créateur
+- **Recherche** par titre sur Jikan/RAWG/TMDB avant ajout
+- **Section Profil** : genres pondérés par `love_score = count × avg_score`, distribution des notes par type, statuts, studios/réalisateurs/créateurs favoris
+- **Page détail** : cast (top 10 photos circulaires), saisons/épisodes (séries/anime), synopsis, score TMDB, runtime/saisons en chips, badge "vous êtes ici"
+- **Suppression** d'entrée depuis la liste (bouton hover, owner only)
 
 > Voir [docs/MEDIALIST.md](docs/MEDIALIST.md) pour les détails techniques.
 
