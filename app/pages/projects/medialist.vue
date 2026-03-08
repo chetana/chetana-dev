@@ -67,6 +67,14 @@ const STATUS_LABEL: Record<string, string> = {
   dropped: 'Abandonné',
 }
 
+function scoreColor(score: number): string {
+  if (score >= 9) return '#22c55e'
+  if (score >= 7) return '#10b981'
+  if (score >= 5) return '#f59e0b'
+  if (score >= 3) return '#f97316'
+  return '#ef4444'
+}
+
 const STATUS_COLOR: Record<string, string> = {
   completed: 'green',
   watching: 'blue',
@@ -322,17 +330,42 @@ useSeoMeta({
           <div v-if="entry.genres?.length" class="card-genres">
             <span v-for="g in entry.genres" :key="g" class="genre-tag">{{ g }}</span>
           </div>
+
+          <!-- Episodes bar (anime) -->
+          <div v-if="entry.media_type === 'anime' && entry.episodes_total" class="progress-block">
+            <div class="progress-label">
+              <span>Épisodes</span>
+              <span class="progress-value">{{ entry.episodes_watched ?? 0 }}/{{ entry.episodes_total }}</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" :style="{
+                width: `${Math.min(100, ((entry.episodes_watched ?? 0) / entry.episodes_total) * 100)}%`,
+                background: 'var(--gradient)'
+              }"></div>
+            </div>
+          </div>
+
+          <!-- Score bar -->
+          <div v-if="entry.score" class="progress-block">
+            <div class="progress-label">
+              <span>Note</span>
+              <span class="progress-value" :style="{ color: scoreColor(entry.score) }">{{ entry.score }}/10</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" :style="{
+                width: `${entry.score * 10}%`,
+                background: scoreColor(entry.score)
+              }"></div>
+            </div>
+          </div>
+
           <div class="card-footer">
             <span class="status-badge" :class="STATUS_COLOR[entry.status] ?? 'gray'">
               {{ STATUS_LABEL[entry.status] ?? entry.status }}
             </span>
-            <span v-if="entry.media_type === 'anime' && entry.episodes_total" class="extra-info">
-              {{ entry.episodes_watched ?? 0 }}/{{ entry.episodes_total }} ep
-            </span>
             <span v-if="entry.media_type === 'game' && entry.platform" class="extra-info">
               {{ entry.platform }}
             </span>
-            <span v-if="entry.score" class="score-badge">★ {{ entry.score }}/10</span>
             <button v-if="isOwner" class="edit-btn" @click.stop="openEdit(entry)" title="Modifier">✏️</button>
           </div>
         </div>
@@ -649,8 +682,8 @@ useSeoMeta({
 /* ── Media grid ── */
 .media-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
 }
 
 .media-card {
@@ -672,7 +705,7 @@ useSeoMeta({
 
 .card-cover {
   position: relative;
-  height: 240px;
+  height: 280px;
   overflow: hidden;
   background: var(--bg-card-hover);
 }
@@ -760,13 +793,39 @@ useSeoMeta({
 
 .extra-info { font-size: 0.75rem; color: var(--text-dim); }
 
-.score-badge {
+/* ── Progress bars ── */
+.progress-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 0.72rem;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.progress-value {
   font-weight: 700;
-  color: var(--accent);
-  background: rgba(196, 150, 60, 0.12);
-  padding: 0.15rem 0.5rem;
-  border-radius: 6px;
+  font-size: 0.75rem;
+}
+
+.progress-track {
+  height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
 }
 
 .edit-btn {
