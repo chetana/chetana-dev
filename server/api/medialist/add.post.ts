@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
   const payload: Record<string, unknown> = { [idKey]: [body.id], status: body.status }
   if (body.type === 'game') payload.platform = body.platform ?? null
 
-  const result = await $fetch(`${config.chetakuApiUrl}${endpoint}`, {
+  const result = await $fetch<{ synced: number; total: number; error?: string }>(`${config.chetakuApiUrl}${endpoint}`, {
     method: 'POST',
     headers: {
       'x-api-key': config.chetakuApiKey,
@@ -40,6 +40,13 @@ export default defineEventHandler(async (event) => {
     },
     body: payload,
   })
+
+  if (result.synced === 0 && result.total > 0) {
+    throw createError({
+      statusCode: 502,
+      statusMessage: result.error ?? `Sync failed: 0/${result.total} synced (external API error)`,
+    })
+  }
 
   return result
 })
