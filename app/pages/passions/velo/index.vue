@@ -190,8 +190,10 @@ interface Activity {
 }
 
 // ── Data ───────────────────────────────────────────────────────────────────
-const { data: stats, pending: statsPending } = useFetch<CyclingStats>(`${API_BASE}/cycling/stats`)
-const { data: activities, pending: activitiesPending } = useFetch<Activity[]>(`${API_BASE}/cycling/activities`)
+const CYCLING_TYPES = ['Ride', 'VirtualRide', 'MountainBikeRide', 'GravelRide', 'EBikeRide', 'Velomobile']
+
+const { data: stats, pending: statsPending } = useFetch<CyclingStats>(`${API_BASE}/strava/stats?sport=cycling`)
+const { data: activities, pending: activitiesPending } = useFetch<Activity[]>(`${API_BASE}/strava/activities?sport=cycling`)
 
 // ── Accordéon auto-ouverture ────────────────────────────────────────────────
 const statsOpen = ref(false)
