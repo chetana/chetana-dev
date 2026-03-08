@@ -75,7 +75,7 @@ const config = useRuntimeConfig()
 
 // ── List & filters ──────────────────────────────────────────────────────────
 const typeFilter = ref<'' | 'anime' | 'game' | 'movie' | 'series'>('')
-const statusFilter = ref<'' | 'completed' | 'ongoing' | 'planned'>('')
+const statusFilter = ref<'' | 'completed' | 'ongoing' | 'planned' | 'dropped'>('')
 
 const { data: allMedia, pending, refresh: refreshList } = useFetch<MediaEntry[]>(`${API_BASE}/media`)
 const { data: stats, refresh: refreshStats } = useFetch<Stats>(`${API_BASE}/stats`)
@@ -86,6 +86,7 @@ const filtered = computed(() => {
     if (typeFilter.value && m.media_type !== typeFilter.value) return false
     if (statusFilter.value === 'ongoing') return ['watching', 'playing'].includes(m.status)
     if (statusFilter.value === 'planned') return ['planned', 'plan_to_watch', 'plan_to_play'].includes(m.status)
+    if (statusFilter.value === 'dropped') return m.status === 'dropped'
     if (statusFilter.value && m.status !== statusFilter.value) return false
     return true
   })
@@ -538,6 +539,7 @@ useSeoMeta({
         <button :class="['filter-btn', statusFilter === 'completed' && 'active']" @click="statusFilter = 'completed'">Terminés</button>
         <button :class="['filter-btn', statusFilter === 'ongoing' && 'active']" @click="statusFilter = 'ongoing'">En cours</button>
         <button :class="['filter-btn', statusFilter === 'planned' && 'active']" @click="statusFilter = 'planned'">Prévus</button>
+        <button :class="['filter-btn', statusFilter === 'dropped' && 'active']" @click="statusFilter = 'dropped'">Abandonnés</button>
       </div>
     </div>
 
