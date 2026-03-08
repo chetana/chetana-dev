@@ -92,10 +92,15 @@ export default defineNuxtConfig({
     cronSecret: process.env.CRON_SECRET || '',
     gcsBucketName: process.env.GCS_BUCKET_NAME || '',
     gcsServiceAccountJson: process.env.GCS_SERVICE_ACCOUNT_JSON || '',
+    rawgApiKey: process.env.RAWG_API_KEY || '',
+    chetakuApiUrl: process.env.CHETAKU_API_URL || 'https://chetaku-rs-mef67kip3a-ew.a.run.app',
+    chetakuApiKey: process.env.CHETAKU_API_KEY || '',
+    medialistOwnerEmail: process.env.MEDIALIST_OWNER_EMAIL || '',
     public: {
       vapidPublicKey: process.env.VAPID_PUBLIC_KEY || '',
       commitSha: (process.env.VERCEL_GIT_COMMIT_SHA || 'local').slice(0, 7),
-      googleClientId: process.env.GOOGLE_CLIENT_ID || ''
+      googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+      medialistOwnerEmail: process.env.MEDIALIST_OWNER_EMAIL || ''
     }
   }
 })
