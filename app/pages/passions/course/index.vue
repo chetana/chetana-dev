@@ -132,7 +132,7 @@
       </div>
 
       <div v-else-if="activities?.length" class="rides-list">
-        <div v-for="a in activities" :key="a.id" class="ride-card">
+        <div v-for="a in displayed" :key="a.id" class="ride-card">
           <div class="ride-header">
             <span class="ride-card-name">{{ a.name }}</span>
             <span class="ride-card-date">{{ formatDate(a.start_date) }}</span>
@@ -151,7 +151,13 @@
         </div>
       </div>
 
-      <div v-else class="empty-state">
+      <div v-if="hasMore" class="load-more">
+        <button class="load-more-btn" @click="displayedCount += PAGE_SIZE">
+          Voir plus <span class="load-more-count">({{ (activities?.length ?? 0) - displayedCount }} restantes)</span>
+        </button>
+      </div>
+
+      <div v-else-if="!activities?.length" class="empty-state">
         <p>Aucune sortie enregistrée pour l'instant.</p>
       </div>
     </div>
@@ -192,6 +198,11 @@ const statsOpen = ref(false)
 watch(stats, (val) => {
   if (val && !statsOpen.value) setTimeout(() => { statsOpen.value = true }, 150)
 })
+
+const PAGE_SIZE = 20
+const displayedCount = ref(PAGE_SIZE)
+const displayed = computed(() => activities.value?.slice(0, displayedCount.value) ?? [])
+const hasMore = computed(() => displayedCount.value < (activities.value?.length ?? 0))
 
 const SPORT_LABEL: Record<string, string> = {
   Run: 'Route',
@@ -540,4 +551,19 @@ function formatMonth(ym: string) {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .empty-state { color: var(--text-dim); padding: 2rem 0; font-size: 0.9rem; }
+
+.load-more { display: flex; justify-content: center; padding: 1.5rem 0 0.5rem; }
+.load-more-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.88rem;
+  padding: 0.6rem 1.5rem;
+  transition: border-color 0.2s, color 0.2s;
+}
+.load-more-btn:hover { border-color: #f97316; color: var(--text); }
+.load-more-count { color: var(--text-dim); }
 </style>

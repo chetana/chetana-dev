@@ -163,6 +163,13 @@ const creatorsTab = ref<'anime' | 'game' | 'movie' | 'series'>('anime')
 const scoreDistTab = ref<'anime' | 'game' | 'movie' | 'series'>('anime')
 const statsOpen = ref(false)
 
+// ── Pagination front-end ─────────────────────────────────────────────────────
+const PAGE_SIZE = 30
+const displayedCount = ref(PAGE_SIZE)
+const displayed = computed(() => filtered.value.slice(0, displayedCount.value))
+const hasMore = computed(() => displayedCount.value < filtered.value.length)
+watch([typeFilter, statusFilter, titleFilter], () => { displayedCount.value = PAGE_SIZE })
+
 // Auto-ouvre avec animation une fois les stats chargées
 watch(stats, (val) => {
   if (val && !statsOpen.value) {
@@ -587,7 +594,7 @@ useSeoMeta({
     <!-- Grid -->
     <div v-else-if="filtered.length" class="media-grid">
       <NuxtLink
-        v-for="entry in filtered"
+        v-for="entry in displayed"
         :key="entry.id"
         :to="`/passions/medialist/${entry.media_type}-${entry.external_id}`"
         class="media-card"
@@ -650,6 +657,13 @@ useSeoMeta({
           </div>
         </div>
       </NuxtLink>
+    </div>
+
+    <!-- Load more -->
+    <div v-if="hasMore" class="load-more">
+      <button class="load-more-btn" @click="displayedCount += PAGE_SIZE">
+        Voir plus <span class="load-more-count">({{ filtered.length - displayedCount }} restants)</span>
+      </button>
     </div>
 
     <!-- Empty -->
@@ -1425,6 +1439,21 @@ useSeoMeta({
 .field-hint { font-weight: 400; color: var(--text-dim); margin-left: 0.3rem; }
 
 .empty-state { padding: 4rem 0; text-align: center; color: var(--text-dim); font-size: 1rem; }
+
+.load-more { display: flex; justify-content: center; padding: 2rem 0 1rem; }
+.load-more-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.88rem;
+  padding: 0.6rem 1.5rem;
+  transition: border-color 0.2s, color 0.2s;
+}
+.load-more-btn:hover { border-color: var(--accent); color: var(--text); }
+.load-more-count { color: var(--text-dim); }
 
 /* ── FAB ── */
 .fab {
