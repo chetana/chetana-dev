@@ -782,7 +782,7 @@ useSeoMeta({
           <!-- Search input -->
           <div class="search-box">
             <input
-              v-model="titleFilter"
+              v-model="searchQuery"
               class="search-input"
               :placeholder="{ anime: 'Rechercher un animé...', game: 'Rechercher un jeu...', movie: 'Rechercher un film...', series: 'Rechercher une série...' }[searchType]"
               autofocus
