@@ -90,6 +90,15 @@ const STATUS_COLOR: Record<string, string> = {
   dropped: 'orange',
 }
 
+function renderMarkdown(text: string): string {
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    .replace(/\n/g, '<br>')
+}
+
 function scoreColor(score: number): string {
   if (score >= 9) return '#22c55e'
   if (score >= 7) return '#10b981'
@@ -508,7 +517,7 @@ async function sendChatMessage() {
             class="chat-message"
             :class="msg.role"
           >
-            <div class="message-bubble">{{ msg.content }}</div>
+            <div class="message-bubble" v-html="msg.role === 'model' ? renderMarkdown(msg.content) : msg.content" />
             <div v-if="msg.sources?.length" class="message-sources">
               <span class="sources-label">Sources :</span>
               <a
@@ -1131,11 +1140,17 @@ async function sendChatMessage() {
   border-radius: 16px;
   font-size: 0.9rem;
   line-height: 1.65;
-  white-space: pre-wrap;
   word-break: break-word;
 }
 .chat-message.user  .message-bubble { background: var(--gradient); color: #fff; border-bottom-right-radius: 4px; }
 .chat-message.model .message-bubble { background: var(--bg-card-hover); color: var(--text-muted); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.chat-message.model .message-bubble code {
+  background: rgba(0,0,0,0.15);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-family: monospace;
+}
 
 /* Typing dots */
 .message-bubble.typing {
