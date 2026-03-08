@@ -192,6 +192,72 @@ export interface TranscriptionResult {
   kh: string
 }
 
+// ── Chat multi-tour avec Google Search grounding ──────────────────────────────
+export interface ChatMessage {
+  role: 'user' | 'model'
+  content: string
+}
+
+export interface ChatResult {
+  reply: string
+  sources?: Array<{ title: string; url: string }>
+}
+
+export async function geminiChatWithSearch(
+  messages: ChatMessage[],
+  systemInstruction: string,
+): Promise<ChatResult> {
+  const token = await getAccessToken()
+  const project = process.env.VERTEX_PROJECT_ID ?? 'cykt-399216'
+  const location = process.env.VERTEX_LOCATION ?? 'us-central1'
+  const model = 'gemini-2.5-flash'
+
+  const contents = messages.map(m => ({ role: m.role, parts: [{ text: m.content }] }))
+
+  const makeBody = (withSearch: boolean) => ({
+    systemInstruction: { parts: [{ text: systemInstruction }] },
+    contents,
+    ...(withSearch ? { tools: [{ googleSearch: {} }] } : {}),
+    generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
+  })
+
+  const endpoint = `https://${location}-aiplatform.googleapis.com/v1beta/projects/${project}/locations/${location}/publishers/google/models/${model}:generateContent`
+
+  for (const withSearch of [true, false]) {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(makeBody(withSearch)),
+    })
+    const data = await res.json() as any
+
+    if (!res.ok) {
+      if (withSearch) {
+        console.warn(`[geminiChat] search failed (${res.status}), retrying without`)
+        continue
+      }
+      throw new Error(`Gemini ${res.status}: ${data?.error?.message}`)
+    }
+
+    const parts: any[] = data?.candidates?.[0]?.content?.parts ?? []
+    const reply = parts.filter(p => !p.thought).map(p => p.text ?? '').join('').trim()
+
+    if (!reply && withSearch) {
+      console.warn('[geminiChat] empty reply with search, retrying without')
+      continue
+    }
+
+    const chunks: any[] = data?.candidates?.[0]?.groundingMetadata?.groundingChunks ?? []
+    const sources = chunks
+      .filter(c => c.web?.title && c.web?.uri)
+      .map(c => ({ title: c.web.title as string, url: c.web.uri as string }))
+
+    return { reply: reply || '…', sources: sources.length ? sources : undefined }
+  }
+
+  throw new Error('Chat failed after all attempts')
+}
+
 // Transcrit un message audio et traduit en 3 langues en un seul appel Gemini
 export async function geminiTranscribeAndTranslate(audioBase64: string, mimeType: string, author?: string): Promise<TranscriptionResult> {
   const prompt = `Transcris EXACTEMENT ce qui est dit dans ce message vocal, mot pour mot, sans rien ajouter ni inventer.

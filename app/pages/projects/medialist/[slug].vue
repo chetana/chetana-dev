@@ -152,6 +152,83 @@ const lightboxImg = ref<string | null>(null)
 // SEO
 const title = computed(() => entry.value ? `${entry.value.title} · Médiathèque` : 'Médiathèque')
 useSeoMeta({ title })
+
+// ── Chat IA ──────────────────────────────────────────────────────────────────
+interface ChatMessageUI {
+  role: 'user' | 'model'
+  content: string
+  sources?: Array<{ title: string; url: string }>
+}
+
+const chatMessages = ref<ChatMessageUI[]>([])
+const chatInput = ref('')
+const chatLoading = ref(false)
+const chatScrollRef = ref<HTMLElement | null>(null)
+
+const suggestedQuestions = computed(() => {
+  if (!entry.value) return []
+  return detail.value?.type === 'anime'
+    ? ['Quels sont les meilleurs arcs ?', 'Qui sont les personnages principaux ?', 'Y a-t-il une suite ?', 'Que regarder ensuite ?']
+    : ['Combien de temps pour finir ?', 'Est-ce que le jeu est difficile ?', 'Y a-t-il des DLC ?', 'Que jouer ensuite ?']
+})
+
+function buildMediaContext() {
+  if (!detail.value || !entry.value) return null
+  const e = entry.value
+  const d = detail.value
+  return {
+    title: e.title,
+    type: e.media_type,
+    year: e.year,
+    genres: e.genres,
+    synopsis: d.type === 'anime' ? (d as any).synopsis : (d as any).description,
+    status: e.status,
+    score: e.score,
+    episodes_watched: e.episodes_watched,
+    episodes_total: e.episodes_total,
+    mal_score: d.type === 'anime' ? (d as any).mal_score : null,
+    metacritic: d.type === 'game' ? (d as any).metacritic : null,
+    platform: e.platform,
+    studios: d.type === 'anime' ? (d as any).studios : null,
+    developers: d.type === 'game' ? (d as any).developers : null,
+  }
+}
+
+async function askSuggestion(q: string) {
+  chatInput.value = q
+  await sendChatMessage()
+}
+
+async function sendChatMessage() {
+  const text = chatInput.value.trim()
+  if (!text || chatLoading.value) return
+  chatInput.value = ''
+  chatMessages.value.push({ role: 'user', content: text })
+  chatLoading.value = true
+
+  await nextTick()
+  chatScrollRef.value?.scrollTo({ top: chatScrollRef.value.scrollHeight, behavior: 'smooth' })
+
+  try {
+    const result = await $fetch<{ reply: string; sources?: Array<{ title: string; url: string }> }>(
+      '/api/medialist/chat',
+      {
+        method: 'POST',
+        body: {
+          messages: chatMessages.value.map(m => ({ role: m.role, content: m.content })),
+          mediaContext: buildMediaContext(),
+        },
+      }
+    )
+    chatMessages.value.push({ role: 'model', content: result.reply, sources: result.sources })
+  } catch {
+    chatMessages.value.push({ role: 'model', content: '❌ Une erreur est survenue, réessaie dans un instant.' })
+  } finally {
+    chatLoading.value = false
+    await nextTick()
+    chatScrollRef.value?.scrollTo({ top: chatScrollRef.value.scrollHeight, behavior: 'smooth' })
+  }
+}
 </script>
 
 <template>
@@ -407,6 +484,68 @@ useSeoMeta({ title })
             @click="lightboxImg = src"
           />
         </div>
+      </section>
+
+      <!-- ── Chat IA ── -->
+      <section v-if="entry" class="content-section">
+        <h2 class="section-heading">💬 Demande à l'IA</h2>
+
+        <!-- Suggested questions (only before first message) -->
+        <div v-if="!chatMessages.length" class="chat-suggestions">
+          <button
+            v-for="q in suggestedQuestions"
+            :key="q"
+            class="suggestion-chip"
+            @click="askSuggestion(q)"
+          >{{ q }}</button>
+        </div>
+
+        <!-- Messages -->
+        <div v-if="chatMessages.length" ref="chatScrollRef" class="chat-messages">
+          <div
+            v-for="(msg, i) in chatMessages"
+            :key="i"
+            class="chat-message"
+            :class="msg.role"
+          >
+            <div class="message-bubble">{{ msg.content }}</div>
+            <div v-if="msg.sources?.length" class="message-sources">
+              <span class="sources-label">Sources :</span>
+              <a
+                v-for="s in msg.sources.slice(0, 4)"
+                :key="s.url"
+                :href="s.url"
+                target="_blank"
+                rel="noopener"
+                class="source-chip"
+              >{{ s.title }}</a>
+            </div>
+          </div>
+          <!-- Typing indicator -->
+          <div v-if="chatLoading" class="chat-message model">
+            <div class="message-bubble typing">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input -->
+        <div class="chat-input-row">
+          <input
+            v-model="chatInput"
+            class="chat-input"
+            :placeholder="`Pose une question sur ${entry?.title ?? 'ce média'}…`"
+            :disabled="chatLoading"
+            @keydown.enter.prevent="sendChatMessage"
+          />
+          <button
+            class="chat-send-btn"
+            :disabled="chatLoading || !chatInput.trim()"
+            @click="sendChatMessage"
+            title="Envoyer"
+          >↑</button>
+        </div>
+        <p v-if="!chatMessages.length" class="chat-hint">Gemini 2.5 Flash · recherche web en temps réel</p>
       </section>
 
       <!-- Lightbox -->
@@ -946,6 +1085,143 @@ useSeoMeta({ title })
 /* Modal transition (lightbox) */
 .modal-enter-active, .modal-leave-active { transition: opacity 0.2s; }
 .modal-enter-from, .modal-leave-to { opacity: 0; }
+
+/* ── Chat IA ── */
+.chat-suggestions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.suggestion-chip {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.suggestion-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+.chat-messages {
+  max-height: 440px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 0.75rem;
+  scroll-behavior: smooth;
+}
+
+.chat-message { display: flex; flex-direction: column; gap: 0.35rem; }
+.chat-message.user  { align-items: flex-end; }
+.chat-message.model { align-items: flex-start; }
+
+.message-bubble {
+  max-width: 78%;
+  padding: 0.65rem 1rem;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.chat-message.user  .message-bubble { background: var(--gradient); color: #fff; border-bottom-right-radius: 4px; }
+.chat-message.model .message-bubble { background: var(--bg-card-hover); color: var(--text-muted); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+
+/* Typing dots */
+.message-bubble.typing {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  min-width: 60px;
+}
+.message-bubble.typing span {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  animation: typing-bounce 1.2s infinite ease-in-out;
+}
+.message-bubble.typing span:nth-child(2) { animation-delay: 0.2s; }
+.message-bubble.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing-bounce {
+  0%, 80%, 100% { transform: scale(0.8); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.message-sources {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 0 0.25rem;
+  max-width: 78%;
+}
+.sources-label { font-size: 0.68rem; color: var(--text-dim); font-weight: 500; }
+.source-chip {
+  font-size: 0.68rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(196, 150, 60, 0.1);
+  color: var(--accent-light);
+  border: 1px solid rgba(196, 150, 60, 0.2);
+  text-decoration: none;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  transition: opacity 0.15s;
+}
+.source-chip:hover { opacity: 0.75; }
+
+.chat-input-row { display: flex; gap: 0.5rem; align-items: center; }
+
+.chat-input {
+  flex: 1;
+  padding: 0.7rem 1.1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 24px;
+  background: var(--bg-card);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.chat-input:focus { border-color: var(--accent); }
+.chat-input::placeholder { color: var(--text-dim); }
+.chat-input:disabled { opacity: 0.6; }
+
+.chat-send-btn {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gradient);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  box-shadow: var(--shadow-accent);
+  flex-shrink: 0;
+}
+.chat-send-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+.chat-send-btn:not(:disabled):hover { transform: scale(1.08); }
+
+.chat-hint { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.5rem; }
 
 /* ── Responsive ── */
 @media (max-width: 640px) {
