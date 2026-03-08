@@ -89,6 +89,53 @@ onMounted(() => {
   document.head.appendChild(script)
 })
 
+// ── Edit modal ───────────────────────────────────────────────────────────────
+const editEntry = ref<MediaEntry | null>(null)
+const editStatus = ref('')
+const editPlatform = ref('')
+const editEpisodesWatched = ref<number | null>(null)
+const editScore = ref<number | null>(null)
+const saving = ref(false)
+const editError = ref('')
+
+function openEdit(entry: MediaEntry) {
+  editEntry.value = entry
+  editStatus.value = entry.status
+  editPlatform.value = entry.platform ?? ''
+  editEpisodesWatched.value = entry.episodes_watched
+  editScore.value = entry.score
+  editError.value = ''
+}
+
+function closeEdit() {
+  editEntry.value = null
+}
+
+async function saveEdit() {
+  if (!editEntry.value) return
+  saving.value = true
+  editError.value = ''
+  try {
+    const body: Record<string, unknown> = { status: editStatus.value }
+    if (editEntry.value.media_type === 'game') body.platform = editPlatform.value || null
+    if (editEntry.value.media_type === 'anime') body.episodes_watched = editEpisodesWatched.value
+    if (editScore.value !== null) body.score = editScore.value
+
+    await $fetch(`/api/medialist/${editEntry.value.id}`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+      body,
+    })
+    closeEdit()
+    await refreshList()
+    await refreshStats()
+  } catch (e: any) {
+    editError.value = e?.data?.statusMessage ?? 'Erreur lors de la sauvegarde'
+  } finally {
+    saving.value = false
+  }
+}
+
 // ── Search modal ─────────────────────────────────────────────────────────────
 const showModal = ref(false)
 const searchType = ref<'anime' | 'game'>('anime')
@@ -285,6 +332,7 @@ useSeoMeta({
             <span v-if="entry.media_type === 'game' && entry.platform" class="extra-info">
               {{ entry.platform }}
             </span>
+            <button v-if="isOwner" class="edit-btn" @click.stop="openEdit(entry)" title="Modifier">✏️</button>
           </div>
         </div>
       </div>
@@ -301,7 +349,88 @@ useSeoMeta({
     <!-- Login hint for non-authenticated owner -->
     <div v-if="!isAuthenticated" ref="googleBtnRef" class="google-btn-hidden"></div>
 
-    <!-- ── Modal ── -->
+    <!-- ── Edit modal ── -->
+    <Transition name="modal">
+      <div v-if="editEntry" class="modal-overlay" @click.self="closeEdit">
+        <div class="modal">
+          <div class="modal-header">
+            <h2 class="modal-title">Modifier l'entrée</h2>
+            <button class="modal-close" @click="closeEdit">✕</button>
+          </div>
+
+          <!-- Entry recap -->
+          <div class="confirm-result">
+            <img v-if="editEntry.cover_url" :src="editEntry.cover_url" :alt="editEntry.title" class="confirm-cover" />
+            <div class="cover-placeholder-sm" v-else>{{ editEntry.media_type === 'anime' ? '🎌' : '🎮' }}</div>
+            <div class="confirm-info">
+              <p class="confirm-title">{{ editEntry.title }}</p>
+              <p v-if="editEntry.title_original" class="confirm-meta">{{ editEntry.title_original }}</p>
+              <p class="confirm-meta">{{ editEntry.year }}</p>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="field-row">
+            <label class="field-label">Statut</label>
+            <div class="status-options">
+              <button
+                v-for="s in (editEntry.media_type === 'anime' ? ANIME_STATUSES : GAME_STATUSES)"
+                :key="s.value"
+                :class="['status-option', editStatus === s.value && 'active']"
+                @click="editStatus = s.value"
+              >{{ s.label }}</button>
+            </div>
+          </div>
+
+          <!-- Episodes watched (anime only) -->
+          <div v-if="editEntry.media_type === 'anime'" class="field-row">
+            <label class="field-label">
+              Épisodes vus
+              <span v-if="editEntry.episodes_total" class="field-hint">/ {{ editEntry.episodes_total }}</span>
+            </label>
+            <input
+              v-model.number="editEpisodesWatched"
+              type="number"
+              min="0"
+              :max="editEntry.episodes_total ?? undefined"
+              class="platform-input"
+              placeholder="0"
+            />
+          </div>
+
+          <!-- Platform (game only) -->
+          <div v-if="editEntry.media_type === 'game'" class="field-row">
+            <label class="field-label">Plateforme</label>
+            <input v-model="editPlatform" class="platform-input" placeholder="PC, PS5, Switch..." />
+          </div>
+
+          <!-- Score -->
+          <div class="field-row">
+            <label class="field-label">Score <span class="field-hint">(1-10, optionnel)</span></label>
+            <input
+              v-model.number="editScore"
+              type="number"
+              min="1"
+              max="10"
+              class="platform-input"
+              placeholder="—"
+            />
+          </div>
+
+          <div v-if="editError" class="add-error">{{ editError }}</div>
+
+          <div class="confirm-actions">
+            <button class="btn-cancel" @click="closeEdit">Annuler</button>
+            <button class="btn-confirm" :disabled="saving" @click="saveEdit">
+              <span v-if="saving" class="btn-spinner"></span>
+              {{ saving ? 'Sauvegarde...' : 'Sauvegarder' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- ── Search modal ── -->
     <Transition name="modal">
       <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
         <div class="modal">
@@ -629,6 +758,22 @@ useSeoMeta({
 .status-badge.gray   { background: rgba(107, 114, 128, 0.15); color: #6b7280; }
 
 .extra-info { font-size: 0.75rem; color: var(--text-dim); }
+
+.edit-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  opacity: 0.4;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  transition: opacity 0.15s;
+  line-height: 1;
+}
+.media-card:hover .edit-btn { opacity: 1; }
+
+.field-hint { font-weight: 400; color: var(--text-dim); margin-left: 0.3rem; }
 
 .empty-state { padding: 4rem 0; text-align: center; color: var(--text-dim); font-size: 1rem; }
 
