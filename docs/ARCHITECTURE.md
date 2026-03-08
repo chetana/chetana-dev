@@ -94,10 +94,12 @@ chetana-dev/
 │   │   ├── blog/
 │   │   ├── projects/
 │   │   │   ├── health.vue
-│   │   │   ├── medialist/
-│   │   │   │   ├── index.vue   # Liste + section profil stats
-│   │   │   │   └── [slug].vue  # Détail + chat IA Gemini
 │   │   │   └── imagichet.vue   # Génération images Imagen 3
+│   │   ├── passions/
+│   │   │   ├── index.vue       # Cartes TCG interactives (Médiathèque, Vélo, Voyage)
+│   │   │   └── medialist/
+│   │   │       ├── index.vue   # Liste + section profil stats
+│   │   │       └── [slug].vue  # Détail + chat IA Gemini
 │   │   └── ...
 │   ├── components/             # Vue components (auto-imported)
 │   ├── composables/            # Composables (auto-imported)
@@ -230,6 +232,71 @@ server/
 
 ---
 
+## Section Passions (`/passions`)
+
+Page de loisirs personnels avec des cartes TCG interactives, accessible depuis la navigation principale (lien "Passions" dans `Nav.vue`, clé i18n `nav.passions`).
+
+### Cartes TCG
+
+4 cartes affichées en grille desktop / carousel mobile avec scroll-snap :
+
+| Carte | Statut | Route | Accent |
+|---|---|---|---|
+| Médiathèque | Live | `/passions/medialist` | violet |
+| Vélo | Live | `/passions/velo` | bleu |
+| Natation | Live | `/passions/natation` | cyan |
+| Course | Live | `/passions/course` | orange |
+| Voyage | Bientôt | — | vert |
+
+### Effet interactif desktop
+
+- `mousemove` → `perspective(800px) rotateX/rotateY` (effet tilt 3D)
+- Shine radial positionné dynamiquement selon la position de la souris dans la carte
+
+### Scroll-snap mobile
+
+```css
+.cards-wrapper {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+.card {
+  scroll-snap-align: center;
+}
+```
+
+Chaque carte occupe 100% de la largeur. Le swipe horizontal ne bloque pas le scroll vertical natif.
+
+### Entrance animations
+
+`IntersectionObserver` sur chaque carte : à chaque fois qu'une carte entre dans le viewport (snap), une animation tilt-in sinusoïdale (~800ms) est déclenchée.
+
+Dots de navigation cliquables en bas de l'écran — `activeIdx` est mis à jour réactivement via l'observer.
+
+### Routing médiathèque
+
+La médiathèque a été déplacée de `/projects/medialist` vers `/passions/medialist` :
+
+- Fichiers : `app/pages/passions/medialist/index.vue` + `[slug].vue`
+- Back-links dans les pages détail pointent vers `/passions` (← Passions)
+- L'ancien slug `/projects/medialist` dans la DB pointe désormais vers `demoUrl: https://chetana.dev/passions/medialist`
+- La route `/projects/[slug].vue` sert désormais le rendu d'articles projet depuis la DB
+
+### Pages Strava (Vélo / Natation / Course)
+
+Les pages `/passions/velo`, `/passions/natation` et `/passions/course` appellent **directement** l'API chetaku-rs depuis le client (pas de proxy Nuxt) :
+
+```typescript
+const API_BASE = 'https://chetaku-rs-267131866578.europe-west1.run.app'
+const { data: stats } = useFetch(`${API_BASE}/strava/stats?sport=cycling`)
+const { data: activities } = useFetch(`${API_BASE}/strava/activities?sport=cycling`)
+```
+
+Les endpoints sont publics (GET uniquement) — pas besoin de proxy pour masquer une clé. Le POST `/strava/sync` (protégé par `x-api-key`) est déclenché manuellement, pas depuis le frontend.
+
+---
+
 ## Coffre a souvenirs — chet_lys
 
 API GCS pour l'application SvelteKit `chet_lys` (chetlys.vercel.app). Permet d'uploader, lister, telecharger et supprimer des photos/videos stockees dans Google Cloud Storage.
@@ -283,16 +350,18 @@ Deux niveaux :
 
 ### chetaku-rs (Rust/Axum — Cloud Run)
 
-Service dédié à la médiathèque (animés + jeux + films + séries), hébergé sur Cloud Run (`europe-west1`).
+Service dédié à la médiathèque et aux activités sportives Strava, hébergé sur Cloud Run (`europe-west1`).
 
 - **URL** : `https://chetaku-rs-267131866578.europe-west1.run.app`
 - **Auth** : header `x-api-key` sur les endpoints d'écriture
-- **DB** : `media_entries` — table PostgreSQL dans Neon (même cluster)
-- **Sources** : Jikan API v4 (MyAnimeList) + RAWG API v1 (jeux) + TMDB API v3 (films/séries)
+- **DB** : tables `media_entries`, `strava_activities`, `stats_cache` dans Neon PostgreSQL
+- **Sources** : Jikan (MyAnimeList), RAWG (jeux), TMDB (films/séries), Strava API v3
 
-Nuxt appelle chetaku-rs via les proxies `server/api/medialist/` — l'API key n'est jamais exposée au client.
+**Endpoints médiathèque** : Nuxt appelle via proxies `server/api/medialist/` — l'API key n'est jamais exposée au client.
 
-Les métadonnées enrichies (cast, synopsis détaillé, saisons/épisodes) sont fetched directement depuis TMDB par `detail.get.ts` au moment de l'affichage — elles ne sont pas stockées dans `media_entries`.
+**Endpoints Strava** (`/strava/activities`, `/strava/stats`) : publics — appelés directement depuis les pages velo/natation/course sans proxy Nuxt.
+
+**Cache DB** (`stats_cache`) : les agrégations coûteuses sont mises en cache dans `stats_cache` (TTL 30s). Indispensable sur Cloud Run scale-to-zero — aucun cache in-memory ne survit aux redémarrages.
 
 > Voir [docs/MEDIALIST.md](MEDIALIST.md) et le [README chetaku-rs](https://github.com/chetana/chetaku-rs).
 

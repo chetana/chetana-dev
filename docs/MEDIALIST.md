@@ -1,4 +1,4 @@
-# Médiathèque — chetana.dev/projects/medialist
+# Médiathèque — chetana.dev/passions/medialist
 
 Suivi personnel d'animés, jeux vidéo, films et séries, avec statistiques pondérées et chat IA contextuel.
 
@@ -7,7 +7,7 @@ Suivi personnel d'animés, jeux vidéo, films et séries, avec statistiques pond
 ```
 chetana.dev (Nuxt)                chetaku-rs (Rust/Axum)
 ─────────────────                 ────────────────────────
-/projects/medialist
+/passions/medialist
   index.vue        ──GET /media──▶  Neon PostgreSQL
   (liste, stats)   ◀─────────────   media_entries table
                    ──GET /stats──▶

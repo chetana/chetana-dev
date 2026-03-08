@@ -21,9 +21,14 @@ Portfolio dynamique, blog technique et projets personnels de **Chetana YIN** —
 | `/` | Homepage — hero, stats, about, experience timeline, skills, education, contact |
 | `/projects` | Liste des projets personnels |
 | `/projects/health` | Suivi quotidien de pompes (streak, calendrier, validation) |
-| `/projects/medialist` | Médiathèque — animés, jeux, films et séries avec stats pondérées par note |
-| `/projects/medialist/[slug]` | Détail d'un animé, jeu, film ou série + chat IA (Gemini) |
 | `/projects/imagichet` | Génération et édition d'images avec Vertex AI Imagen 3 |
+| `/passions` | Section Passions — 5 cartes TCG interactives (Médiathèque, Vélo, Natation, Course, Voyage) |
+| `/passions/medialist` | Médiathèque — animés, jeux, films et séries avec stats pondérées par note |
+| `/passions/medialist/[slug]` | Détail d'un animé, jeu, film ou série + chat IA (Gemini) |
+| `/passions/velo` | Sorties vélo Strava — stats, graphiques, carte GPS des traces |
+| `/passions/natation` | Sessions natation Strava — distance, allure, progressions |
+| `/passions/course` | Runs Strava — allure, dénivelé, évolution |
+| `/passions/voyage` | Carte des pays visités, stats (km, pays, continents), cards avec photo |
 | `/blog` | Articles techniques et retours d'experience |
 | `/blog/[slug]` | Article complet avec rendu markdown et commentaires |
 | `/cv` | CV format A4 imprimable (PDF via `window.print()`) |
@@ -166,10 +171,16 @@ app/
     blog/                # Liste + detail articles
     projects/
       health.vue         # Health tracker (pompes)
+      imagichet.vue      # Génération d'images Imagen 3
+    passions/
+      index.vue          # Section Passions — 5 cartes TCG interactives
       medialist/
         index.vue        # Médiathèque + section profil stats (4 types)
         [slug].vue       # Detail animé/jeu/film/série + chat IA Gemini
-      imagichet.vue      # Génération d'images Imagen 3
+      velo/index.vue     # Sorties vélo Strava + carte GPS (Leaflet + polyline)
+      natation/index.vue # Sessions natation Strava
+      course/index.vue   # Runs Strava
+      voyage/index.vue   # Carte monde Leaflet + GeoJSON + cards voyages
 server/
   api/                   # Routes REST
     health/              # Endpoints proteges (Google OAuth) — daily pushup tracker
@@ -257,10 +268,22 @@ Requierent `Authorization: Bearer <google_id_token>` :
 | `/api/medialist/detail` | GET | Métadonnées enrichies TMDB (cast, saisons, synopsis) |
 | `/api/medialist/chat` | POST | Chat IA Gemini sur un animé/jeu/film/série avec Google Search |
 | `/api/imagenie/generate` | POST | Génère ou édite une image via Vertex AI Imagen 3 |
+| `/api/voyage/cover` | GET | Signed URL GCS pour la couverture d'un voyage (`?path=`) |
+
+## Passions (`/passions`)
+
+Section dédiée aux loisirs personnels — accessible depuis la nav principale.
+
+- **5 cartes TCG interactives** : Médiathèque, Vélo, Natation, Course, Voyage (toutes live)
+- **Effet 3D tilt** au hover desktop via `mousemove` + `perspective(800px) rotateX/rotateY`
+- **Shine radial** qui suit la position de la souris
+- **Mobile** : scroll-snap horizontal natif (`scroll-snap-type: x mandatory`) — swipe entre cartes sans bloquer le scroll vertical
+- **`IntersectionObserver`** par carte → entrance animation (tilt-in sinusoïdal ~800ms) à chaque snap
+- **Dots de navigation** cliquables, `activeIdx` réactif
 
 ## Médiathèque (medialist)
 
-Suivi d'animés, jeux vidéo, films et séries consommant l'API [chetaku-rs](https://github.com/chetana/chetaku-rs).
+Suivi d'animés, jeux vidéo, films et séries consommant l'API [chetaku-rs](https://github.com/chetana/chetaku-rs). Accessible à `/passions/medialist`.
 
 - **Liste** filtrée par type/statut, ajout et suppression (owner only via Google OAuth)
 - **Sync auto** depuis Jikan (MyAnimeList), RAWG (jeux) et TMDB (films/séries) — métadonnées, cover, genres, créateur
@@ -270,6 +293,22 @@ Suivi d'animés, jeux vidéo, films et séries consommant l'API [chetaku-rs](htt
 - **Suppression** d'entrée depuis la liste (bouton hover, owner only)
 
 > Voir [docs/MEDIALIST.md](docs/MEDIALIST.md) pour les détails techniques.
+
+## Passions Sport (Strava)
+
+Trois pages (`/passions/velo`, `/passions/natation`, `/passions/course`) consomment `GET /strava/activities?sport=` directement depuis le frontend (pas de proxy Nuxt).
+
+- **Carte GPS** : `map_polyline` (Google Encoded Polyline) décodé par `app/utils/polyline.ts` → modal Leaflet (`MapModal.vue`) avec trace dorée sur fond OpenStreetMap
+
+## Voyage
+
+Page `/passions/voyage` — tracker de voyages pour le couple :
+
+- **Carte monde Leaflet** : fond CartoDB `dark_nolabels`, pays visités colorés en vert (`#10b981`) via `public/countries.geojson` (Natural Earth 110m, propriété `ISO_A2`), markers par voyage
+- **Stats band** : pays visités, continents, km parcourus, nombre de voyages
+- **Cards** : photo de couverture via signed URL (`/api/voyage/cover?path=`), flag emoji, dates, notes
+- **Admin** : `public/admin-voyage.html` — formulaire statique autonome (create/update/delete avec `x-api-key`)
+- **Import** : `C:\tmp\parse-takeout.mjs` — parse les JSON sidecars Google Photos Takeout → `voyages-proposes.json` + `curl-import.sh`
 
 ## ImagiChet (imagichet)
 
@@ -350,6 +389,8 @@ Le blog utilise un renderer markdown custom (pas de dependance externe) qui supp
 - Listes a puces (`- item`) et ordonnees (`1. item`)
 - Separateurs horizontaux (`---`)
 - Paragraphes automatiques
+- Blocs de code triple-backtick → `<pre><code>` (avec extraction/réinsertion via placeholders pour éviter les conflits de parsing)
+- Tableaux `| col |` → `<table><thead><tbody>` avec CSS borders et `pre` scrollable
 
 ### Articles
 
@@ -357,6 +398,7 @@ Le blog utilise un renderer markdown custom (pas de dependance externe) qui supp
 - **Claude Code en equipe** — Integration de l'IA dans le workflow engineering
 - **Nuxt 4 + Neon + Drizzle** — Retour d'experience migration HTML statique vers stack moderne
 - **Dark theme to light theme** — Pourquoi j'ai change apres 15 ans
+- **Médiathèque en Rust** — Angle EM, Club Dorothée, Rust comme apprentissage délibéré (slug: `medialist-rust-tracker`)
 
 ## Documentation
 
