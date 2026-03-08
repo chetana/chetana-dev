@@ -9,197 +9,177 @@ config({ path: '.env.local' })
 const sql = neon(process.env.DATABASE_URL!)
 const db = drizzle(sql)
 
-const contentFr = `## Un carnet de bord qui n'existait pas
+const contentFr = `## Le Club Dorothée et la dette technique invisible
 
-Je me souviens du premier anime que j'ai regardé en boucle jusqu'à ne plus pouvoir m'arrêter. *Dragon Ball Z* sur RTL9, un mercredi après-midi. Je devais avoir huit ans. Je ne savais pas que ça allait structurer une partie entière de mon rapport à la narration, au rythme, à l'intensité des histoires.
+J'avais à peine cinq ans quand j'ai découvert Dragon Ball Z sur le Club Dorothée, un samedi matin sur TF1. Je ne comprenais pas encore très bien ce qui se passait dans les arcs narratifs — les sagas duraient des dizaines d'épisodes et je manquais souvent des semaines entières. Mais quelque chose dans ce format m'a accroché : la progression, la montée en puissance, le fait qu'on pouvait suivre quelque chose sur le long terme et voir qu'on avançait.
 
-Vingt ans plus tard, je vis à Paris. La personne que j'aime est à Phnom Penh. Six heures de décalage horaire, 9 000 km. Et on partage encore des animés, des jeux, des films — mais cette fois à travers un écran et des messages vocaux du matin.
+Trente ans plus tard, je suis Engineering Manager. Et il y a une certaine ironie à avoir passé ma vie professionnelle à construire des systèmes de suivi — roadmaps, OKRs, burn-down charts — sans jamais avoir construit un système de suivi pour ce qui m'a donné envie de construire des choses.
 
-À un moment, on a voulu se souvenir de tout ça. Pas juste "on a regardé ça ensemble" — mais quand, dans quel état d'esprit, avec quelle note. Ce genre de mémoire culturelle collective qui ressemble à un journal de bord de couple. Il n'existait aucun outil qui correspondait exactement à ce besoin. Alors j'ai construit le mien.
-
----
-
-## Le premier prototype, en deux heures
-
-Le vendredi soir, j'ouvre un terminal. Pas pour le travail — pour voir ce que ça donne. Je crée un repo, je lance \`npx nuxi init\`, et je commence à écrire un endpoint qui appelle l'API de MyAnimeList.
-
-En deux heures, j'ai une page qui liste des animés avec leurs jaquettes. Pas beau. Pas propre. Mais ça fonctionne. Et surtout, ça me donne envie de continuer.
-
-C'est ce que j'aime dans les side projects : le feedback loop immédiat. Pas de réunion de planification, pas de comité d'architecture, pas de ticket Jira. Une idée → un test → quelque chose qui s'affiche. La vitesse de l'itération solo est enivrante quand on passe ses journées à manager plusieurs équipes en parallèle.
+Alors j'ai construit la Médiathèque.
 
 ---
 
-## La décision Rust : mettre les mains dedans
+## Ce que j'avais vraiment envie d'apprendre
 
-À un moment, j'ai voulu séparer proprement le backend de stockage du reste. Nuxt pour l'orchestration et l'UI, mais une API dédiée pour les données persistantes — quelque chose de stable, de typé, de minimal.
+Ce projet n'est pas né d'un besoin fonctionnel urgent. J'aurais pu utiliser MyAnimeList, Letterboxd, RAWG — des outils qui existent et qui fonctionnent très bien. J'ai choisi de construire le mien parce que les problèmes techniques sous-jacents m'intéressaient.
 
-J'aurais pu faire ça en Node. En Go. En Python FastAPI. J'ai choisi **Rust**.
+En particulier, trois choses que je voulais vraiment traverser en pratique :
 
-Pas parce que c'était le bon outil pour ce besoin spécifique. C'était clairement surdimensionné pour un tracker personnel. J'ai choisi Rust parce qu'en tant qu'Engineering Manager, je recommandais parfois Rust à mes équipes pour des cas d'usage précis — sécurité mémoire, performance critique, workloads embarqués — sans l'avoir jamais pratiqué moi-même sur un vrai projet de bout en bout.
+**L'orchestration multi-API.** Jikan pour les animés, RAWG pour les jeux, TMDB pour les films et séries — trois APIs avec des structures différentes, des identifiants différents (entier pour MAL, slug texte pour RAWG, entier encore pour TMDB), des conventions différentes. Comment construire une couche d'abstraction propre qui donne une expérience cohérente malgré ça ? C'est exactement le genre de problème qui ressemble à de la plomberie mais qui cache de vraies décisions d'architecture.
 
-Il y a une limite à ce qu'on peut décider correctement sans avoir soi-même traversé les frictions du terrain. Le borrow checker de Rust est légendaire. J'avais lu des dizaines d'articles dessus. Mais lire, c'est différent de se retrouver à 23h à fixer un message d'erreur \`cannot borrow *x as mutable because it is also borrowed as immutable\` en se demandant pourquoi ce code parfaitement logique ne compile pas.
+**Les statistiques pondérées.** Compter des entrées est trivial. Mais produire un profil de préférences qui révèle quelque chose de vrai sur ce qu'on apprécie — pas juste ce qu'on a consommé — c'est plus intéressant. Le \`love_score = count × avg_score\` est simple comme formule, mais il implique de stocker les bonnes données dès le départ (les genres dénormalisés dans un tableau PostgreSQL, les scores personnels nullable correctement gérés) et de faire les bons trade-offs dans les requêtes SQL.
 
-Ce projet m'a donné cette expérience. Et cette expérience a changé la qualité de mes discussions techniques sur Rust avec mes équipes. Je peux maintenant parler de la courbe d'apprentissage avec des exemples concrets. Je peux expliquer pourquoi Axum est élégant mais pourquoi \`sqlx\` demande du temps à apprivoiser. Je peux défendre ou challenger un choix Rust avec l'autorité du praticien, pas du manager qui a juste lu la doc.
-
-Un Engineering Manager qui ne code plus finit par perdre quelque chose d'important : la capacité à sentir ce qui est réellement difficile pour ses équipes, et ce qui ne l'est pas. Les side projects, c'est ma façon de ne pas perdre ce sens-là.
+**Rust en conditions réelles.** Je voulais mettre les mains dans Rust sur un vrai projet, pas sur des exercices Rustlings.
 
 ---
 
-## La courbe d'apprentissage, honnêtement
+## La décision Rust : praticien ou théoricien
 
-Rust est humiliant au début. Ce n'est pas une hyperbole.
+En tant qu'EM, je participe régulièrement à des discussions sur les choix de langage pour des nouveaux services : performance critique, sécurité mémoire, attractivité pour le recrutement, courbe d'apprentissage de l'équipe. Rust revient souvent.
 
-Le compilateur est strict d'une façon que j'avais rarement rencontrée. Chaque variable a exactement un propriétaire. Chaque référence a une durée de vie explicite ou inférée. Si deux parties de votre code veulent modifier la même donnée en même temps, le compilateur refuse — à la compilation, pas au runtime.
+Le problème, c'est que je discutais de Rust principalement comme quelqu'un qui l'a étudié — pas comme quelqu'un qui a eu à se battre avec le borrow checker à 23h sur du code qui semblait parfaitement logique mais ne compilait pas.
 
-Ce qui m'a frappé, c'est que ces règles ne sont pas arbitraires. Elles éliminent une classe entière de bugs — les data races, les use-after-free, les null pointer dereferences — qui font exploser les programmes en production depuis cinquante ans. Le compilateur est agressif parce qu'il garantit quelque chose de fort.
+La différence est énorme. Quelqu'un qui a lu de la documentation sur Rust peut expliquer conceptuellement ce qu'est un lifetime. Quelqu'un qui a écrit \`Arc<Mutex<Pool>>\` dans un handler Axum parce qu'il a mis une heure à comprendre pourquoi ses références de connexion PostgreSQL n'avaient pas la bonne durée de vie — celui-là peut expliquer *pourquoi ça fait mal*, et dans quels contextes ce mal est justifié par les garanties obtenues.
 
-Mais la courbe est réelle. J'ai réécrit mon handler de route principale trois fois avant de comprendre pourquoi mes références de connexion PostgreSQL ne vivaient pas assez longtemps. Le \`Arc<Mutex<T>>\` pour partager l'état entre requêtes. Les traits \`Send\` et \`Sync\` sur les types async. Rien de tout ça n'est évident au premier passage.
-
-Résultat : \`chetaku-rs\` tourne sur Google Cloud Run, démarre en sous-seconde, consomme environ 15 Mo de RAM, et n'a pas eu un seul crash depuis son déploiement. Aucune exception runtime. Aucun crash silencieux. Juste un binaire qui fait ce qu'il dit qu'il fait.
+C'est ce second type de crédibilité que je cherchais. Et c'est ce que j'ai obtenu.
 
 ---
 
-## Ce que la médiathèque révèle
+## La courbe, honnêtement
 
-Une fois que les données existaient dans la base — 47 animés, 23 jeux, des films, des séries — j'ai voulu des statistiques. Pas juste "combien d'animés", mais quelque chose qui ressemble à un profil.
+Rust est difficile. Pas "difficile comme apprendre un nouveau framework" — difficile comme changer de paradigme mental sur la propriété de la mémoire.
 
-J'ai écrit une requête SQL qui calcule un \`love_score\` pour chaque genre : le nombre d'entrées dans ce genre, multiplié par la note moyenne personnelle. Ça donne un score qui balance fréquence et appréciation. Un genre vu 30 fois avec une note moyenne de 6 est moins "aimé" qu'un genre vu 12 fois avec une note de 9.5.
+Le compilateur refuse de compiler du code qui, dans n'importe quel autre langage, fonctionnerait parfaitement. Au début, c'est frustrant. Avec du recul, c'est exactement le point : le compilateur élimine à la compilation des bugs qui normalement explosent en production à 3h du matin. Ce qu'il refuse de compiler, c'est du code qui *aurait pu* créer une data race ou un use-after-free.
 
-Le résultat m'a surpris. Les genres qui émergent en tête ne sont pas forcément ceux auxquels j'aurais pensé spontanément. Les données ont une façon de révéler des préférences qu'on n'articule pas consciemment.
+La section qui m'a pris le plus de temps : comprendre pourquoi je ne pouvais pas passer ma connexion PostgreSQL directement dans mes handlers de route. Il fallait encapsuler le pool dans un \`Arc\`, l'injecter via l'état Axum, et laisser chaque handler extraire sa connexion depuis l'état de la requête. Une fois compris, c'est évident et élégant. Avant de comprendre, c'est une série de messages d'erreur cryptiques.
 
-C'est pour ça que ce projet a une valeur au-delà du technique. Ce n'est pas un tracker. C'est un miroir de ce qu'on consomme et de ce qu'on en pense vraiment.
-
----
-
-## Les détails qui comptent
-
-Quelques choix d'implémentation qui méritent d'être mentionnés :
-
-**Les arcs narratifs** sont codés à la main côté serveur. Pour chaque anime, un objet \`ANIME_ARCS\` indexé par l'ID MyAnimeList définit les arcs et les épisodes correspondants. C'est du travail manuel — mais les données sont stables. Un arc de *One Piece* ne va pas changer. Et l'alternative (scraper un wiki à chaque appel) est fragile et lente.
-
-**Le cast** n'est jamais stocké en base. TMDB est appelé à la demande, sur la page de détail uniquement. Ça évite de stocker des données qui changent rarement et qui ne sont pas critiques — et ça maintient \`chetaku-rs\` dans son rôle : stocker *ce que j'ai vu et ressenti*, pas *toutes les métadonnées publiques* sur chaque œuvre.
-
-**La suppression** n'est accessible qu'à moi. Mais elle est publiquement visible comme bouton côté UI quand je suis connecté. Ce genre de "soft security" — l'action est protégée mais pas cachée — est une décision UI délibérée. La transparence sur ce qui existe compte, même pour un outil personnel.
+J'ai réécrit mon handler principal trois fois. C'est le bon nombre.
 
 ---
 
-## Ce que ça m'a appris sur le fait de manager des équipes techniques
+## Les vrais problèmes intéressants
 
-J'ai passé environ trois week-ends sur ce projet, de l'idée au déploiement. En journée, je gère des équipes qui font ce genre de travail à plein temps — architecture, APIs, bases de données, CI/CD.
+### La pagination des épisodes
 
-Construire ce projet m'a rappelé quelques vérités utiles pour ce rôle :
+Jikan renvoie les épisodes 100 par page. Pour un anime comme One Piece (1 100+ épisodes), ça fait au moins 11 appels pour avoir la liste complète. J'ai choisi de ne charger que la première page sur la fiche détail, avec un indicateur \`has_more\`. C'est une décision de produit autant que technique : charger 1 100 épisodes dans une liste côté client n'apporte rien à l'utilisateur qui veut juste savoir où il en est.
 
-**Le coût de switching est réel.** Quand on code seul, chaque interruption — une notification, un message — coûte 15 minutes de concentration retrouvée. C'est pour ça que mes équipes ont des blocs de temps protégés dans leur calendrier. Je le savais. Je le ressens mieux maintenant.
+### Les arcs narratifs
 
-**Les edge cases émergent à l'usage.** J'avais prévu que le compteur d'épisodes ne prendrait en compte que les animés. C'est seulement en ajoutant des séries dans la base que j'ai réalisé que la requête SQL était trop restrictive. Aucun test unitaire n'aurait attrapé ça avant qu'on utilise vraiment le système. C'est un argument pour itérer vite et observer, pas pour itérer lentement et sur-spécifier.
+Les APIs anime ne retournent pas les arcs — juste les épisodes numérotés. Les arcs, c'est de la connaissance éditoriale, pas de la métadonnée structurée. J'ai choisi de les hardcoder dans un fichier serveur (\`anime-arcs.ts\`), indexé par MAL ID. C'est de la dette technique assumée : maintenable manuellement, stable dans le temps (les arcs de Naruto ne vont pas changer), et infiniment plus fiable qu'un scraping de wiki.
 
-**La dette technique choisie n'est pas la même que la dette subie.** Les arcs narratifs hardcodés sont de la dette — mais c'est de la dette choisie, documentée, et cohérente avec les contraintes. La différence entre les deux, c'est la conscience et l'intention. Ce que j'essaie d'inculquer à mes équipes aussi.
+En tant qu'EM, ce genre de décision me parle directement. La bonne dette technique, c'est de la dette *choisie* : on sait ce qu'on sacrifie, on sait pourquoi, et on sait dans quelles conditions ça deviendra un problème. La mauvaise dette, c'est de la dette *accumulée* sans conscience.
 
----
+### Le love_score
 
-## La suite
+La formule est simple : \`COUNT(*) × AVG(score)\`. Mais l'implémenter correctement impose de réfléchir à ce qu'on stocke. Les genres ne peuvent pas rester dans une relation séparée si on veut faire des agrégats efficaces — il faut les dénormaliser dans un \`TEXT[]\` PostgreSQL. Les scores NULL (entrées non notées) doivent être exclus du calcul de la moyenne, pas traités comme des zéros.
 
-La médiathèque est vivante. On y ajoute des entrées régulièrement. Les stats évoluent. Le profil de genres change à mesure qu'on explore de nouvelles choses.
-
-La prochaine étape technique que j'envisage : ajouter les modes **OUTPAINT** et **INPAINTING** à ImagiChet (la génération d'images) — parce que les side projects ont une façon de générer leurs propres idées suivantes.
-
-Mais surtout, ce projet m'a redonné quelque chose que le management a tendance à éroder lentement : le plaisir de construire quelque chose qui fonctionne, de A à Z, seul, dans le silence d'un week-end.`
-
-const contentEn = `## A logbook that didn't exist
-
-I remember the first anime I watched on loop until I couldn't stop. *Dragon Ball Z* on RTL9, a Wednesday afternoon. I must have been eight years old. I didn't know it would shape a significant part of how I relate to storytelling, pacing, and narrative intensity.
-
-Twenty years later, I live in Paris. The person I love is in Phnom Penh. Six hours of time difference, 9,000 km. We still share anime, games, movies — but this time through a screen and morning voice messages.
-
-At some point, we wanted to remember all of it. Not just "we watched this together" — but when, in what frame of mind, with what rating. The kind of shared cultural memory that looks like a couple's logbook. No tool existed that matched exactly this need. So I built my own.
+Ces détails semblent mineurs. Ils ont chacun nécessité une décision explicite et un ajustement du schéma.
 
 ---
 
-## The first prototype, in two hours
+## Ce que j'ai appris sur moi comme praticien
 
-Friday evening, I open a terminal. Not for work — just to see what happens. I create a repo, run \`npx nuxi init\`, and start writing an endpoint that calls the MyAnimeList API.
+Je code beaucoup moins depuis que je suis EM. C'est inévitable — le calendrier ne ment pas. Ce projet m'a rappelé quelques vérités que je connaissais mais que je n'avais plus ressenties récemment.
 
-Two hours later, I have a page listing anime with cover art. Not pretty. Not clean. But working. And most importantly, it makes me want to keep going.
+**Le context switching coûte vraiment cher.** Coder seul sur un week-end m'a rappelé à quel point chaque interruption casse quelque chose. Ce que j'accepte parfois trop facilement pour mes équipes — "juste une réunion de 30 minutes au milieu de l'après-midi" — coûte bien plus que 30 minutes. Je le savais. Je le ressens différemment maintenant.
 
-That's what I love about side projects: the immediate feedback loop. No planning meetings, no architecture committee, no Jira ticket. An idea → a test → something on screen. The iteration speed of solo work is intoxicating when your days are spent managing multiple teams in parallel.
+**Les edge cases sortent à l'usage, pas à la spec.** J'avais prévu un compteur d'épisodes. Je n'avais pas prévu qu'il faudrait qu'il couvre aussi les séries. C'est seulement en ajoutant de vraies entrées séries que j'ai vu que la requête SQL avait un \`WHERE media_type = 'anime'\` trop restrictif. Aucune spécification n'aurait capturé ça avant. C'est un argument pour itérer vite sur du réel, pas pour sur-spécifier en amont.
 
----
-
-## The Rust decision: getting hands-on
-
-At some point, I wanted to cleanly separate the storage backend from the rest. Nuxt for orchestration and UI, but a dedicated API for persistent data — something stable, typed, minimal.
-
-I could have done it in Node. In Go. In Python FastAPI. I chose **Rust**.
-
-Not because it was the right tool for this specific need. It was clearly oversized for a personal tracker. I chose Rust because as an Engineering Manager, I sometimes recommended Rust to my teams for specific use cases — memory safety, performance-critical paths, embedded workloads — without having ever actually shipped a real end-to-end project in it myself.
-
-There's a limit to how well you can make decisions without having personally gone through the friction on the ground. Rust's borrow checker is legendary. I'd read dozens of articles about it. But reading is different from finding yourself at 11pm staring at a \`cannot borrow *x as mutable because it is also borrowed as immutable\` error, wondering why perfectly logical code won't compile.
-
-This project gave me that experience. And that experience changed the quality of my technical conversations about Rust with my teams. I can now talk about the learning curve with concrete examples. I can explain why Axum is elegant but why \`sqlx\` takes time to get comfortable with. I can defend or challenge a Rust architectural choice with the authority of a practitioner, not a manager who just read the docs.
-
-An Engineering Manager who stops coding eventually loses something important: the ability to feel what is genuinely difficult for their teams, and what isn't. Side projects are my way of not losing that sense.
+**Finir quelque chose a une valeur propre.** En management, beaucoup de choses restent toujours "en cours" — les conversations, les initiatives, les changements culturels. Un side project qui démarre et qui se déploie, c'est une boucle qui se ferme. C'est rare et ça fait du bien.
 
 ---
 
-## The learning curve, honestly
+## Et maintenant
 
-Rust is humbling at first. That's not hyperbole.
+La médiathèque tourne. Les fiches se construisent. Les statistiques reflètent quelque chose de vrai sur trente ans d'animés regardés depuis un canapé, un samedi matin, devant le Club Dorothée.
 
-The compiler is strict in a way I had rarely encountered. Every variable has exactly one owner. Every reference has an explicit or inferred lifetime. If two parts of your code want to modify the same data simultaneously, the compiler refuses — at compile time, not at runtime.
+Le prochain chantier technique sur lequel j'ai envie de mettre les mains : les modes d'édition d'image avancés (outpainting, inpainting) sur ImagiChet. Parce que les side projects ont cette propriété : ils génèrent leurs propres questions suivantes.`
 
-What struck me is that these rules aren't arbitrary. They eliminate an entire class of bugs — data races, use-after-free, null pointer dereferences — that have been crashing programs in production for fifty years. The compiler is aggressive because it guarantees something strong.
+const contentEn = `## Club Dorothée and invisible technical debt
 
-But the curve is real. I rewrote my main route handler three times before understanding why my PostgreSQL connection references didn't live long enough. The \`Arc<Mutex<T>>\` for sharing state between requests. The \`Send\` and \`Sync\` traits on async types. None of it is obvious on first pass.
+I was barely five when I discovered Dragon Ball Z on Club Dorothée, a Saturday morning on TF1. I didn't fully understand what was happening in the narrative arcs — the sagas lasted dozens of episodes and I often missed entire weeks. But something in that format hooked me: the progression, the power-ups, the idea that you could follow something over time and actually see that you were making progress.
 
-Result: \`chetaku-rs\` runs on Google Cloud Run, starts in under a second, uses around 15 MB of RAM, and hasn't had a single crash since deployment. No runtime exceptions. No silent failures. Just a binary that does what it says it does.
+Thirty years later, I'm an Engineering Manager. And there's a certain irony in having spent my professional life building tracking systems — roadmaps, OKRs, burn-down charts — without ever building a tracking system for the thing that made me want to build things in the first place.
 
----
-
-## What the media library reveals
-
-Once the data existed in the database — 47 anime, 23 games, movies, series — I wanted statistics. Not just "how many anime", but something that looks like a profile.
-
-I wrote a SQL query that calculates a \`love_score\` for each genre: the number of entries in that genre, multiplied by the personal average rating. It produces a score that balances frequency and appreciation. A genre watched 30 times with an average score of 6 is less "loved" than one watched 12 times with an average of 9.5.
-
-The result surprised me. The genres that emerge at the top aren't necessarily the ones I would have named spontaneously. Data has a way of surfacing preferences you don't consciously articulate.
-
-That's why this project has value beyond the technical. It's not a tracker. It's a mirror of what we consume and what we genuinely think about it.
+So I built the Media Library.
 
 ---
 
-## The details that matter
+## What I actually wanted to learn
 
-A few implementation choices worth mentioning:
+This project wasn't born from an urgent functional need. I could have used MyAnimeList, Letterboxd, RAWG — tools that exist and work very well. I chose to build my own because the underlying technical problems genuinely interested me.
 
-**Narrative arcs** are hardcoded server-side. For each anime, an \`ANIME_ARCS\` object indexed by MyAnimeList ID defines the arcs and corresponding episodes. It's manual work — but the data is stable. A *One Piece* arc isn't going to change. And the alternative (scraping a wiki on every request) is fragile and slow.
+Three things in particular I wanted to go through in practice:
 
-**Cast data** is never stored in the database. TMDB is called on demand, on the detail page only. This avoids storing data that rarely changes and isn't critical — and keeps \`chetaku-rs\` in its role: storing *what I've seen and felt*, not *all public metadata* about every work.
+**Multi-API orchestration.** Jikan for anime, RAWG for games, TMDB for movies and series — three APIs with different structures, different identifiers (integer for MAL, text slug for RAWG, integer again for TMDB), different conventions. How do you build a clean abstraction layer that delivers a consistent experience despite all that? It's exactly the kind of problem that looks like plumbing but hides real architectural decisions.
 
-**Deletion** is only accessible to me. But it's publicly visible as a UI button when I'm logged in. This kind of "soft security" — the action is protected but not hidden — is a deliberate UI decision. Transparency about what exists matters, even for a personal tool.
+**Weighted statistics.** Counting entries is trivial. But producing a preference profile that reveals something true about what you enjoy — not just what you've consumed — is more interesting. The \`love_score = count × avg_score\` is simple as a formula, but it implies storing the right data from the start (genres denormalised into a PostgreSQL array, personal scores with nullable correctly handled) and making the right trade-offs in the SQL queries.
+
+**Rust in real conditions.** I wanted to get my hands dirty in Rust on a real project, not Rustlings exercises.
 
 ---
 
-## What this taught me about managing technical teams
+## The Rust decision: practitioner or theorist
 
-I spent about three weekends on this project, from idea to deployment. During the day, I manage teams doing this kind of work full-time — architecture, APIs, databases, CI/CD.
+As an EM, I regularly participate in discussions about language choices for new services: performance-critical paths, memory safety, recruitment attractiveness, team learning curve. Rust comes up often.
 
-Building this project reminded me of a few useful truths for that role:
+The problem is that I was discussing Rust mostly as someone who had studied it — not as someone who had fought with the borrow checker at 11pm on code that seemed perfectly logical but wouldn't compile.
 
-**Context switching cost is real.** When coding alone, every interruption — a notification, a message — costs 15 minutes of recovered focus. That's why my teams have protected time blocks in their calendars. I knew this. I feel it more viscerally now.
+The difference is enormous. Someone who has read Rust documentation can conceptually explain what a lifetime is. Someone who has written \`Arc<Mutex<Pool>>\` inside an Axum handler because it took them an hour to understand why their PostgreSQL connection references had the wrong lifetime — that person can explain *why it hurts*, and in which contexts that pain is justified by the guarantees obtained.
 
-**Edge cases emerge from actual use.** I had assumed the episode counter would only cover anime. It was only when I added series to the database that I noticed the SQL query was too restrictive. No unit test would have caught this before the system was actually used. That's an argument for iterating fast and observing, not iterating slowly and over-specifying.
+It's this second type of credibility I was looking for. And it's what I got.
 
-**Chosen technical debt is not the same as accumulated debt.** Hardcoded narrative arcs are debt — but it's chosen, documented, and coherent with the constraints. The difference between the two is awareness and intention. What I try to instil in my teams as well.
+---
+
+## The curve, honestly
+
+Rust is hard. Not "hard like learning a new framework" — hard like changing your mental model of memory ownership.
+
+The compiler refuses to compile code that, in any other language, would work perfectly fine. At first, this is frustrating. In hindsight, it's exactly the point: the compiler eliminates at compile time the bugs that normally explode in production at 3am. What it refuses to compile is code that *could have* created a data race or a use-after-free.
+
+The section that took me the longest: understanding why I couldn't pass my PostgreSQL connection directly into my route handlers. I had to wrap the pool in an \`Arc\`, inject it via Axum state, and let each handler extract its connection from the request state. Once understood, it's obvious and elegant. Before understanding, it's a series of cryptic error messages.
+
+I rewrote my main handler three times. That's the right number.
+
+---
+
+## The genuinely interesting problems
+
+### Episode pagination
+
+Jikan returns episodes 100 per page. For an anime like One Piece (1,100+ episodes), that's at least 11 calls to get the full list. I chose to only load the first page on the detail view, with a \`has_more\` indicator. It's as much a product decision as a technical one: loading 1,100 episodes into a client-side list adds nothing for a user who just wants to know where they left off.
+
+### Narrative arcs
+
+Anime APIs don't return arcs — just numbered episodes. Arcs are editorial knowledge, not structured metadata. I chose to hardcode them in a server file (\`anime-arcs.ts\`), indexed by MAL ID. It's consciously chosen technical debt: manually maintainable, stable over time (Naruto's arcs aren't going to change), and infinitely more reliable than scraping a wiki.
+
+As an EM, this type of decision speaks directly to me. Good technical debt is *chosen* debt: you know what you're sacrificing, you know why, and you know under what conditions it will become a problem. Bad debt is *accumulated* debt without awareness.
+
+### The love_score
+
+The formula is simple: \`COUNT(*) × AVG(score)\`. But implementing it correctly requires thinking carefully about what you store. Genres can't stay in a separate relation if you want efficient aggregates — you have to denormalise them into a PostgreSQL \`TEXT[]\`. NULL scores (unrated entries) must be excluded from the average calculation, not treated as zeroes.
+
+These details seem minor. Each required an explicit decision and a schema adjustment.
+
+---
+
+## What I learned about myself as a practitioner
+
+I code significantly less since becoming an EM. The calendar doesn't lie. This project reminded me of a few truths I knew but hadn't felt recently.
+
+**Context switching is genuinely expensive.** Coding alone over a weekend reminded me how much each interruption breaks something. What I sometimes accept too easily for my teams — "just a 30-minute meeting in the middle of the afternoon" — costs far more than 30 minutes. I knew this. I feel it differently now.
+
+**Edge cases emerge from actual use, not from specs.** I had planned an episode counter. I hadn't planned that it would also need to cover series. It was only when I added real series entries that I noticed the SQL query had an overly restrictive \`WHERE media_type = 'anime'\`. No specification would have caught this beforehand. It's an argument for iterating fast on real things, not over-specifying upfront.
+
+**Finishing something has its own value.** In management, many things are always "in progress" — conversations, initiatives, cultural changes. A side project that starts and gets deployed is a loop that closes. It's rare and it feels good.
 
 ---
 
 ## What's next
 
-The media library is alive. We add entries regularly. Stats evolve. The genre profile shifts as we explore new things.
+The media library is running. Entries are being added. Statistics reflect something true about thirty years of anime watched from a couch, on Saturday mornings, in front of Club Dorothée.
 
-The next technical step I'm considering: adding **OUTPAINT** and **INPAINTING** modes to ImagiChet (the image generation tool) — because side projects have a way of generating their own next ideas.
-
-But more than anything, this project gave back something that management tends to slowly erode: the pleasure of building something that works, from A to Z, alone, in the silence of a weekend.`
+The next technical area I want to get my hands into: advanced image editing modes (outpainting, inpainting) on ImagiChet. Because side projects have this property: they generate their own next questions.`
 
 async function seedBlogMedialist() {
   console.log('📚  Seeding Médiathèque blog post...')
@@ -209,12 +189,12 @@ async function seedBlogMedialist() {
 
   await db.insert(blogPosts).values({
     slug: 'medialist-rust-tracker',
-    titleFr: 'J\'ai construit un tracker multimédia en Rust pour me souvenir de tout ce qu\'on a regardé ensemble',
-    titleEn: 'I built a multimedia tracker in Rust to remember everything we watched together',
+    titleFr: 'J\'ai construit un tracker multimédia en Rust pour garder les mains dans le cambouis',
+    titleEn: 'I built a multimedia tracker in Rust to keep my hands dirty',
     contentFr,
     contentEn,
-    excerptFr: 'Dragon Ball Z sur RTL9, un mercredi après-midi. La distance Paris–Phnom Penh. Un tracker en Rust écrit un vendredi soir. Le récit d\'un Engineering Manager qui reprend les mains dans le cambouis — et ce que ça lui a appris.',
-    excerptEn: 'Dragon Ball Z on RTL9, a Wednesday afternoon. The Paris–Phnom Penh distance. A Rust tracker written on a Friday evening. The story of an Engineering Manager getting hands-on again — and what it taught him.',
+    excerptFr: 'Dragon Ball Z sur le Club Dorothée, cinq ans, un samedi matin. Trente ans plus tard, Engineering Manager — et l\'envie de construire quelque chose de complexe juste pour voir si je suis encore capable de le faire.',
+    excerptEn: 'Dragon Ball Z on Club Dorothée, five years old, a Saturday morning. Thirty years later, Engineering Manager — and the urge to build something complex just to see if I\'m still capable of doing it.',
     tags: ['Rust', 'Side Project', 'Engineering Manager', 'Anime', 'Architecture', 'PostgreSQL'],
     published: true,
     createdAt: new Date('2026-03-08'),

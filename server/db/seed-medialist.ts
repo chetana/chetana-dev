@@ -20,24 +20,26 @@ async function seedMedialist() {
     titleFr: 'Médiathèque',
     titleEn: 'Media Library',
     titleKm: 'បណ្ណាល័យ',
-    descriptionFr: `## Qu'est-ce que la Médiathèque ?
+    descriptionFr: `## Pourquoi ce projet ?
 
-La Médiathèque est un tracker multimédia personnel qui centralise l'historique de consommation culturelle de deux personnes vivant à 9 000 km de distance. Animés, jeux vidéo, films, séries — tout est tracé en un seul endroit, avec des notes personnelles, des statuts de progression, et des statistiques détaillées.
+La Médiathèque est née d'une envie simple en tant qu'Engineering Manager : construire quelque chose de suffisamment complexe pour être réellement formateur, mais suffisamment personnel pour rester motivant sur la durée.
 
-Ce n'est pas un outil public. C'est un carnet de bord culturel commun, un reflet de ce qu'on a regardé, joué, ressenti — ensemble ou séparément, mais toujours partagé.
+Tracker des animés, jeux, films et séries, ça semble anodin. Mais dès qu'on creuse, les problèmes intéressants s'accumulent : comment agréger des données de trois APIs aux structures différentes ? Comment modéliser un suivi d'épisodes qui fonctionne aussi bien pour 12 épisodes que pour 1 000 ? Comment produire des statistiques personnelles qui révèlent quelque chose de vrai sur vos préférences, plutôt que juste compter des entrées ? Et quel rôle donner à l'IA dans l'enrichissement de chaque fiche ?
+
+Ce sont des problèmes d'ingénierie réels — pas des exercices de formation, mais des questions auxquelles il faut répondre si on veut que l'outil soit utile.
 
 ---
 
 ## Architecture : deux couches distinctes
 
-Le projet repose sur une séparation claire entre le stockage des données et l'affichage.
+Le projet repose sur une séparation nette entre le stockage des données et leur présentation.
 
 ### chetaku-rs — le backend Rust
 
-\`chetaku-rs\` est une API REST écrite en **Rust avec Axum**, déployée sur **Google Cloud Run** (serverless, région Europe-West1). Elle gère l'intégralité des données de la médiathèque :
+\`chetaku-rs\` est une API REST écrite en **Rust avec Axum**, déployée sur **Google Cloud Run** (serverless, région Europe-West1). Elle gère l'intégralité des données persistantes :
 
 - **Base de données** : PostgreSQL (Neon serverless)
-- **ORM** : SQLx (requêtes paramétrées, pas de macros)
+- **ORM** : SQLx (requêtes paramétrées, validation SQL au build)
 - **Authentification** : clé API statique (\`x-api-key\`) pour les opérations d'écriture
 - **CORS** : restreint à \`chetana.dev\` et \`localhost:3000\`
 
@@ -57,119 +59,110 @@ POST   /sync/series                → synchronisation depuis TMDB
 
 ### chetana-dev — le frontend Nuxt 3
 
-Le frontend est intégré directement dans le portfolio **chetana.dev** (Nuxt 3 / Nitro). Il sert de couche d'orchestration : il contacte \`chetaku-rs\` pour les données stockées, puis enrichit ces données à la volée en appelant les APIs tierces (Jikan, RAWG, TMDB) pour les détails riches (synopsis, cast, épisodes...).
+Le frontend est intégré dans le portfolio **chetana.dev** (Nuxt 3 / Nitro). Il joue le rôle de couche d'orchestration : il récupère les données stockées depuis \`chetaku-rs\`, puis les enrichit à la volée en interrogeant les APIs tierces selon le type de média.
 
 ---
 
 ## Modèle de données
 
-Chaque entrée dans la table \`media_entries\` contient :
+Chaque entrée dans \`media_entries\` stocke les données de suivi personnel — pas les métadonnées publiques, qui restent côté APIs :
 
 | Champ | Type | Description |
 | --- | --- | --- |
-| \`id\` | INTEGER | Identifiant interne |
 | \`media_type\` | TEXT | \`anime\` / \`game\` / \`movie\` / \`series\` |
 | \`external_id\` | TEXT | ID dans l'API source (MAL ID, RAWG slug, TMDB ID) |
-| \`title\` | TEXT | Titre affiché |
 | \`status\` | TEXT | \`watching\` / \`completed\` / \`plan_to_watch\` / etc. |
 | \`score\` | SMALLINT | Note personnelle (1–10), nullable |
-| \`episodes_watched\` | INTEGER | Épisodes regardés (anime et séries) |
+| \`episodes_watched\` | INTEGER | Épisodes vus (anime et séries) |
 | \`playtime_hours\` | INTEGER | Heures jouées (jeux) |
-| \`genres\` | TEXT[] | Tableau de genres |
-| \`creator\` | TEXT | Studio (anime), développeur (jeu), réalisateur/créateur (film/série) |
+| \`genres\` | TEXT[] | Genres (dénormalisés pour les requêtes stats) |
+| \`creator\` | TEXT | Studio, développeur, réalisateur ou showrunner |
 | \`notes\` | TEXT | Notes personnelles libres |
-| \`platform\` | TEXT | Plateforme de jeu |
-| \`cover_url\` | TEXT | URL de la jaquette |
+
+La donnée enrichie — synopsis, cast, épisodes, captures d'écran — n'est jamais stockée. Elle est fetched à la demande sur la page de détail, ce qui maintient la base légère et les APIs comme source de vérité.
 
 ---
 
-## APIs tierces
+## Orchestration multi-API : le vrai problème intéressant
 
-Selon le type de média, les détails enrichis viennent de sources différentes :
+Chaque type de média a sa propre source de données, avec des structures différentes et des contraintes différentes :
 
-### Anime — Jikan (MAL)
-**Jikan** est l'API REST non officielle de MyAnimeList. Elle retourne synopsis, score global, studios, liste des épisodes (avec flags \`filler\` et \`recap\`), bande-annonce YouTube.
+### Anime — Jikan (MyAnimeList)
+Jikan retourne synopsis, score, studios, liste d'épisodes avec flags \`filler\` et \`recap\`, et trailer YouTube. La pagination des épisodes (100 par page) impose de gérer le cas \`has_next_page\`.
 
-Pour les arcs narratifs, les données sont **hardcodées côté serveur** dans \`server/utils/anime-arcs.ts\` : un objet \`ANIME_ARCS\` indexé par MAL ID, permettant d'afficher quels arcs l'utilisateur a vus sans dépendre d'une API externe.
+Les arcs narratifs sont **hardcodés côté serveur** dans \`server/utils/anime-arcs.ts\` — un objet indexé par MAL ID. Alternative fragile : scraper un wiki. Alternative choisie : données stables, contrôlées, maintenables.
 
 ### Jeux — RAWG
-**RAWG** est la plus grande base de données de jeux vidéo. Elle fournit description, score Metacritic, site officiel, équipes de développement et éditeurs, captures d'écran in-game.
+RAWG fournit description, score Metacritic, équipes de développement, éditeurs, captures d'écran in-game. L'identifiant externe est un **slug** (texte), pas un entier — ce qui impose un typage cohérent dans toute la chaîne.
 
 ### Films & Séries — TMDB
-**The Movie Database** fournit synopsis, score, tagline, durée (films), réalisateur, cast (top 10 avec photos), et la liste complète des épisodes par saison (fetched en parallèle jusqu'à 15 saisons).
+TMDB pose le défi le plus intéressant pour les séries : récupérer la liste complète des épisodes impose un appel **par saison**, en parallèle, avec gestion des séries à 15+ saisons. La solution : \`Promise.allSettled\` sur un maximum de 15 saisons, avec dégradation gracieuse si un appel échoue.
+
+Pour les films, TMDB fournit aussi le cast (top 10 avec photos), le réalisateur, le tagline et la durée — des données qui rendent chaque fiche nettement plus riche qu'une simple jaquette + score.
 
 ---
 
-## Page de détail
+## Suivi d'épisodes et logique "vous êtes ici"
 
-La page \`/projects/medialist/[slug]\` affiche une vue riche pour chaque entrée. Les données statiques viennent de \`chetaku-rs\`, les données enrichies d'un endpoint \`/api/medialist/detail\` qui appelle les APIs tierces à la demande.
+Suivre des épisodes de manière significative est plus complexe qu'un simple compteur. L'interface affiche :
 
-### Sections communes
-- **Hero** avec jaquette, titre, type de média, statut, score personnel, score externe (MAL / Metacritic / TMDB)
-- **Synopsis / Overview / Description** selon le type
-- **Barre de progression** épisodes ou heures jouées
-- **Notes personnelles**
+- **Barre de progression** globale (épisodes vus / total)
+- **Indicateur par arc** (anime) : quels arcs sont complétés, en cours, non commencés
+- **Indicateur par saison** (séries) : quelle saison correspond à l'épisode actuel
 
-### Sections spécifiques
-- **Anime** : liste des épisodes avec flags filler/recap, arcs narratifs (collapsibles), bande-annonce YouTube
-- **Jeux** : captures d'écran (grid 3 colonnes), studios et éditeurs, site officiel
-- **Films** : réalisateur, tagline, durée, cast (grid de cercles avec photos)
-- **Séries** : créateur, nombre de saisons/épisodes, cast, liste des saisons collapsibles avec indicateur "vous êtes ici"
+Pour les saisons, l'algorithme calcule un **offset cumulatif** : la somme des épisodes de toutes les saisons précédentes. Si j'ai vu 45 épisodes et que les saisons font respectivement 10, 13 et 26 épisodes, je suis en saison 3, épisode 22. Ce calcul est fait côté client sur les données TMDB, sans aucun appel supplémentaire.
 
 ---
 
-## Statistiques pondérées
+## Statistiques pondérées : le love_score
 
-L'endpoint \`/stats\` calcule des métriques avancées directement en SQL :
+L'endpoint \`/stats\` calcule des métriques avancées directement en SQL, en parallèle avec \`tokio::join!\` :
 
-- **Total par type** : animés, jeux, films, séries
-- **Épisodes regardés** : anime + séries
-- **Heures jouées** : playtime cumulé
-- **Distribution des scores** : histogramme par note (1–10)
-- **Genres préférés** : pondérés par \`love_score = count × avg_score\` — balance popularité et appréciation personnelle
-- **Studios / Devs favoris** : top 6 classés par fréquence puis par note
+- **Distribution des scores** : histogramme 1–10 par type de média
+- **Genres préférés** : pondérés par \`love_score = COUNT(*) × AVG(score)\` — un genre vu 12 fois avec une note moyenne de 9.2 est mieux classé qu'un genre vu 30 fois avec une note de 5.8
+- **Studios / Devs favoris** : top 6 par fréquence puis par note moyenne
 - **Statuts** : répartition watching / completed / plan_to_watch
 
-La page affiche ces stats dans une section **"Profil"** au-dessus des filtres, avec des barres proportionnelles au love_score et un dégradé de couleur selon le type de média.
+Le \`love_score\` est la métrique centrale. Un simple compteur ne dit pas grand chose — il reflète l'exposition, pas l'appréciation. Le \`love_score\` force une balance entre fréquence et qualité perçue, ce qui donne un profil de préférences nettement plus honnête.
 
 ---
 
-## Pourquoi Rust pour le backend ?
+## Pourquoi Rust ?
 
-Le choix de Rust pour \`chetaku-rs\` n'était pas motivé par la performance — le volume de données est modeste, Node.js aurait largement suffi. C'était une décision **délibérée de montée en compétence personnelle**.
+Rust n'était pas le choix pragmatique ici — Node.js aurait suffi. C'était un choix **délibéré de montée en compétence**.
 
-En tant qu'Engineering Manager, je passe la plupart de mon temps à coordonner, aligner, décider — rarement à coder. Rust est un langage que je recommande parfois à mes équipes pour certains contextes (performance critique, sécurité mémoire) sans l'avoir pratiqué moi-même sur un vrai projet. Cette médiathèque était l'occasion de combler cet écart.
+En tant qu'Engineering Manager, je suis régulièrement amené à évaluer des choix d'architecture impliquant Rust : performance critique, sécurité mémoire, workloads embarqués. Mais recommander ou challenger un choix Rust sans l'avoir pratiqué soi-même sur un vrai projet reste une position fragile. Ce projet était l'occasion de combler cet écart.
 
-Mettre les mains dans Rust — ses ownership rules, son borrow checker, son système de types expressif — m'a rendu bien plus crédible dans les conversations techniques sur les trade-offs entre Rust, Go et C++. Je peux maintenant discuter des vrais frictions (la courbe d'apprentissage, la lenteur de compilation, la verbosité des traits) avec l'expérience du praticien, pas du théoricien.
+Le borrow checker, les lifetimes, le modèle d'ownership, les traits async — tout ça ne se comprend vraiment qu'en les rencontrant sur du code réel, pas en lisant de la documentation. Après ce projet, je peux discuter des frictions réelles de Rust avec mes équipes à partir d'une expérience concrète, pas d'une lecture.
 
-Axum est un framework web minimaliste, typé à la compilation, sans magie cachée. Chaque route est une fonction Rust ordinaire. SQLx valide les requêtes SQL au moment du build. Aucune exception runtime, aucun crash silencieux.
-
-Déployé en image Docker minimale sur Cloud Run, \`chetaku-rs\` démarre en sous-seconde, consomme ~15 Mo de RAM, et tient les requêtes concurrentes sans effort. Le coût mensuel sur Cloud Run Free Tier est de zéro.
+Résultat opérationnel : \`chetaku-rs\` tourne sur Cloud Run Free Tier, démarre en sous-seconde, consomme ~15 Mo de RAM, et n'a eu aucun crash depuis son déploiement. Le compilateur Rust a éliminé à la conception les classes entières de bugs qui auraient pu apparaître en production.
 
 ---
 
-## Sécurité et propriété
+## Sécurité et accès
 
-La Médiathèque est **en lecture publique** : n'importe qui peut voir la liste et les détails. Les opérations d'écriture (ajout, édition, suppression) sont réservées au propriétaire authentifié via Google OAuth (\`chetana.yin@gmail.com\`). Les appels vers \`chetaku-rs\` depuis le frontend passent par une clé API interne (\`x-api-key\`) jamais exposée au client.`,
+La médiathèque est **en lecture publique** : la liste et les fiches sont accessibles à tous. Les opérations d'écriture (ajout, édition, suppression) sont réservées au propriétaire authentifié via Google OAuth. Les appels vers \`chetaku-rs\` transitent par une clé API interne jamais exposée côté client.`,
 
-    descriptionEn: `## What is the Media Library?
+    descriptionEn: `## Why this project?
 
-The Media Library is a personal multimedia tracker that centralises the cultural consumption history of two people living 9,000 km apart. Anime, video games, movies, series — everything is tracked in one place, with personal scores, progress statuses, and detailed statistics.
+The Media Library started from a simple goal as an Engineering Manager: build something complex enough to be genuinely instructive, but personal enough to stay motivating over time.
 
-This isn't a public tool. It's a shared cultural logbook, a reflection of what we've watched, played, and felt — together or apart, but always shared.
+Tracking anime, games, movies and series sounds trivial. But as soon as you dig in, interesting problems accumulate: how do you aggregate data from three APIs with different structures? How do you model episode tracking that works equally well for 12 episodes and 1,000? How do you produce personal statistics that reveal something true about your preferences, rather than just counting entries? And what role should AI play in enriching each entry?
+
+These are real engineering problems — not training exercises, but questions that need answers if the tool is going to be useful.
 
 ---
 
 ## Architecture: two distinct layers
 
-The project relies on a clear separation between data storage and display.
+The project relies on a clean separation between data storage and its presentation.
 
 ### chetaku-rs — the Rust backend
 
-\`chetaku-rs\` is a REST API written in **Rust with Axum**, deployed on **Google Cloud Run** (serverless, Europe-West1 region). It manages all media library data:
+\`chetaku-rs\` is a REST API written in **Rust with Axum**, deployed on **Google Cloud Run** (serverless, Europe-West1 region). It manages all persistent data:
 
 - **Database**: PostgreSQL (Neon serverless)
-- **ORM**: SQLx (parameterised queries, no macros)
+- **ORM**: SQLx (parameterised queries, SQL validated at build time)
 - **Authentication**: static API key (\`x-api-key\`) for write operations
 - **CORS**: restricted to \`chetana.dev\` and \`localhost:3000\`
 
@@ -189,102 +182,91 @@ POST   /sync/series                → sync from TMDB
 
 ### chetana-dev — the Nuxt 3 frontend
 
-The frontend is integrated directly into the **chetana.dev** portfolio (Nuxt 3 / Nitro). It acts as an orchestration layer: it contacts \`chetaku-rs\` for stored data, then enriches that data on the fly by calling third-party APIs (Jikan, RAWG, TMDB) for rich details (synopsis, cast, episodes...).
+The frontend lives inside the **chetana.dev** portfolio (Nuxt 3 / Nitro). It acts as an orchestration layer: it fetches stored data from \`chetaku-rs\`, then enriches it on the fly by querying third-party APIs depending on the media type.
 
 ---
 
 ## Data Model
 
-Each entry in the \`media_entries\` table contains:
+Each entry in \`media_entries\` stores personal tracking data — not public metadata, which stays on the API side:
 
 | Field | Type | Description |
 | --- | --- | --- |
-| \`id\` | INTEGER | Internal identifier |
 | \`media_type\` | TEXT | \`anime\` / \`game\` / \`movie\` / \`series\` |
 | \`external_id\` | TEXT | ID in the source API (MAL ID, RAWG slug, TMDB ID) |
-| \`title\` | TEXT | Display title |
 | \`status\` | TEXT | \`watching\` / \`completed\` / \`plan_to_watch\` / etc. |
 | \`score\` | SMALLINT | Personal rating (1–10), nullable |
 | \`episodes_watched\` | INTEGER | Episodes watched (anime and series) |
 | \`playtime_hours\` | INTEGER | Hours played (games) |
-| \`genres\` | TEXT[] | Genre array |
-| \`creator\` | TEXT | Studio (anime), developer (game), director/creator (movie/series) |
+| \`genres\` | TEXT[] | Genres (denormalised for stats queries) |
+| \`creator\` | TEXT | Studio, developer, director or showrunner |
 | \`notes\` | TEXT | Free personal notes |
-| \`platform\` | TEXT | Gaming platform |
-| \`cover_url\` | TEXT | Cover image URL |
+
+Enriched data — synopsis, cast, episodes, screenshots — is never stored. It's fetched on demand on the detail page, keeping the database light and the APIs as the source of truth.
 
 ---
 
-## Third-party APIs
+## Multi-API orchestration: the interesting problem
 
-Depending on the media type, enriched details come from different sources:
+Each media type has its own data source, with different structures and different constraints:
 
-### Anime — Jikan (MAL)
-**Jikan** is the unofficial REST API for MyAnimeList. It returns synopsis, global score, studios, episode list (with \`filler\` and \`recap\` flags), and YouTube trailer.
+### Anime — Jikan (MyAnimeList)
+Jikan returns synopsis, score, studios, episode list with \`filler\` and \`recap\` flags, and YouTube trailer. Episode pagination (100 per page) requires handling the \`has_next_page\` case.
 
-Narrative arcs are **hardcoded server-side** in \`server/utils/anime-arcs.ts\`: an \`ANIME_ARCS\` object indexed by MAL ID, allowing arc display without depending on an external API.
+Narrative arcs are **hardcoded server-side** in \`server/utils/anime-arcs.ts\` — an object indexed by MAL ID. The fragile alternative: scraping a wiki. The chosen alternative: stable, controlled, maintainable data.
 
 ### Games — RAWG
-**RAWG** is the largest video game database. It provides description, Metacritic score, official website, development teams and publishers, in-game screenshots.
+RAWG provides description, Metacritic score, development teams, publishers, in-game screenshots. The external identifier is a **slug** (text), not an integer — requiring consistent typing throughout the chain.
 
 ### Movies & Series — TMDB
-**The Movie Database** provides synopsis, score, tagline, runtime (movies), director, cast (top 10 with photos), and the complete episode list per season (fetched in parallel for up to 15 seasons).
+TMDB poses the most interesting challenge for series: retrieving the complete episode list requires one call **per season**, in parallel, handling series with 15+ seasons. The solution: \`Promise.allSettled\` over a maximum of 15 seasons, with graceful degradation if a call fails.
+
+For movies, TMDB also provides cast (top 10 with photos), director, tagline and runtime — data that makes each entry significantly richer than a cover image and a score.
 
 ---
 
-## Detail Page
+## Episode tracking and the "you are here" logic
 
-The \`/projects/medialist/[slug]\` page displays a rich view for each entry. Static data comes from \`chetaku-rs\`, enriched data from a \`/api/medialist/detail\` endpoint that calls third-party APIs on demand.
+Tracking episodes meaningfully is more complex than a simple counter. The interface shows:
 
-### Common sections
-- **Hero** with cover, title, media type, status, personal score, external score (MAL / Metacritic / TMDB)
-- **Synopsis / Overview / Description** depending on type
-- **Progress bar** for episodes or hours played
-- **Personal notes**
+- **Global progress bar** (episodes watched / total)
+- **Per-arc indicator** (anime): which arcs are completed, in progress, not started
+- **Per-season indicator** (series): which season the current episode falls in
 
-### Type-specific sections
-- **Anime**: episode list with filler/recap flags, narrative arcs (collapsible), YouTube trailer
-- **Games**: screenshots (3-column grid), studios and publishers, official website
-- **Movies**: director, tagline, runtime, cast (circle grid with photos)
-- **Series**: creator, season/episode count, cast, collapsible season list with "you are here" indicator
+For seasons, the algorithm calculates a **cumulative offset**: the sum of all episodes in previous seasons. If you've watched 45 episodes and the seasons have 10, 13 and 26 episodes respectively, you're in season 3, episode 22. This is computed client-side from TMDB data, with no additional API call.
 
 ---
 
-## Weighted Statistics
+## Weighted statistics: the love_score
 
-The \`/stats\` endpoint calculates advanced metrics directly in SQL:
+The \`/stats\` endpoint calculates advanced metrics directly in SQL, in parallel with \`tokio::join!\`:
 
-- **Total by type**: anime, games, movies, series
-- **Episodes watched**: anime + series
-- **Hours played**: cumulative playtime
-- **Score distribution**: histogram by rating (1–10)
-- **Favourite genres**: weighted by \`love_score = count × avg_score\` — balancing popularity and personal appreciation
-- **Top studios / devs**: top 6 ranked by frequency then by score
+- **Score distribution**: 1–10 histogram per media type
+- **Favourite genres**: weighted by \`love_score = COUNT(*) × AVG(score)\` — a genre watched 12 times with an average rating of 9.2 ranks higher than one watched 30 times with a rating of 5.8
+- **Top studios / devs**: top 6 ranked by frequency then by average score
 - **Statuses**: breakdown of watching / completed / plan_to_watch
 
-The page displays these stats in a **"Profile"** section above the filters, with bars proportional to the love_score and a colour gradient based on media type.
+The \`love_score\` is the central metric. A simple count says little — it reflects exposure, not appreciation. The \`love_score\` forces a balance between frequency and perceived quality, producing a significantly more honest preference profile.
 
 ---
 
-## Why Rust for the backend?
+## Why Rust?
 
-The choice of Rust for \`chetaku-rs\` was not driven by performance requirements — the data volume is modest, Node.js would have been perfectly fine. It was a **deliberate skill-building decision**.
+Rust wasn't the pragmatic choice here — Node.js would have been perfectly fine. It was a **deliberate skill-building decision**.
 
-As an Engineering Manager, most of my time goes into coordination, alignment, and technical decision-making — rarely hands-on coding. Rust is a language I sometimes recommend to my teams for specific contexts (performance-critical paths, memory safety requirements) without having actually shipped a real project in it myself. This media library was the opportunity to close that gap.
+As an Engineering Manager, I'm regularly called on to evaluate architectural choices involving Rust: performance-critical paths, memory safety requirements, embedded workloads. But recommending or challenging a Rust decision without having shipped a real project in it myself remains a fragile position. This project was the opportunity to close that gap.
 
-Getting hands-on with Rust — its ownership rules, borrow checker, and expressive type system — made me significantly more credible in technical conversations about trade-offs between Rust, Go, and C++. I can now discuss the real friction points (the learning curve, slow compile times, trait verbosity) as a practitioner, not a theorist.
+The borrow checker, lifetimes, ownership model, async traits — none of it is truly understood until you encounter it in real code, not documentation. After this project, I can discuss the real friction points of Rust with my teams from concrete experience, not from reading.
 
-Axum is a minimalist, compile-time typed web framework with no hidden magic. Every route is an ordinary Rust function. SQLx validates SQL queries at build time. No runtime exceptions, no silent crashes.
-
-Deployed as a minimal Docker image on Cloud Run, \`chetaku-rs\` starts in under a second, uses ~15 MB of RAM, and handles concurrent requests effortlessly. Monthly cost on Cloud Run Free Tier: zero.
+Operational result: \`chetaku-rs\` runs on Cloud Run Free Tier, starts in under a second, uses ~15 MB of RAM, and has had zero crashes since deployment. The Rust compiler eliminated entire classes of bugs at design time that would otherwise have surfaced in production.
 
 ---
 
-## Security and Ownership
+## Security and access
 
-The Media Library is **publicly readable**: anyone can view the list and details. Write operations (add, edit, delete) are restricted to the authenticated owner via Google OAuth (\`chetana.yin@gmail.com\`). Calls from the frontend to \`chetaku-rs\` go through an internal API key (\`x-api-key\`) never exposed to the client.`,
+The media library is **publicly readable**: the list and detail pages are accessible to everyone. Write operations (add, edit, delete) are restricted to the authenticated owner via Google OAuth. Calls from the frontend to \`chetaku-rs\` go through an internal API key never exposed to the client.`,
 
-    tags: ['Rust', 'Axum', 'PostgreSQL', 'Nuxt 3', 'TMDB', 'Jikan', 'RAWG', 'Cloud Run', 'TypeScript'],
+    tags: ['Rust', 'Axum', 'PostgreSQL', 'Nuxt 3', 'TMDB', 'Jikan', 'RAWG', 'Cloud Run', 'TypeScript', 'Engineering Manager'],
     demoUrl: 'https://chetana.dev/projects/medialist',
     githubUrl: 'https://github.com/chetana/chetaku-rs',
     featured: true,
