@@ -312,7 +312,12 @@ useSeoMeta({
 
     <!-- Grid -->
     <div v-else-if="filtered.length" class="media-grid">
-      <div v-for="entry in filtered" :key="entry.id" class="media-card">
+      <NuxtLink
+        v-for="entry in filtered"
+        :key="entry.id"
+        :to="`/projects/medialist/${entry.media_type}-${entry.external_id}`"
+        class="media-card"
+      >
         <div class="card-cover">
           <img v-if="entry.cover_url" :src="entry.cover_url" :alt="entry.title" loading="lazy" />
           <div v-else class="cover-placeholder">{{ entry.media_type === 'anime' ? '🎌' : '🎮' }}</div>
@@ -366,10 +371,10 @@ useSeoMeta({
             <span v-if="entry.media_type === 'game' && entry.platform" class="extra-info">
               {{ entry.platform }}
             </span>
-            <button v-if="isOwner" class="edit-btn" @click.stop="openEdit(entry)" title="Modifier">✏️</button>
+            <button v-if="isOwner" class="edit-btn" @click.prevent.stop="openEdit(entry)" title="Modifier">✏️</button>
           </div>
         </div>
-      </div>
+      </NuxtLink>
     </div>
 
     <!-- Empty -->
@@ -695,6 +700,8 @@ useSeoMeta({
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
+  text-decoration: none;
+  color: inherit;
 }
 
 .media-card:hover {
