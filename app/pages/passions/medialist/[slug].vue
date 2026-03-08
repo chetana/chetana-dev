@@ -316,7 +316,7 @@ async function sendChatMessage() {
 
 <template>
   <div class="section detail-page" style="padding-top: 8rem;">
-    <NuxtLink to="/projects/medialist" class="back-link">← Médiathèque</NuxtLink>
+    <NuxtLink to="/passions/medialist" class="back-link">← Médiathèque</NuxtLink>
 
     <!-- Loading -->
     <div v-if="pending" class="loading-state">
@@ -327,7 +327,7 @@ async function sendChatMessage() {
     <!-- Error -->
     <div v-else-if="error" class="error-state">
       <p>Entrée introuvable.</p>
-      <NuxtLink to="/projects/medialist" class="btn-back">← Retour à la liste</NuxtLink>
+      <NuxtLink to="/passions/medialist" class="btn-back">← Retour à la liste</NuxtLink>
     </div>
 
     <!-- Content -->

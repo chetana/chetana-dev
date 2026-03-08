@@ -398,7 +398,7 @@ useSeoMeta({
 
 <template>
   <div class="section medialist-page" style="padding-top: 8rem;">
-    <NuxtLink to="/projects" class="back-link">← Projets</NuxtLink>
+    <NuxtLink to="/passions" class="back-link">← Passions</NuxtLink>
 
     <div class="section-label">Médiathèque</div>
     <h1 class="section-title">Médiathèque</h1>
@@ -552,7 +552,7 @@ useSeoMeta({
       <NuxtLink
         v-for="entry in filtered"
         :key="entry.id"
-        :to="`/projects/medialist/${entry.media_type}-${entry.external_id}`"
+        :to="`/passions/medialist/${entry.media_type}-${entry.external_id}`"
         class="media-card"
       >
         <div class="card-cover">

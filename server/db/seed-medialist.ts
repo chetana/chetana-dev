@@ -267,7 +267,7 @@ Operational result: \`chetaku-rs\` runs on Cloud Run Free Tier, starts in under 
 The media library is **publicly readable**: the list and detail pages are accessible to everyone. Write operations (add, edit, delete) are restricted to the authenticated owner via Google OAuth. Calls from the frontend to \`chetaku-rs\` go through an internal API key never exposed to the client.`,
 
     tags: ['Rust', 'Axum', 'PostgreSQL', 'Nuxt 3', 'TMDB', 'Jikan', 'RAWG', 'Cloud Run', 'TypeScript', 'Engineering Manager'],
-    demoUrl: 'https://chetana.dev/projects/medialist',
+    demoUrl: 'https://chetana.dev/passions/medialist',
     githubUrl: 'https://github.com/chetana/chetaku-rs',
     featured: true,
   })

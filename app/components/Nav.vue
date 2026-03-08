@@ -11,8 +11,9 @@
       <a href="/#experience" class="nav-link" :class="{ 'scrollspy-active': activeSection === 'experience' }" @click.prevent="scrollToSection('experience')">{{ t('nav.experience') }}</a>
       <a href="/#skills"     class="nav-link" :class="{ 'scrollspy-active': activeSection === 'skills' }"     @click.prevent="scrollToSection('skills')">{{ t('nav.skills') }}</a>
       <a href="/#education"  class="nav-link" :class="{ 'scrollspy-active': activeSection === 'education' }"  @click.prevent="scrollToSection('education')">{{ t('nav.education') }}</a>
-      <NuxtLink to="/projects" class="nav-link" @click="mobileOpen = false">{{ t('nav.projects') }}</NuxtLink>
-      <NuxtLink to="/blog"     class="nav-link" @click="mobileOpen = false">{{ t('nav.blog') }}</NuxtLink>
+      <NuxtLink to="/projects"  class="nav-link" @click="mobileOpen = false">{{ t('nav.projects') }}</NuxtLink>
+      <NuxtLink to="/passions"  class="nav-link" @click="mobileOpen = false">{{ t('nav.passions') }}</NuxtLink>
+      <NuxtLink to="/blog"      class="nav-link" @click="mobileOpen = false">{{ t('nav.blog') }}</NuxtLink>
       <NuxtLink to="/contact"  class="nav-link" @click="mobileOpen = false">{{ t('nav.contact') }}</NuxtLink>
     </nav>
 

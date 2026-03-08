@@ -7,6 +7,7 @@ const translations: Record<string, Record<string, string>> = {
   'nav.projects': { fr: 'Projets', en: 'Projects', km: 'គម្រោង' },
   'nav.blog': { fr: 'Blog', en: 'Blog', km: 'ប្លុក' },
   'nav.contact': { fr: 'Contact', en: 'Contact', km: 'ទំនាក់ទំនង' },
+  'nav.passions': { fr: 'Passions', en: 'Passions', km: 'ចំណូលចិត្ត' },
 
   // Hero
   'hero.badge': { fr: 'Ouvert aux opportunités', en: 'Open to opportunities', km: 'បើកទទួលឱកាស' },
