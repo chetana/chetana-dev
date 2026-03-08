@@ -82,9 +82,9 @@ function coupleContext(author?: string): string {
   const normalized = author?.normalize('NFD').replace(/[\u0300-\u036f]/g, '') ?? ''
   const isChet = author ? /^(chet|chetana)$/i.test(normalized) : null
   const authorLine = isChet === true
-    ? "Ce message est écrit par CHET (homme)."
+    ? "Ce message est écrit par CHET (homme). Dans la traduction khmère : \"je/me/moi\" → \"bang\" (បង) OBLIGATOIRE, jamais \"oun\" ni \"knhom\"."
     : isChet === false
-      ? "Ce message est écrit par LYS (femme)."
+      ? "Ce message est écrit par LYS (femme). Dans la traduction khmère : \"je/me/moi\" → \"oun\" (អូន) OBLIGATOIRE, jamais \"bang\"."
       : "" // auteur inconnu : contexte général sans préciser qui écrit
 
   return `CONTEXTE DU COUPLE (respecter impérativement) :
