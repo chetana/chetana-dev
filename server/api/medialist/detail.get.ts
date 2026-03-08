@@ -76,6 +76,26 @@ export default defineEventHandler(async (event) => {
   // ── Series ───────────────────────────────────────────────────────────────────
   if (type === 'series') {
     const tv = await $fetch<any>(`https://api.themoviedb.org/3/tv/${externalId}?api_key=${config.tmdbApiKey}&language=fr-FR`).catch(() => null)
+
+    // Fetch episodes for each real season (exclude season 0 = specials, max 15)
+    const seasons: any[] = (tv?.seasons ?? []).filter((s: any) => s.season_number > 0).slice(0, 15)
+    const seasonResults = await Promise.allSettled(
+      seasons.map((s: any) =>
+        $fetch<any>(`https://api.themoviedb.org/3/tv/${externalId}/season/${s.season_number}?api_key=${config.tmdbApiKey}&language=fr-FR`)
+      )
+    )
+    const seasons_list = seasons.map((s: any, i: number) => ({
+      season_number: s.season_number,
+      name: s.name,
+      episode_count: s.episode_count,
+      episodes: seasonResults[i].status === 'fulfilled'
+        ? (seasonResults[i].value?.episodes ?? []).map((e: any) => ({
+            number: e.episode_number,
+            title: e.name ?? null,
+          }))
+        : [],
+    }))
+
     return {
       entry,
       type: 'series',
@@ -85,6 +105,7 @@ export default defineEventHandler(async (event) => {
       tagline: tv?.tagline ?? null,
       number_of_seasons: tv?.number_of_seasons ?? null,
       number_of_episodes: tv?.number_of_episodes ?? null,
+      seasons_list,
     }
   }
 

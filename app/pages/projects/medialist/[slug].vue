@@ -67,6 +67,13 @@ interface MovieDetail {
   runtime: number | null
 }
 
+interface SeriesSeason {
+  season_number: number
+  name: string
+  episode_count: number
+  episodes: Array<{ number: number; title: string | null }>
+}
+
 interface SeriesDetail {
   entry: MediaEntry
   type: 'series'
@@ -76,6 +83,7 @@ interface SeriesDetail {
   tagline: string | null
   number_of_seasons: number | null
   number_of_episodes: number | null
+  seasons_list: SeriesSeason[]
 }
 
 type Detail = AnimeDetail | GameDetail | MovieDetail | SeriesDetail
@@ -180,6 +188,32 @@ function episodesForArc(arc: AnimeArc): Episode[] {
   const eps = (detail.value as AnimeDetail).episodes_list
   const end = arc.end ?? 99999
   return eps.filter(ep => ep.number >= arc.start && ep.number <= end)
+}
+
+// Season expand state (series)
+const expandedSeason = ref<number | null>(null)
+function toggleSeason(idx: number) {
+  expandedSeason.value = expandedSeason.value === idx ? null : idx
+}
+
+// Which season the user is currently watching (based on cumulative episodes_watched)
+const currentSeason = computed(() => {
+  if (detail.value?.type !== 'series') return null
+  const seasons = (detail.value as SeriesDetail).seasons_list
+  if (!seasons?.length || !entry.value?.episodes_watched) return null
+  let cumul = 0
+  for (const s of seasons) {
+    cumul += s.episode_count
+    if (entry.value.episodes_watched <= cumul) return s
+  }
+  return null
+})
+
+// First episode number of a season (cumulative offset)
+function seasonEpOffset(seasonIdx: number): number {
+  if (detail.value?.type !== 'series') return 0
+  const seasons = (detail.value as SeriesDetail).seasons_list
+  return seasons.slice(0, seasonIdx).reduce((acc, s) => acc + s.episode_count, 0)
 }
 
 // Lightbox for screenshots
@@ -521,6 +555,47 @@ async function sendChatMessage() {
             <span class="ep-num">{{ ep.number }}</span>
             <span class="ep-title">{{ ep.title ?? '—' }}</span>
             <span v-if="ep.filler" class="ep-tag">Filler</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Seasons (series) ── -->
+      <section v-if="detail.type === 'series' && (detail as any).seasons_list?.length" class="content-section">
+        <h2 class="section-heading">Saisons</h2>
+        <div class="arcs-list">
+          <div
+            v-for="(season, idx) in (detail as SeriesDetail).seasons_list"
+            :key="season.season_number"
+            class="arc-item"
+            :class="{ 'is-current': currentSeason === season }"
+          >
+            <button class="arc-header" @click="toggleSeason(idx)">
+              <div class="arc-header-left">
+                <span class="arc-dot" :class="{ current: currentSeason === season }"></span>
+                <span class="arc-name">{{ season.name }}</span>
+                <span v-if="currentSeason === season" class="current-badge">← vous êtes ici</span>
+              </div>
+              <div class="arc-header-right">
+                <span class="arc-range">{{ season.episode_count }} ép.</span>
+                <span v-if="season.episodes.length" class="arc-chevron">
+                  {{ expandedSeason === idx ? '▲' : '▼' }}
+                </span>
+              </div>
+            </button>
+
+            <Transition name="arc-expand">
+              <div v-if="expandedSeason === idx && season.episodes.length" class="arc-episodes">
+                <div
+                  v-for="ep in season.episodes"
+                  :key="ep.number"
+                  class="arc-episode"
+                  :class="{ watched: entry?.episodes_watched && (seasonEpOffset(idx) + ep.number) <= entry.episodes_watched }"
+                >
+                  <span class="ep-num">S{{ season.season_number }}E{{ ep.number }}</span>
+                  <span class="ep-title">{{ ep.title ?? '—' }}</span>
+                </div>
+              </div>
+            </Transition>
           </div>
         </div>
       </section>
