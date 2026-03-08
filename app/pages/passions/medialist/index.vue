@@ -76,14 +76,14 @@ const config = useRuntimeConfig()
 // ── List & filters ──────────────────────────────────────────────────────────
 const typeFilter = ref<'' | 'anime' | 'game' | 'movie' | 'series'>('')
 const statusFilter = ref<'' | 'completed' | 'ongoing' | 'planned' | 'dropped'>('')
-const searchQuery = ref('')
+const titleFilter = ref('')
 
 const { data: allMedia, pending, refresh: refreshList } = useFetch<MediaEntry[]>(`${API_BASE}/media`)
 const { data: stats, refresh: refreshStats } = useFetch<Stats>(`${API_BASE}/stats`)
 
 const filtered = computed(() => {
   if (!allMedia.value) return []
-  const q = searchQuery.value.trim().toLowerCase()
+  const q = titleFilter.value.trim().toLowerCase()
   return allMedia.value.filter(m => {
     if (typeFilter.value && m.media_type !== typeFilter.value) return false
     if (statusFilter.value === 'ongoing') return ['watching', 'playing'].includes(m.status)
@@ -536,14 +536,14 @@ useSeoMeta({
     <div class="search-bar">
       <span class="search-icon">🔍</span>
       <input
-        v-model="searchQuery"
+        v-model="titleFilter"
         class="search-input"
         type="text"
         placeholder="Rechercher un titre…"
         autocomplete="off"
         spellcheck="false"
       />
-      <button v-if="searchQuery" class="search-clear" @click="searchQuery = ''">✕</button>
+      <button v-if="titleFilter" class="search-clear" @click="titleFilter = ''">✕</button>
     </div>
 
     <!-- Filters -->
@@ -640,9 +640,9 @@ useSeoMeta({
 
     <!-- Empty -->
     <div v-else class="empty-state">
-      <template v-if="searchQuery.trim()">
+      <template v-if="titleFilter.trim()">
         <p class="empty-title">Pas dans la liste</p>
-        <p class="empty-sub">« {{ searchQuery.trim() }} » n'a pas encore été ajouté.</p>
+        <p class="empty-sub">« {{ titleFilter.trim() }} » n'a pas encore été ajouté.</p>
       </template>
       <p v-else>Aucune entrée pour ces filtres.</p>
     </div>
@@ -754,7 +754,7 @@ useSeoMeta({
           <!-- Search input -->
           <div class="search-box">
             <input
-              v-model="searchQuery"
+              v-model="titleFilter"
               class="search-input"
               :placeholder="{ anime: 'Rechercher un animé...', game: 'Rechercher un jeu...', movie: 'Rechercher un film...', series: 'Rechercher une série...' }[searchType]"
               autofocus
