@@ -78,13 +78,13 @@
         </div>
       </NuxtLink>
 
-      <!-- Voyage — bientôt -->
-      <div class="tcg-card voyage disabled">
+      <!-- Voyage — live -->
+      <NuxtLink to="/passions/voyage" class="tcg-card voyage">
         <div class="card-shine" />
         <div class="card-inner">
           <div class="card-icon">✈️</div>
           <div class="card-content">
-            <span class="card-badge soon">Bientôt</span>
+            <span class="card-badge live">Live</span>
             <h2 class="card-title">Voyage</h2>
             <p class="card-desc">Carte des pays visités, anecdotes et photos marquantes par destination.</p>
             <div class="card-tags">
@@ -92,9 +92,9 @@
               <span class="tag">GCS</span>
             </div>
           </div>
-          <div class="card-arrow muted">→</div>
+          <div class="card-arrow">→</div>
         </div>
-      </div>
+      </NuxtLink>
     </div>
 
     <!-- Dots — mobile slideshow only -->

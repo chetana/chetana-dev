@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Voyages</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #0f0f11; color: #e5e5e5; min-height: 100vh; padding: 2rem 1rem; }
+    h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.25rem; color: #10b981; }
+    .subtitle { color: #6b7280; font-size: 0.85rem; margin-bottom: 2rem; }
+    .card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1.25rem; color: #a1a1aa; letter-spacing: 0.05em; text-transform: uppercase; font-size: 0.75rem; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 0.78rem; color: #9ca3af; font-weight: 500; }
+    input, select, textarea {
+      background: #09090b; border: 1px solid #27272a; color: #e5e5e5;
+      border-radius: 8px; padding: 0.55rem 0.75rem; font-size: 0.9rem;
+      font-family: inherit; width: 100%;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #10b981; }
+    textarea { resize: vertical; min-height: 80px; }
+    .btn { padding: 0.6rem 1.25rem; border-radius: 8px; border: none; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: #10b981; color: #000; }
+    .btn-danger  { background: #ef4444; color: #fff; font-size: 0.78rem; padding: 0.35rem 0.75rem; }
+    .btn-edit    { background: #3b82f6; color: #fff; font-size: 0.78rem; padding: 0.35rem 0.75rem; }
+    .btn-row { display: flex; gap: 0.75rem; align-items: center; margin-top: 1rem; }
+    #status { font-size: 0.85rem; padding: 0.5rem 0.75rem; border-radius: 6px; display: none; }
+    #status.ok  { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); display: block; }
+    #status.err { background: rgba(239,68,68,0.15);  color: #ef4444;  border: 1px solid rgba(239,68,68,0.3);  display: block; }
+    .trip-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .trip-row {
+      background: #09090b; border: 1px solid #27272a; border-radius: 8px;
+      padding: 0.75rem 1rem; display: flex; align-items: center; gap: 1rem;
+    }
+    .trip-info { flex: 1; }
+    .trip-title { font-weight: 600; font-size: 0.95rem; }
+    .trip-meta  { font-size: 0.78rem; color: #6b7280; margin-top: 0.2rem; }
+    .trip-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+    #edit-banner {
+      background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.3);
+      color: #60a5fa; border-radius: 8px; padding: 0.6rem 0.9rem;
+      font-size: 0.82rem; margin-bottom: 1rem; display: none;
+      align-items: center; justify-content: space-between; gap: 0.5rem;
+    }
+    #edit-banner.visible { display: flex; }
+    #edit-banner button { background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 0.85rem; }
+    .section-sep { border: none; border-top: 1px solid #27272a; margin: 1.5rem 0; }
+    .apikey-row { display: flex; gap: 0.75rem; align-items: flex-end; margin-bottom: 1rem; }
+    .apikey-row .form-group { flex: 1; margin: 0; }
+  </style>
+</head>
+<body>
+  <h1>✈️ Admin — Voyages</h1>
+  <p class="subtitle">Saisie manuelle des voyages de Chet &amp; Lys</p>
+
+  <!-- API Key -->
+  <div class="card">
+    <h2>🔑 Authentification</h2>
+    <div class="form-group">
+      <label for="api-key">API Key</label>
+      <input id="api-key" type="password" placeholder="x-api-key" autocomplete="off">
+    </div>
+  </div>
+
+  <!-- Formulaire -->
+  <div class="card">
+    <h2>📝 Nouveau voyage</h2>
+
+    <div id="edit-banner">
+      <span>✏️ Mode édition — voyage <strong id="edit-id-label"></strong></span>
+      <button onclick="cancelEdit()">✕ Annuler</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group full">
+        <label for="f-title">Titre *</label>
+        <input id="f-title" type="text" placeholder="Cambodge — mars 2024">
+      </div>
+
+      <div class="form-group">
+        <label for="f-country-code">Code pays * (ISO 3166-1 alpha-2)</label>
+        <input id="f-country-code" type="text" maxlength="2" placeholder="KH" style="text-transform:uppercase">
+      </div>
+
+      <div class="form-group">
+        <label for="f-country-name">Nom du pays *</label>
+        <input id="f-country-name" type="text" placeholder="Cambodge">
+      </div>
+
+      <div class="form-group">
+        <label for="f-continent">Continent *</label>
+        <select id="f-continent">
+          <option value="">— choisir —</option>
+          <option>Asie</option>
+          <option>Europe</option>
+          <option>Amérique du Nord</option>
+          <option>Amérique du Sud</option>
+          <option>Afrique</option>
+          <option>Océanie</option>
+          <option>Antarctique</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="f-date-start">Date début *</label>
+        <input id="f-date-start" type="date">
+      </div>
+
+      <div class="form-group">
+        <label for="f-date-end">Date fin *</label>
+        <input id="f-date-end" type="date">
+      </div>
+
+      <div class="form-group">
+        <label for="f-lat">Latitude * (centroïde)</label>
+        <input id="f-lat" type="number" step="0.0001" placeholder="11.5500">
+      </div>
+
+      <div class="form-group">
+        <label for="f-lng">Longitude * (centroïde)</label>
+        <input id="f-lng" type="number" step="0.0001" placeholder="104.9167">
+      </div>
+
+      <div class="form-group">
+        <label for="f-distance">Distance aller-retour (km)</label>
+        <input id="f-distance" type="number" placeholder="17500">
+      </div>
+
+      <div class="form-group">
+        <label for="f-cover">Chemin GCS couverture</label>
+        <input id="f-cover" type="text" placeholder="voyages/cambodge-2024/cover.jpg">
+      </div>
+
+      <div class="form-group full">
+        <label for="f-notes">Notes (markdown)</label>
+        <textarea id="f-notes" placeholder="Anecdote, coup de cœur, souvenir…"></textarea>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitVoyage()">💾 Enregistrer</button>
+      <span id="status"></span>
+    </div>
+  </div>
+
+  <!-- Liste -->
+  <div class="card">
+    <h2>🗺️ Voyages existants</h2>
+    <div id="trip-list" class="trip-list">
+      <p style="color:#6b7280;font-size:0.85rem">Chargement…</p>
+    </div>
+    <hr class="section-sep">
+    <button class="btn btn-primary" style="background:#27272a;color:#a1a1aa;font-size:0.8rem;" onclick="loadTrips()">↻ Rafraîchir</button>
+  </div>
+
+  <script>
+    const API = 'https://chetaku-rs-267131866578.europe-west1.run.app'
+    let editingId = null
+
+    function apiKey() { return document.getElementById('api-key').value.trim() }
+
+    function setStatus(msg, isOk) {
+      const el = document.getElementById('status')
+      el.textContent = msg
+      el.className = isOk ? 'ok' : 'err'
+    }
+
+    // ── Load trips ──────────────────────────────────────────────────────
+    async function loadTrips() {
+      const container = document.getElementById('trip-list')
+      try {
+        const res = await fetch(`${API}/voyage`)
+        const trips = await res.json()
+        if (!trips.length) { container.innerHTML = '<p style="color:#6b7280;font-size:0.85rem">Aucun voyage.</p>'; return }
+        container.innerHTML = trips.map(t => `
+          <div class="trip-row" id="row-${t.id}">
+            <div class="trip-info">
+              <div class="trip-title">${escHtml(t.title)}</div>
+              <div class="trip-meta">${t.country_name} (${t.country_code}) · ${t.date_start} → ${t.date_end} · ${t.distance_km} km</div>
+              ${t.cover_gcs_path ? `<div class="trip-meta" style="color:#10b981">📷 ${escHtml(t.cover_gcs_path)}</div>` : ''}
+            </div>
+            <div class="trip-actions">
+              <button class="btn btn-edit" onclick="startEdit(${t.id})">✏️</button>
+              <button class="btn btn-danger" onclick="deleteTrip(${t.id}, '${escHtml(t.title)}')">🗑️</button>
+            </div>
+          </div>
+        `).join('')
+      } catch(e) {
+        container.innerHTML = `<p style="color:#ef4444;font-size:0.85rem">Erreur: ${e.message}</p>`
+      }
+    }
+
+    // ── Submit (create or update) ────────────────────────────────────────
+    async function submitVoyage() {
+      const key = apiKey()
+      if (!key) { setStatus('Renseigner l\'API key.', false); return }
+
+      const title      = document.getElementById('f-title').value.trim()
+      const countryCode = document.getElementById('f-country-code').value.trim().toUpperCase()
+      const countryName = document.getElementById('f-country-name').value.trim()
+      const continent  = document.getElementById('f-continent').value
+      const dateStart  = document.getElementById('f-date-start').value
+      const dateEnd    = document.getElementById('f-date-end').value
+      const lat        = parseFloat(document.getElementById('f-lat').value)
+      const lng        = parseFloat(document.getElementById('f-lng').value)
+      const distanceKm = parseInt(document.getElementById('f-distance').value) || 0
+      const coverGcs   = document.getElementById('f-cover').value.trim() || null
+      const notes      = document.getElementById('f-notes').value.trim() || null
+
+      if (!title || !countryCode || !countryName || !continent || !dateStart || !dateEnd || isNaN(lat) || isNaN(lng)) {
+        setStatus('Champs obligatoires manquants.', false); return
+      }
+
+      const isEdit = editingId !== null
+      const url    = isEdit ? `${API}/voyage/${editingId}` : `${API}/voyage`
+      const method = isEdit ? 'PATCH' : 'POST'
+      const body   = isEdit
+        ? { title, notes, cover_gcs_path: coverGcs, distance_km: distanceKm }
+        : { title, country_code: countryCode, country_name: countryName, continent, date_start: dateStart, date_end: dateEnd, lat, lng, distance_km: distanceKm, cover_gcs_path: coverGcs, notes }
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json', 'x-api-key': key },
+          body: JSON.stringify(body),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`)
+        setStatus(isEdit ? `Voyage #${editingId} mis à jour.` : `Voyage créé (id: ${data.id}).`, true)
+        clearForm()
+        cancelEdit()
+        loadTrips()
+      } catch(e) {
+        setStatus(`Erreur: ${e.message}`, false)
+      }
+    }
+
+    // ── Edit ─────────────────────────────────────────────────────────────
+    async function startEdit(id) {
+      try {
+        const res = await fetch(`${API}/voyage`)
+        const trips = await res.json()
+        const t = trips.find(x => x.id === id)
+        if (!t) { alert('Voyage introuvable'); return }
+
+        editingId = id
+        document.getElementById('f-title').value        = t.title
+        document.getElementById('f-country-code').value = t.country_code
+        document.getElementById('f-country-name').value = t.country_name
+        document.getElementById('f-continent').value    = t.continent
+        document.getElementById('f-date-start').value   = t.date_start
+        document.getElementById('f-date-end').value     = t.date_end
+        document.getElementById('f-lat').value          = t.lat
+        document.getElementById('f-lng').value          = t.lng
+        document.getElementById('f-distance').value     = t.distance_km
+        document.getElementById('f-cover').value        = t.cover_gcs_path || ''
+        document.getElementById('f-notes').value        = t.notes || ''
+
+        document.getElementById('edit-id-label').textContent = `#${id} — ${t.title}`
+        document.getElementById('edit-banner').classList.add('visible')
+        document.querySelector('.card:nth-child(2) h2').textContent = '✏️ Modifier le voyage'
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } catch(e) { alert('Erreur: ' + e.message) }
+    }
+
+    function cancelEdit() {
+      editingId = null
+      document.getElementById('edit-banner').classList.remove('visible')
+      document.querySelector('.card:nth-child(2) h2').textContent = '📝 Nouveau voyage'
+      clearForm()
+    }
+
+    // ── Delete ───────────────────────────────────────────────────────────
+    async function deleteTrip(id, title) {
+      if (!confirm(`Supprimer "${title}" (id: ${id}) ?`)) return
+      const key = apiKey()
+      if (!key) { alert('Renseigner l\'API key.'); return }
+      try {
+        const res = await fetch(`${API}/voyage/${id}`, {
+          method: 'DELETE',
+          headers: { 'x-api-key': key },
+        })
+        if (!res.ok) { const d = await res.json(); throw new Error(d.message || `HTTP ${res.status}`) }
+        document.getElementById(`row-${id}`)?.remove()
+        setStatus(`Voyage #${id} supprimé.`, true)
+      } catch(e) { alert('Erreur: ' + e.message) }
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────
+    function clearForm() {
+      ['f-title','f-country-code','f-country-name','f-date-start','f-date-end',
+       'f-lat','f-lng','f-distance','f-cover','f-notes'].forEach(id => {
+        document.getElementById(id).value = ''
+      })
+      document.getElementById('f-continent').value = ''
+      document.getElementById('status').className = ''
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+    }
+
+    // ── Init ─────────────────────────────────────────────────────────────
+    loadTrips()
+  </script>
+</body>
+</html>
