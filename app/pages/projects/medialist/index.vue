@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface MediaEntry {
   id: number
-  media_type: 'anime' | 'game'
+  media_type: 'anime' | 'game' | 'movie' | 'series'
   external_id: number
   title: string
   title_original: string | null
@@ -26,23 +26,37 @@ interface CreatorStat { creator: string; count: number; avg_score: number | null
 interface Stats {
   total_anime: number
   total_games: number
+  total_movies: number
+  total_series: number
   anime_completed: number
   games_completed: number
+  movies_completed: number
+  series_completed: number
   anime_watching: number
   games_playing: number
   average_anime_score: number | null
   average_game_score: number | null
+  average_movie_score: number | null
+  average_series_score: number | null
   total_episodes_watched: number
   total_playtime_hours: number
   top_genres: Array<{ genre: string; count: number }>
   top_anime_genres: GenreStat[]
   top_game_genres: GenreStat[]
+  top_movie_genres: GenreStat[]
+  top_series_genres: GenreStat[]
   anime_score_distribution: ScoreCount[]
   game_score_distribution: ScoreCount[]
+  movie_score_distribution: ScoreCount[]
+  series_score_distribution: ScoreCount[]
   anime_status: StatusCount[]
   game_status: StatusCount[]
+  movie_status: StatusCount[]
+  series_status: StatusCount[]
   top_anime_studios: CreatorStat[]
   top_game_developers: CreatorStat[]
+  top_movie_directors: CreatorStat[]
+  top_series_creators: CreatorStat[]
 }
 
 interface SearchResult {
@@ -56,11 +70,11 @@ interface SearchResult {
   creator: string | null
 }
 
-const API_BASE = 'https://chetaku-rs-mef67kip3a-ew.a.run.app'
+const API_BASE = 'https://chetaku-rs-267131866578.europe-west1.run.app'
 const config = useRuntimeConfig()
 
 // ── List & filters ──────────────────────────────────────────────────────────
-const typeFilter = ref<'' | 'anime' | 'game'>('')
+const typeFilter = ref<'' | 'anime' | 'game' | 'movie' | 'series'>('')
 const statusFilter = ref<'' | 'completed' | 'ongoing' | 'planned'>('')
 
 const { data: allMedia, pending, refresh: refreshList } = useFetch<MediaEntry[]>(`${API_BASE}/media`)
@@ -70,7 +84,8 @@ const filtered = computed(() => {
   if (!allMedia.value) return []
   return allMedia.value.filter(m => {
     if (typeFilter.value && m.media_type !== typeFilter.value) return false
-    if (statusFilter.value === 'ongoing') return m.status === 'watching' || m.status === 'playing'
+    if (statusFilter.value === 'ongoing') return ['watching', 'playing'].includes(m.status)
+    if (statusFilter.value === 'planned') return ['planned', 'plan_to_watch', 'plan_to_play'].includes(m.status)
     if (statusFilter.value && m.status !== statusFilter.value) return false
     return true
   })
@@ -78,35 +93,57 @@ const filtered = computed(() => {
 
 // ── Profil stats helpers ─────────────────────────────────────────────────────
 interface MergedGenre {
-  genre: string; love: number; hasAnime: boolean; hasGame: boolean
-  animeAvg: number; gameAvg: number; count: number
+  genre: string; love: number
+  hasAnime: boolean; hasGame: boolean; hasMovie: boolean; hasSeries: boolean
+  avgSum: number; avgCount: number; count: number
 }
 
 const mergedGenres = computed<MergedGenre[]>(() => {
   if (!stats.value) return []
   const map = new Map<string, MergedGenre>()
-  for (const g of stats.value.top_anime_genres) {
-    map.set(g.genre, { genre: g.genre, love: g.love_score, hasAnime: true, hasGame: false, animeAvg: g.avg_score, gameAvg: 0, count: g.count })
-  }
-  for (const g of stats.value.top_game_genres) {
+
+  const addGenre = (g: GenreStat, key: keyof Pick<MergedGenre, 'hasAnime'|'hasGame'|'hasMovie'|'hasSeries'>) => {
     const ex = map.get(g.genre)
-    if (ex) { ex.love += g.love_score; ex.hasGame = true; ex.gameAvg = g.avg_score; ex.count += g.count }
-    else map.set(g.genre, { genre: g.genre, love: g.love_score, hasAnime: false, hasGame: true, animeAvg: 0, gameAvg: g.avg_score, count: g.count })
+    if (ex) {
+      ex.love += g.love_score; ex.count += g.count
+      ex.avgSum += g.avg_score; ex.avgCount += 1
+      ex[key] = true
+    } else {
+      map.set(g.genre, { genre: g.genre, love: g.love_score, count: g.count,
+        hasAnime: false, hasGame: false, hasMovie: false, hasSeries: false,
+        avgSum: g.avg_score, avgCount: 1, [key]: true } as MergedGenre)
+    }
   }
-  return [...map.values()].sort((a, b) => b.love - a.love).slice(0, 10)
+
+  for (const g of stats.value.top_anime_genres)  addGenre(g, 'hasAnime')
+  for (const g of stats.value.top_game_genres)   addGenre(g, 'hasGame')
+  for (const g of stats.value.top_movie_genres)  addGenre(g, 'hasMovie')
+  for (const g of stats.value.top_series_genres) addGenre(g, 'hasSeries')
+
+  return [...map.values()].sort((a, b) => b.love - a.love).slice(0, 12)
 })
 
 const maxLove = computed(() => Math.max(...mergedGenres.value.map(g => g.love), 1))
 
 function genreBarWidth(g: MergedGenre) { return `${(g.love / maxLove.value) * 100}%` }
 function genreBarColor(g: MergedGenre) {
-  if (g.hasAnime && g.hasGame) return 'linear-gradient(90deg, var(--accent), #3b82f6)'
+  const types = [g.hasAnime, g.hasGame, g.hasMovie, g.hasSeries].filter(Boolean).length
+  if (types > 1) return 'linear-gradient(90deg, var(--accent), #3b82f6)'
   if (g.hasGame) return '#3b82f6'
+  if (g.hasMovie) return '#dc2626'
+  if (g.hasSeries) return '#7c3aed'
   return 'var(--gradient)'
 }
 function genreAvgScore(g: MergedGenre) {
-  if (g.hasAnime && g.hasGame) return ((g.animeAvg + g.gameAvg) / 2).toFixed(1)
-  return (g.hasAnime ? g.animeAvg : g.gameAvg).toFixed(1)
+  return (g.avgSum / g.avgCount).toFixed(1)
+}
+function genreIcons(g: MergedGenre) {
+  const icons = []
+  if (g.hasAnime)  icons.push('🎌')
+  if (g.hasGame)   icons.push('🎮')
+  if (g.hasMovie)  icons.push('🎬')
+  if (g.hasSeries) icons.push('📺')
+  return icons.join('')
 }
 
 function scoreBarWidth(count: number, dist: ScoreCount[]) {
@@ -114,10 +151,11 @@ function scoreBarWidth(count: number, dist: ScoreCount[]) {
   return `${(count / max) * 100}%`
 }
 
-const creatorsTab = ref<'anime' | 'game'>('anime')
-const scoreDistTab = ref<'anime' | 'game'>('anime')
+const creatorsTab = ref<'anime' | 'game' | 'movie' | 'series'>('anime')
+const scoreDistTab = ref<'anime' | 'game' | 'movie' | 'series'>('anime')
 const STATUS_LABEL_FR: Record<string, string> = {
-  completed: 'Terminés', watching: 'En cours', playing: 'En cours', planned: 'Prévus', dropped: 'Abandonnés',
+  completed: 'Terminés', watching: 'En cours', playing: 'En cours',
+  planned: 'Prévus', plan_to_watch: 'Prévus', plan_to_play: 'Prévus', dropped: 'Abandonnés',
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -125,6 +163,8 @@ const STATUS_LABEL: Record<string, string> = {
   watching: 'En cours',
   playing: 'En cours',
   planned: 'Prévu',
+  plan_to_watch: 'À voir',
+  plan_to_play: 'À jouer',
   dropped: 'Abandonné',
 }
 
@@ -141,6 +181,8 @@ const STATUS_COLOR: Record<string, string> = {
   watching: 'blue',
   playing: 'blue',
   planned: 'gray',
+  plan_to_watch: 'gray',
+  plan_to_play: 'gray',
   dropped: 'orange',
 }
 
@@ -187,7 +229,7 @@ async function saveEdit() {
   try {
     const body: Record<string, unknown> = { status: editStatus.value }
     if (editEntry.value.media_type === 'game') body.platform = editPlatform.value || null
-    if (editEntry.value.media_type === 'anime') body.episodes_watched = editEpisodesWatched.value
+    if (editEntry.value.media_type === 'anime' || editEntry.value.media_type === 'series') body.episodes_watched = editEpisodesWatched.value
     if (editScore.value !== null) body.score = editScore.value
 
     await $fetch(`/api/medialist/${editEntry.value.id}`, {
@@ -207,7 +249,7 @@ async function saveEdit() {
 
 // ── Search modal ─────────────────────────────────────────────────────────────
 const showModal = ref(false)
-const searchType = ref<'anime' | 'game'>('anime')
+const searchType = ref<'anime' | 'game' | 'movie' | 'series'>('anime')
 const searchQuery = ref('')
 const searchResults = ref<SearchResult[]>([])
 const searching = ref(false)
@@ -226,6 +268,24 @@ const GAME_STATUSES = [
   { value: 'planned', label: '📋 Prévu' },
   { value: 'dropped', label: '🚫 Abandonné' },
 ]
+const MOVIE_STATUSES = [
+  { value: 'completed', label: '✅ Vu' },
+  { value: 'planned', label: '📋 À voir' },
+  { value: 'dropped', label: '🚫 Abandonné' },
+]
+const SERIES_STATUSES = [
+  { value: 'completed', label: '✅ Terminée' },
+  { value: 'watching', label: '▶️ En cours' },
+  { value: 'planned', label: '📋 À voir' },
+  { value: 'dropped', label: '🚫 Abandonnée' },
+]
+
+function statusOptionsFor(type: string) {
+  if (type === 'game') return GAME_STATUSES
+  if (type === 'movie') return MOVIE_STATUSES
+  if (type === 'series') return SERIES_STATUSES
+  return ANIME_STATUSES
+}
 const addStatus = ref('completed')
 const addPlatform = ref('')
 const adding = ref(false)
@@ -327,8 +387,8 @@ useSeoMeta({
     <NuxtLink to="/projects" class="back-link">← Projets</NuxtLink>
 
     <div class="section-label">Médiathèque</div>
-    <h1 class="section-title">Animés & Jeux</h1>
-    <p class="page-subtitle">Ma liste personnelle — ce que j'ai regardé, joué, ou prévu.</p>
+    <h1 class="section-title">Médiathèque</h1>
+    <p class="page-subtitle">Ma liste personnelle — animés, films, séries et jeux.</p>
 
     <!-- ── Profil ── -->
     <div v-if="stats" class="profile-section">
@@ -339,6 +399,14 @@ useSeoMeta({
           <span class="stat-value">{{ stats.total_anime }}</span>
           <span class="stat-label">🎌 Animés</span>
         </div>
+        <div v-if="stats.total_movies" class="stat-item">
+          <span class="stat-value">{{ stats.total_movies }}</span>
+          <span class="stat-label">🎬 Films</span>
+        </div>
+        <div v-if="stats.total_series" class="stat-item">
+          <span class="stat-value">{{ stats.total_series }}</span>
+          <span class="stat-label">📺 Séries</span>
+        </div>
         <div class="stat-item">
           <span class="stat-value">{{ stats.total_games }}</span>
           <span class="stat-label">🎮 Jeux</span>
@@ -347,20 +415,12 @@ useSeoMeta({
           <span class="stat-value">{{ stats.total_episodes_watched.toLocaleString('fr-FR') }}</span>
           <span class="stat-label">Épisodes vus</span>
         </div>
-        <div v-if="stats.average_anime_score" class="stat-item">
-          <span class="stat-value" :style="{ color: scoreColor(Math.round(stats.average_anime_score)) }">
-            {{ stats.average_anime_score.toFixed(1) }}
-          </span>
-          <span class="stat-label">Score moyen animé</span>
-        </div>
-        <div v-if="stats.average_game_score" class="stat-item">
-          <span class="stat-value" :style="{ color: scoreColor(Math.round(stats.average_game_score)) }">
-            {{ stats.average_game_score.toFixed(1) }}
-          </span>
-          <span class="stat-label">Score moyen jeu</span>
+        <div v-if="stats.total_playtime_hours" class="stat-item">
+          <span class="stat-value">{{ stats.total_playtime_hours.toLocaleString('fr-FR') }}</span>
+          <span class="stat-label">Heures jouées</span>
         </div>
         <div class="stat-item">
-          <span class="stat-value">{{ stats.anime_completed + stats.games_completed }}</span>
+          <span class="stat-value">{{ stats.anime_completed + stats.games_completed + stats.movies_completed + stats.series_completed }}</span>
           <span class="stat-label">Terminés</span>
         </div>
       </div>
@@ -372,10 +432,7 @@ useSeoMeta({
           <div v-for="g in mergedGenres" :key="g.genre" class="genre-row">
             <div class="genre-meta">
               <span class="genre-name">{{ g.genre }}</span>
-              <span class="genre-icons">
-                <span v-if="g.hasAnime">🎌</span>
-                <span v-if="g.hasGame">🎮</span>
-              </span>
+              <span class="genre-icons">{{ genreIcons(g) }}</span>
             </div>
             <div class="genre-bar-track">
               <div class="genre-bar-fill" :style="{ width: genreBarWidth(g), background: genreBarColor(g) }" />
@@ -395,16 +452,23 @@ useSeoMeta({
         <div class="profile-block profile-block-half">
           <h3 class="profile-block-title">📊 Distribution des notes</h3>
           <div class="score-tabs">
-            <button :class="['score-tab', scoreDistTab === 'anime' && 'active']" @click="scoreDistTab = 'anime'">🎌 Animés</button>
-            <button :class="['score-tab', scoreDistTab === 'game' && 'active']" @click="scoreDistTab = 'game'">🎮 Jeux</button>
+            <button :class="['score-tab', scoreDistTab === 'anime' && 'active']" @click="scoreDistTab = 'anime'">🎌</button>
+            <button :class="['score-tab', scoreDistTab === 'movie' && 'active']" @click="scoreDistTab = 'movie'">🎬</button>
+            <button :class="['score-tab', scoreDistTab === 'series' && 'active']" @click="scoreDistTab = 'series'">📺</button>
+            <button :class="['score-tab', scoreDistTab === 'game' && 'active']" @click="scoreDistTab = 'game'">🎮</button>
           </div>
           <div class="score-dist">
-            <template v-for="s in (scoreDistTab === 'anime' ? stats.anime_score_distribution : stats.game_score_distribution)" :key="s.score">
+            <template v-for="s in (
+              scoreDistTab === 'anime' ? stats.anime_score_distribution :
+              scoreDistTab === 'movie' ? stats.movie_score_distribution :
+              scoreDistTab === 'series' ? stats.series_score_distribution :
+              stats.game_score_distribution
+            )" :key="s.score">
               <span class="score-label" :style="{ color: scoreColor(s.score) }">{{ s.score }}</span>
               <div class="score-bar-track">
                 <div class="score-bar-fill"
                   :style="{
-                    width: scoreBarWidth(s.count, scoreDistTab === 'anime' ? stats.anime_score_distribution : stats.game_score_distribution),
+                    width: scoreBarWidth(s.count, scoreDistTab === 'anime' ? stats.anime_score_distribution : scoreDistTab === 'movie' ? stats.movie_score_distribution : scoreDistTab === 'series' ? stats.series_score_distribution : stats.game_score_distribution),
                     background: scoreColor(s.score)
                   }"
                 />
@@ -418,12 +482,19 @@ useSeoMeta({
         <div class="profile-block profile-block-half">
           <h3 class="profile-block-title">🏆 Créateurs favoris</h3>
           <div class="score-tabs">
-            <button :class="['score-tab', creatorsTab === 'anime' && 'active']" @click="creatorsTab = 'anime'">🎌 Studios</button>
-            <button :class="['score-tab', creatorsTab === 'game' && 'active']" @click="creatorsTab = 'game'">🎮 Devs</button>
+            <button :class="['score-tab', creatorsTab === 'anime' && 'active']" @click="creatorsTab = 'anime'">🎌</button>
+            <button :class="['score-tab', creatorsTab === 'movie' && 'active']" @click="creatorsTab = 'movie'">🎬</button>
+            <button :class="['score-tab', creatorsTab === 'series' && 'active']" @click="creatorsTab = 'series'">📺</button>
+            <button :class="['score-tab', creatorsTab === 'game' && 'active']" @click="creatorsTab = 'game'">🎮</button>
           </div>
           <div class="creator-list">
             <div
-              v-for="c in (creatorsTab === 'anime' ? stats.top_anime_studios : stats.top_game_developers)"
+              v-for="c in (
+                creatorsTab === 'anime' ? stats.top_anime_studios :
+                creatorsTab === 'movie' ? stats.top_movie_directors :
+                creatorsTab === 'series' ? stats.top_series_creators :
+                stats.top_game_developers
+              )"
               :key="c.creator"
               class="creator-row"
             >
@@ -444,6 +515,8 @@ useSeoMeta({
       <div class="filter-group">
         <button :class="['filter-btn', typeFilter === '' && 'active']" @click="typeFilter = ''">Tout</button>
         <button :class="['filter-btn', typeFilter === 'anime' && 'active']" @click="typeFilter = 'anime'">🎌 Animés</button>
+        <button :class="['filter-btn', typeFilter === 'movie' && 'active']" @click="typeFilter = 'movie'">🎬 Films</button>
+        <button :class="['filter-btn', typeFilter === 'series' && 'active']" @click="typeFilter = 'series'">📺 Séries</button>
         <button :class="['filter-btn', typeFilter === 'game' && 'active']" @click="typeFilter = 'game'">🎮 Jeux</button>
       </div>
       <div class="filter-group">
@@ -470,9 +543,9 @@ useSeoMeta({
       >
         <div class="card-cover">
           <img v-if="entry.cover_url" :src="entry.cover_url" :alt="entry.title" loading="lazy" />
-          <div v-else class="cover-placeholder">{{ entry.media_type === 'anime' ? '🎌' : '🎮' }}</div>
+          <div v-else class="cover-placeholder">{{ { anime: '🎌', game: '🎮', movie: '🎬', series: '📺' }[entry.media_type] }}</div>
           <span class="type-badge" :class="entry.media_type">
-            {{ entry.media_type === 'anime' ? 'Animé' : 'Jeu' }}
+            {{ { anime: 'Animé', game: 'Jeu', movie: 'Film', series: 'Série' }[entry.media_type] }}
           </span>
         </div>
         <div class="card-body">
@@ -486,8 +559,8 @@ useSeoMeta({
             <span v-for="g in entry.genres" :key="g" class="genre-tag">{{ g }}</span>
           </div>
 
-          <!-- Episodes bar (anime) -->
-          <div v-if="entry.media_type === 'anime' && entry.episodes_total" class="progress-block">
+          <!-- Episodes bar (anime / series) -->
+          <div v-if="(entry.media_type === 'anime' || entry.media_type === 'series') && entry.episodes_total" class="progress-block">
             <div class="progress-label">
               <span>Épisodes</span>
               <span class="progress-value">{{ entry.episodes_watched ?? 0 }}/{{ entry.episodes_total }}</span>
@@ -550,7 +623,7 @@ useSeoMeta({
           <!-- Entry recap -->
           <div class="confirm-result">
             <img v-if="editEntry.cover_url" :src="editEntry.cover_url" :alt="editEntry.title" class="confirm-cover" />
-            <div class="cover-placeholder-sm" v-else>{{ editEntry.media_type === 'anime' ? '🎌' : '🎮' }}</div>
+            <div class="cover-placeholder-sm" v-else>{{ { anime: '🎌', game: '🎮', movie: '🎬', series: '📺' }[editEntry.media_type] }}</div>
             <div class="confirm-info">
               <p class="confirm-title">{{ editEntry.title }}</p>
               <p v-if="editEntry.title_original" class="confirm-meta">{{ editEntry.title_original }}</p>
@@ -563,7 +636,7 @@ useSeoMeta({
             <label class="field-label">Statut</label>
             <div class="status-options">
               <button
-                v-for="s in (editEntry.media_type === 'anime' ? ANIME_STATUSES : GAME_STATUSES)"
+                v-for="s in statusOptionsFor(editEntry.media_type)"
                 :key="s.value"
                 :class="['status-option', editStatus === s.value && 'active']"
                 @click="editStatus = s.value"
@@ -571,8 +644,8 @@ useSeoMeta({
             </div>
           </div>
 
-          <!-- Episodes watched (anime only) -->
-          <div v-if="editEntry.media_type === 'anime'" class="field-row">
+          <!-- Episodes watched (anime / series) -->
+          <div v-if="editEntry.media_type === 'anime' || editEntry.media_type === 'series'" class="field-row">
             <label class="field-label">
               Épisodes vus
               <span v-if="editEntry.episodes_total" class="field-hint">/ {{ editEntry.episodes_total }}</span>
@@ -631,6 +704,8 @@ useSeoMeta({
           <!-- Type tabs -->
           <div class="modal-tabs">
             <button :class="['modal-tab', searchType === 'anime' && 'active']" @click="searchType = 'anime'">🎌 Animé</button>
+            <button :class="['modal-tab', searchType === 'movie' && 'active']" @click="searchType = 'movie'">🎬 Film</button>
+            <button :class="['modal-tab', searchType === 'series' && 'active']" @click="searchType = 'series'">📺 Série</button>
             <button :class="['modal-tab', searchType === 'game' && 'active']" @click="searchType = 'game'">🎮 Jeu</button>
           </div>
 
@@ -639,7 +714,7 @@ useSeoMeta({
             <input
               v-model="searchQuery"
               class="search-input"
-              :placeholder="searchType === 'anime' ? 'Rechercher un animé...' : 'Rechercher un jeu...'"
+              :placeholder="{ anime: 'Rechercher un animé...', game: 'Rechercher un jeu...', movie: 'Rechercher un film...', series: 'Rechercher une série...' }[searchType]"
               autofocus
             />
             <div v-if="searching" class="search-spinner"></div>
@@ -652,7 +727,7 @@ useSeoMeta({
           <div v-if="selectedResult" class="confirm-panel">
             <div class="confirm-result">
               <img v-if="selectedResult.cover_url" :src="selectedResult.cover_url" :alt="selectedResult.title" class="confirm-cover" />
-              <div class="cover-placeholder-sm" v-else>{{ searchType === 'anime' ? '🎌' : '🎮' }}</div>
+              <div class="cover-placeholder-sm" v-else>{{ { anime: '🎌', game: '🎮', movie: '🎬', series: '📺' }[searchType] }}</div>
               <div class="confirm-info">
                 <p class="confirm-title">{{ selectedResult.title }}</p>
                 <p v-if="selectedResult.year" class="confirm-meta">{{ selectedResult.year }}</p>
@@ -664,7 +739,7 @@ useSeoMeta({
               <label class="field-label">Statut</label>
               <div class="status-options">
                 <button
-                  v-for="s in (searchType === 'anime' ? ANIME_STATUSES : GAME_STATUSES)"
+                  v-for="s in statusOptionsFor(searchType)"
                   :key="s.value"
                   :class="['status-option', addStatus === s.value && 'active']"
                   @click="addStatus = s.value"
@@ -673,7 +748,7 @@ useSeoMeta({
             </div>
 
             <!-- Platform (games only) -->
-            <div v-if="searchType === 'game'" class="field-row">
+            <div v-if="searchType === 'game'" class="field-row" style="display: flex; flex-direction: column; gap: 0.5rem;">
               <label class="field-label">Plateforme</label>
               <input v-model="addPlatform" class="platform-input" placeholder="PC, PS5, Switch..." />
             </div>
@@ -698,7 +773,7 @@ useSeoMeta({
               @click="selectResult(r)"
             >
               <img v-if="r.cover_url" :src="r.cover_url" :alt="r.title" class="result-cover" />
-              <div v-else class="result-cover-placeholder">{{ searchType === 'anime' ? '🎌' : '🎮' }}</div>
+              <div v-else class="result-cover-placeholder">{{ { anime: '🎌', game: '🎮', movie: '🎬', series: '📺' }[searchType] }}</div>
               <div class="result-info">
                 <p class="result-title">{{ r.title }}</p>
                 <p v-if="r.title_original" class="result-original">{{ r.title_original }}</p>
@@ -1092,8 +1167,10 @@ useSeoMeta({
   letter-spacing: 0.05em;
 }
 
-.type-badge.anime { background: rgba(139, 46, 59, 0.85); color: #fff; backdrop-filter: blur(4px); }
-.type-badge.game  { background: rgba(30, 80, 160, 0.85);  color: #fff; backdrop-filter: blur(4px); }
+.type-badge.anime  { background: rgba(139, 46, 59, 0.85);  color: #fff; backdrop-filter: blur(4px); }
+.type-badge.game   { background: rgba(30, 80, 160, 0.85);  color: #fff; backdrop-filter: blur(4px); }
+.type-badge.movie  { background: rgba(185, 28, 28, 0.85);  color: #fff; backdrop-filter: blur(4px); }
+.type-badge.series { background: rgba(109, 40, 217, 0.85); color: #fff; backdrop-filter: blur(4px); }
 
 .card-body {
   padding: 1rem;

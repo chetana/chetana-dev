@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event) as {
-    type: 'anime' | 'game'
+    type: 'anime' | 'game' | 'movie' | 'series'
     id: number
     status: string
     platform?: string
@@ -19,10 +19,18 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Missing fields' })
   }
 
-  const endpoint = body.type === 'anime' ? '/sync/anime' : '/sync/game'
-  const payload = body.type === 'anime'
-    ? { mal_ids: [body.id], status: body.status }
-    : { rawg_ids: [body.id], status: body.status, platform: body.platform ?? null }
+  const endpointMap: Record<string, string> = {
+    anime: '/sync/anime',
+    game: '/sync/game',
+    movie: '/sync/movie',
+    series: '/sync/series',
+  }
+  const endpoint = endpointMap[body.type]
+  if (!endpoint) throw createError({ statusCode: 400, statusMessage: 'Invalid type' })
+
+  const idKey = body.type === 'anime' ? 'mal_ids' : body.type === 'game' ? 'rawg_ids' : 'tmdb_ids'
+  const payload: Record<string, unknown> = { [idKey]: [body.id], status: body.status }
+  if (body.type === 'game') payload.platform = body.platform ?? null
 
   const result = await $fetch(`${config.chetakuApiUrl}${endpoint}`, {
     method: 'POST',

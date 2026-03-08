@@ -21,6 +21,9 @@ Portfolio dynamique, blog technique et projets personnels de **Chetana YIN** —
 | `/` | Homepage — hero, stats, about, experience timeline, skills, education, contact |
 | `/projects` | Liste des projets personnels |
 | `/projects/health` | Suivi quotidien de pompes (streak, calendrier, validation) |
+| `/projects/medialist` | Médiathèque — animés et jeux avec stats pondérées par note |
+| `/projects/medialist/[slug]` | Détail d'un animé ou jeu + chat IA (Gemini) |
+| `/projects/imagichet` | Génération et édition d'images avec Vertex AI Imagen 3 |
 | `/blog` | Articles techniques et retours d'experience |
 | `/blog/[slug]` | Article complet avec rendu markdown et commentaires |
 | `/cv` | CV format A4 imprimable (PDF via `window.print()`) |
@@ -67,20 +70,27 @@ Toutes les pages sont optimisees pour mobile (320px+) :
 ┌──────────────────────────────────────────────────────┐
 │              Nuxt 4 / Nitro (Vercel)                 │
 │                                                       │
-│  Public routes:          Protected routes (OAuth):   │
-│  /api/projects           /api/health/stats    🔒     │
-│  /api/blog               /api/health/entries  🔒     │
-│  /api/comments           /api/health/validate 🔒     │
-│  /api/messages                                        │
-│                  requireAuth() → google-auth-library  │
-│                  upsert user → scope par userId       │
-└──────────────────────────┬───────────────────────────┘
-                           │ Drizzle ORM
-                    ┌──────▼───────┐
-                    │    Neon      │
-                    │  PostgreSQL  │
-                    │  (9 tables)  │
-                    └──────────────┘
+│  Public:                 Protected (OAuth 🔒):       │
+│  /api/projects           /api/health/*               │
+│  /api/blog               /api/coffre/*               │
+│  /api/comments           /api/chat/*                 │
+│  /api/messages           /api/medialist/*            │
+│                          /api/imagenie/*             │
+│                                                       │
+│              requireAuth() → google-auth-library     │
+└──────┬─────────────────────────┬─────────────────────┘
+       │ Drizzle ORM             │ x-api-key
+       ▼                         ▼
+┌──────────────┐       ┌──────────────────────┐
+│    Neon      │       │     chetaku-rs        │
+│  PostgreSQL  │       │  (Axum / Cloud Run)   │
+│  (9 tables)  │       │  media_entries table  │
+└──────────────┘       └──────────┬────────────┘
+                                  │
+                    ┌─────────────┴──────────────┐
+                    │ Jikan API v4   RAWG API v1  │
+                    │ (MyAnimeList)  (jeux vidéo) │
+                    └────────────────────────────┘
 ```
 
 > Voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) et [docs/DATABASE.md](docs/DATABASE.md) pour les details.
@@ -120,6 +130,12 @@ npm run dev
 | `CRON_SECRET` | Secret pour les endpoints cron |
 | `GCS_BUCKET_NAME` | Nom du bucket Google Cloud Storage (coffre chet_lys) |
 | `GCS_SERVICE_ACCOUNT_JSON` | JSON stringifie du service account GCS (Storage Object Admin) |
+| `RAWG_API_KEY` | Clé API rawg.io (medialist — sync jeux) |
+| `CHETAKU_API_URL` | URL de chetaku-rs (défaut: `https://chetaku-rs-mef67kip3a-ew.a.run.app`) |
+| `CHETAKU_API_KEY` | Clé secrète partagée avec chetaku-rs |
+| `MEDIALIST_OWNER_EMAIL` | Email du propriétaire (seul autorisé à ajouter/éditer) |
+| `VERTEX_PROJECT_ID` | Projet GCP pour Vertex AI Imagen (imagichet) |
+| `VERTEX_LOCATION` | Région Vertex AI (ex: `us-central1`) |
 
 ## Scripts
 
@@ -142,34 +158,40 @@ app/
   assets/css/main.css    # Variables CSS, boutons, tags, cards, grids, responsive
   components/            # Nav, Hero, Footer, Timeline, SkillCard, BlogCard, ProjectCard
   composables/           # useLocale() (i18n FR/EN/KM)
-  pages/                 # Routes Nuxt (index, blog, projects, cv, contact)
+  pages/
+    index.vue            # Homepage
+    blog/                # Liste + detail articles
+    projects/
+      health.vue         # Health tracker (pompes)
+      medialist/
+        index.vue        # Médiathèque + section profil stats
+        [slug].vue       # Detail animé/jeu + chat IA Gemini
+      imagichet.vue      # Génération d'images Imagen 3
 server/
   api/                   # Routes REST
     health/              # Endpoints proteges (Google OAuth) — daily pushup tracker
-      stats.get.ts       # GET stats scopees par userId
-      entries.get.ts     # GET entries scopees par userId
-      validate.post.ts   # POST validation scopee par userId
     coffre/              # Endpoints proteges (Google OAuth) — coffre a souvenirs chet_lys
-      list.get.ts        # GET liste objets GCS avec delimiter
-      sign-upload.post.ts  # POST genere signed URL PUT v4
-      sign-download.get.ts # GET genere signed URL GET v4
-      delete.delete.ts   # DELETE supprime un objet GCS
+    chat/                # Chat chet_lys (messages GCS + traductions Gemini)
+    medialist/
+      sync.post.ts       # Proxy POST /sync vers chetaku-rs (protege, owner only)
+      update.post.ts     # Proxy PATCH /media/{id} vers chetaku-rs (protege)
+      chat.post.ts       # Chat IA sur un animé/jeu (Gemini + Google Search)
+    imagenie/
+      generate.post.ts   # Génération image Imagen 3 (generate, bgswap)
   middleware/
     cors.ts              # CORS pour /api/coffre/* (chetlys.vercel.app)
-  db/
-    schema.ts            # Schema Drizzle (users, healthEntries, projects, blogPosts, ...)
-    seed.ts              # Seed principal
-    seed-health.ts       # Seed health tracker + projet
-    seed-blog-pushup.ts  # Seed article "52 jours de pompes"
-    seed-blog-light.ts   # Seed article "Dark to light theme"
-    migrate-health-to-user.ts  # Migration one-time : entries → userId
   utils/
     db.ts                # Connexion Neon singleton
     auth.ts              # requireAuth() — verification Google ID Token + upsert user
     gcs.ts               # GCS bucket + signed URLs v4 (Node.js crypto natif)
-cors.json                # Config CORS du bucket GCS (PUT direct depuis chetlys.vercel.app)
+    vertex.ts            # Fonctions Gemini (translate, transcribe, suggest, chat)
+    imagen.ts            # Fonctions Imagen 3 (generate, bgswap)
+  db/
+    schema.ts            # Schema Drizzle
+    seed.ts              # Seeds
+cors.json                # Config CORS du bucket GCS
 drizzle/                 # Migrations auto-generees
-docs/                    # Architecture, Database, ADRs
+docs/                    # Architecture, Database, Medialist, ADRs
 ```
 
 ## Base de donnees
@@ -222,6 +244,30 @@ Requierent `Authorization: Bearer <google_id_token>` :
 | `/api/chat/messages?y=&m=&d=&id=` | DELETE | Supprime un message (auteur uniquement) |
 | `/api/chat/transcribe` | POST | Transcrit un audio base64 → texte + 3 traductions (Gemini) |
 | `/api/chat/suggest` | POST | Suggestion/correction + traductions + lecon grammaticale (Gemini) |
+| `/api/medialist/sync` | POST | Sync anime/game vers chetaku-rs (owner only) |
+| `/api/medialist/update` | POST | Met à jour une entrée dans chetaku-rs (owner only) |
+| `/api/medialist/chat` | POST | Chat IA Gemini sur un animé/jeu avec Google Search |
+| `/api/imagenie/generate` | POST | Génère ou édite une image via Vertex AI Imagen 3 |
+
+## Médiathèque (medialist)
+
+Suivi d'animés et de jeux vidéo consommant l'API [chetaku-rs](https://github.com/chetana/chetaku-rs).
+
+- **Liste** filtrée par type/statut, ajout et édition (owner only via Google OAuth)
+- **Sync auto** depuis Jikan (MyAnimeList) et RAWG — métadonnées, cover, genres, studio
+- **Section Profil** : genres pondérés par `love_score = count × avg_score`, distribution des notes, statuts, studios/devs favoris
+- **Page détail** : chat IA contextuel (Gemini + Google Search grounding)
+
+> Voir [docs/MEDIALIST.md](docs/MEDIALIST.md) pour les détails techniques.
+
+## ImagiChet (imagichet)
+
+Génération et édition d'images via **Vertex AI Imagen 3** (GCP project `cykt-399216`).
+
+- **Mode génération** : texte → image (prompt, aspect ratio, seed optionnel)
+- **Mode BGSWAP** : remplace l'arrière-plan d'une image avec un sujet + prompt décor
+- Galerie persistante (GCS `gallery.json`) avec badges de mode
+- Upload du sujet avec preview + compression 1024px
 
 ## Chat chet_lys
 
@@ -272,11 +318,18 @@ L'application Android native ([repo](https://github.com/chetana/dailypushup)) co
 
 ## Deploiement Vercel
 
-Le deploiement est automatique sur push to `main`.
+⚠️ **Le deploiement n'est PAS automatique sur push** — toujours lancer manuellement :
+
+```bash
+git push origin main
+npx vercel deploy --prod
+```
+
+Ne jamais utiliser `--prebuilt` : Vercel doit builder côté serveur pour installer correctement les dépendances Node.
 
 - **Projet** : `chetana-cv`
 - **Domaine** : chetana.dev
-- **Variables d'env** : `DATABASE_URL`, `GOOGLE_CLIENT_ID`, `VAPID_*`, `CRON_SECRET`
+- **Variables d'env** : voir section "Variables d'environnement" ci-dessus
 
 ## Blog
 
@@ -298,6 +351,7 @@ Le blog utilise un renderer markdown custom (pas de dependance externe) qui supp
 
 - [Architecture](docs/ARCHITECTURE.md) — Vue d'ensemble, schema, auth flow
 - [Database](docs/DATABASE.md) — Schema detaille, routes, seeds
+- [Medialist](docs/MEDIALIST.md) — Fonctionnalités médiathèque + chetaku-rs
 - [ADRs](docs/adr/) — Decisions architecturales
 
 ## Licence

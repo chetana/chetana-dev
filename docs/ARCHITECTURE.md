@@ -31,19 +31,20 @@
 │  │  │             │     │  /api/messages               │   │  │
 │  │  │             │     │                             │   │  │
 │  │  │             │     │  Protected (Google OAuth):   │   │  │
-│  │  │             │     │  /api/health/stats    🔒     │   │  │
-│  │  │             │     │  /api/health/entries  🔒     │   │  │
-│  │  │             │     │  /api/health/validate 🔒     │   │  │
+│  │  │             │     │  /api/health/*        🔒     │   │  │
+│  │  │             │     │  /api/coffre/*        🔒     │   │  │
+│  │  │             │     │  /api/chat/*          🔒     │   │  │
+│  │  │             │     │  /api/medialist/*     🔒     │   │  │
+│  │  │             │     │  /api/imagenie/*      🔒     │   │  │
 │  │  └─────────────┘     └────────┬────────────────────┘   │  │
 │  │                                │                        │  │
 │  │                     ┌──────────▼──────────┐             │  │
 │  │                     │  server/utils/       │             │  │
 │  │                     │  ├── db.ts (Drizzle) │             │  │
-│  │                     │  └── auth.ts         │             │  │
-│  │                     │      requireAuth()   │             │  │
-│  │                     │      ├── verify token│             │  │
-│  │                     │      ├── upsert user │             │  │
-│  │                     │      └── return user │             │  │
+│  │                     │  ├── auth.ts         │             │  │
+│  │                     │  ├── gcs.ts          │             │  │
+│  │                     │  ├── vertex.ts       │             │  │
+│  │                     │  └── imagen.ts       │             │  │
 │  │                     └──────────┬───────────┘             │  │
 │  └─────────────────────────────────┼───────────────────────┘  │
 │                                    │                          │
@@ -52,22 +53,21 @@
 │                    @neondatabase/serverless                    │
 └────────────────────────────┼──────────────────────────────────┘
                              │
-                     ┌───────▼────────┐
-                     │ Neon PostgreSQL │
-                     │  (serverless)   │
-                     │                 │
-                     │ ┌─────────────┐ │
-                     │ │ users       │ │
-                     │ │ health_     │ │
-                     │ │  entries    │ │
-                     │ │ projects    │ │
-                     │ │ blog_posts  │ │
-                     │ │ comments    │ │
-                     │ │ messages    │ │
-                     │ │ experiences │ │
-                     │ │ skills      │ │
-                     │ └─────────────┘ │
-                     └─────────────────┘
+               ┌─────────────┼──────────────────────┐
+               ▼             ▼                       ▼
+       ┌───────────────┐  ┌──────────────────┐  ┌──────────────────┐
+       │ Neon          │  │   chetaku-rs     │  │ Google Cloud     │
+       │ PostgreSQL    │  │   (Axum/Cloud    │  │ Storage (GCS)    │
+       │ (9 tables)    │  │   Run, Rust)     │  │ chat/, coffre/,  │
+       └───────────────┘  │   media_entries  │  │ gallery.json     │
+                          └────────┬─────────┘  └──────────────────┘
+                                   │
+                        ┌──────────┴──────────┐
+                        ▼                     ▼
+                   ┌──────────┐          ┌──────────┐
+                   │  Jikan   │          │   RAWG   │
+                   │ (MAL v4) │          │ (games)  │
+                   └──────────┘          └──────────┘
 ```
 
 ## Stack technique
@@ -89,24 +89,42 @@
 ```
 chetana-dev/
 ├── app/                        # Nuxt 4 app directory
-│   ├── pages/                  # File-based routing
+│   ├── pages/
+│   │   ├── index.vue
+│   │   ├── blog/
+│   │   ├── projects/
+│   │   │   ├── health.vue
+│   │   │   ├── medialist/
+│   │   │   │   ├── index.vue   # Liste + section profil stats
+│   │   │   │   └── [slug].vue  # Détail + chat IA Gemini
+│   │   │   └── imagichet.vue   # Génération images Imagen 3
+│   │   └── ...
 │   ├── components/             # Vue components (auto-imported)
 │   ├── composables/            # Composables (auto-imported)
 │   └── assets/css/             # CSS global
 ├── server/
 │   ├── api/                    # Nitro API routes
-│   │   └── health/             # Protected health endpoints
-│   ├── db/                     # Schema Drizzle + seed + migrations
-│   │   ├── schema.ts           # Tables: users, health_entries, projects, ...
-│   │   ├── seed-health.ts      # Seed health data + project
-│   │   ├── seed-blog-pushup.ts # Blog post about the pushup journey
-│   │   └── migrate-health-to-user.ts  # One-time migration script
+│   │   ├── health/             # Protected — pushup tracker
+│   │   ├── coffre/             # Protected — GCS file manager
+│   │   ├── chat/               # Protected — chat chet_lys (GCS + Gemini)
+│   │   ├── medialist/          # Protected — proxy chetaku-rs + chat IA
+│   │   │   ├── sync.post.ts
+│   │   │   ├── update.post.ts
+│   │   │   └── chat.post.ts
+│   │   └── imagenie/           # Protected — Vertex AI Imagen 3
+│   │       └── generate.post.ts
+│   ├── db/                     # Schema Drizzle + seeds + migrations
+│   ├── middleware/
+│   │   └── cors.ts             # CORS pour /api/coffre/*
 │   └── utils/
 │       ├── db.ts               # Drizzle connection singleton
-│       └── auth.ts             # requireAuth() — Google token verification
+│       ├── auth.ts             # requireAuth() — Google token verification
+│       ├── gcs.ts              # GCS bucket + signed URLs v4
+│       ├── vertex.ts           # Gemini (translate, suggest, transcribe, chat)
+│       └── imagen.ts           # Imagen 3 (generate, bgswap)
 ├── docs/                       # Architecture docs + ADRs
-├── drizzle.config.ts           # Drizzle Kit config
-└── nuxt.config.ts              # runtimeConfig: googleClientId, databaseUrl
+├── drizzle.config.ts
+└── nuxt.config.ts              # runtimeConfig: all env vars
 ```
 
 ## Schema de base de donnees
@@ -257,6 +275,38 @@ Le prefix seul suffit pour le drill-down temporel, sans base de donnees.
 Deux niveaux :
 1. **Nuxt middleware** `cors.ts` : permet a `chetlys.vercel.app` d'appeler `chetana.dev/api/coffre/*`
 2. **Bucket GCS** (`cors.json`) : permet a `chetlys.vercel.app` de faire des PUT directs sur GCS
+
+## Services externes
+
+### chetaku-rs (Rust/Axum — Cloud Run)
+
+Service dédié à la médiathèque (animés + jeux), hébergé sur Cloud Run (`europe-west1`).
+
+- **URL** : `https://chetaku-rs-mef67kip3a-ew.a.run.app`
+- **Auth** : header `x-api-key` sur les endpoints d'écriture
+- **DB** : `media_entries` — table PostgreSQL dans Neon (même cluster)
+- **Sources** : Jikan API v4 (MyAnimeList) + RAWG API v1 (jeux)
+
+Nuxt appelle chetaku-rs via les proxies `server/api/medialist/` — l'API key n'est jamais exposée au client.
+
+> Voir [docs/MEDIALIST.md](MEDIALIST.md) et le [README chetaku-rs](https://github.com/chetana/chetaku-rs).
+
+### Google Cloud Storage (GCS)
+
+Bucket GCS pour :
+- **Chat chet_lys** : `chat/YYYY/MM/DD.json` (messages JSON), `YYYY/MM/DD/filename` (images)
+- **Coffre chet_lys** : `YYYY/MM/DD/filename` (photos/vidéos)
+- **ImagiChet** : `gallery.json` (métadonnées galerie), images générées
+
+### Vertex AI (GCP `cykt-399216`)
+
+- **Gemini** (`gemini-2.5-flash`) : traduction, transcription audio, correction grammaticale, chat IA contextuel
+- **Imagen 3** : génération d'images (texte → image, BGSWAP)
+- Auth : service account `coffre-backend@cykt-399216.iam.gserviceaccount.com` via JWT RS256
+
+> ⚠️ `thinkingConfig: { thinkingBudget: 0 }` obligatoire pour Gemini 2.5 Flash (sinon les tokens de thinking consomment tout `maxOutputTokens`).
+
+---
 
 ## Securite
 
