@@ -68,31 +68,95 @@ const { t } = useLocale()
 
 useHead({ title: 'Passions — Chetana YIN' })
 
-// 3D tilt effect on hover
+function applyTilt(card: HTMLElement, x: number, y: number) {
+  const rect = card.getBoundingClientRect()
+  const cx = rect.width / 2
+  const cy = rect.height / 2
+  const rotX = ((y - cy) / cy) * -6
+  const rotY = ((x - cx) / cx) * 8
+  card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-6px)`
+  const shine = card.querySelector<HTMLElement>('.card-shine')
+  if (shine) {
+    shine.style.opacity = '1'
+    shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.18) 0%, transparent 65%)`
+  }
+}
+
+function resetTilt(card: HTMLElement) {
+  card.style.transform = ''
+  const shine = card.querySelector<HTMLElement>('.card-shine')
+  if (shine) shine.style.opacity = '0'
+}
+
+function playEntranceAnim(card: HTMLElement) {
+  // Quick tilt-in then back to neutral — gives mobile users a taste of the effect
+  const rect = card.getBoundingClientRect()
+  const cx = rect.width / 2
+  const cy = rect.height / 2
+  let t = 0
+  const dur = 900
+  const step = () => {
+    t += 16
+    const progress = t / dur
+    if (progress >= 1) { resetTilt(card); return }
+    // Half sine wave: ramp up then back down
+    const wave = Math.sin(progress * Math.PI)
+    const rotY = wave * 10
+    const rotX = wave * -4
+    card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(${wave * -6}px)`
+    const shine = card.querySelector<HTMLElement>('.card-shine')
+    if (shine) {
+      shine.style.opacity = String(wave * 0.7)
+      shine.style.background = `radial-gradient(circle at ${cx + rotY * 8}px ${cy + rotX * 8}px, rgba(255,255,255,0.18) 0%, transparent 65%)`
+    }
+    requestAnimationFrame(step)
+  }
+  requestAnimationFrame(step)
+}
+
 onMounted(() => {
   const cards = document.querySelectorAll<HTMLElement>('.tcg-card:not(.disabled)')
+
   cards.forEach(card => {
+    // ── Desktop: mouse ──────────────────────────────────────────────
     card.addEventListener('mousemove', (e: MouseEvent) => {
       const rect = card.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
-      const cx = rect.width / 2
-      const cy = rect.height / 2
-      const rotX = ((y - cy) / cy) * -6
-      const rotY = ((x - cx) / cx) * 8
-      card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-6px)`
-      // Move shine
-      const shine = card.querySelector<HTMLElement>('.card-shine')
-      if (shine) {
-        shine.style.opacity = '1'
-        shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.18) 0%, transparent 65%)`
-      }
+      applyTilt(card, e.clientX - rect.left, e.clientY - rect.top)
     })
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = ''
-      const shine = card.querySelector<HTMLElement>('.card-shine')
-      if (shine) shine.style.opacity = '0'
+    card.addEventListener('mouseleave', () => resetTilt(card))
+
+    // ── Mobile: touch ───────────────────────────────────────────────
+    card.addEventListener('touchstart', (e: TouchEvent) => {
+      e.preventDefault()
+      const t = e.touches[0]
+      const rect = card.getBoundingClientRect()
+      applyTilt(card, t.clientX - rect.left, t.clientY - rect.top)
+    }, { passive: false })
+
+    card.addEventListener('touchmove', (e: TouchEvent) => {
+      e.preventDefault()
+      const t = e.touches[0]
+      const rect = card.getBoundingClientRect()
+      applyTilt(card, t.clientX - rect.left, t.clientY - rect.top)
+    }, { passive: false })
+
+    card.addEventListener('touchend', () => {
+      // Small delay so user sees the tilt before it resets
+      setTimeout(() => resetTilt(card), 120)
     })
+
+    // ── Mobile: entrance animation via IntersectionObserver ─────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Stagger per card index
+          const idx = Array.from(cards).indexOf(card)
+          setTimeout(() => playEntranceAnim(card), idx * 150)
+          observer.unobserve(card)
+        }
+      })
+    }, { threshold: 0.4 })
+    observer.observe(card)
   })
 })
 </script>
