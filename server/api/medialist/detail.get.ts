@@ -62,6 +62,11 @@ export default defineEventHandler(async (event) => {
     const movie = movieRes.status === 'fulfilled' ? movieRes.value : null
     const credits = creditsRes.status === 'fulfilled' ? creditsRes.value : null
     const director = credits?.crew?.find((c: any) => c.job === 'Director')?.name ?? null
+    const cast = (credits?.cast ?? []).slice(0, 10).map((a: any) => ({
+      name: a.name,
+      character: a.character ?? null,
+      photo: a.profile_path ? `https://image.tmdb.org/t/p/w185${a.profile_path}` : null,
+    }))
     return {
       entry,
       type: 'movie',
@@ -70,12 +75,23 @@ export default defineEventHandler(async (event) => {
       director,
       tagline: movie?.tagline ?? null,
       runtime: movie?.runtime ?? null,
+      cast,
     }
   }
 
   // ── Series ───────────────────────────────────────────────────────────────────
   if (type === 'series') {
-    const tv = await $fetch<any>(`https://api.themoviedb.org/3/tv/${externalId}?api_key=${config.tmdbApiKey}&language=fr-FR`).catch(() => null)
+    const [tvRes, creditsRes] = await Promise.allSettled([
+      $fetch<any>(`https://api.themoviedb.org/3/tv/${externalId}?api_key=${config.tmdbApiKey}&language=fr-FR`),
+      $fetch<any>(`https://api.themoviedb.org/3/tv/${externalId}/credits?api_key=${config.tmdbApiKey}`),
+    ])
+    const tv = tvRes.status === 'fulfilled' ? tvRes.value : null
+    const credits = creditsRes.status === 'fulfilled' ? creditsRes.value : null
+    const cast = (credits?.cast ?? []).slice(0, 10).map((a: any) => ({
+      name: a.name,
+      character: a.character ?? null,
+      photo: a.profile_path ? `https://image.tmdb.org/t/p/w185${a.profile_path}` : null,
+    }))
 
     // Fetch episodes for each real season (exclude season 0 = specials, max 15)
     const seasons: any[] = (tv?.seasons ?? []).filter((s: any) => s.season_number > 0).slice(0, 15)
@@ -106,6 +122,7 @@ export default defineEventHandler(async (event) => {
       number_of_seasons: tv?.number_of_seasons ?? null,
       number_of_episodes: tv?.number_of_episodes ?? null,
       seasons_list,
+      cast,
     }
   }
 

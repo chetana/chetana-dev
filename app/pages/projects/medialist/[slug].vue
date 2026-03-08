@@ -57,6 +57,12 @@ interface GameDetail {
   screenshots: string[]
 }
 
+interface CastMember {
+  name: string
+  character: string | null
+  photo: string | null
+}
+
 interface MovieDetail {
   entry: MediaEntry
   type: 'movie'
@@ -65,6 +71,7 @@ interface MovieDetail {
   director: string | null
   tagline: string | null
   runtime: number | null
+  cast: CastMember[]
 }
 
 interface SeriesSeason {
@@ -84,6 +91,7 @@ interface SeriesDetail {
   number_of_seasons: number | null
   number_of_episodes: number | null
   seasons_list: SeriesSeason[]
+  cast: CastMember[]
 }
 
 type Detail = AnimeDetail | GameDetail | MovieDetail | SeriesDetail
@@ -474,6 +482,24 @@ async function sendChatMessage() {
           >
             {{ synopsisExpanded ? 'Voir moins ▲' : 'Voir plus ▼' }}
           </button>
+        </div>
+      </section>
+
+      <!-- ── Cast (film / série) ── -->
+      <section
+        v-if="(detail.type === 'movie' || detail.type === 'series') && (detail as any).cast?.length"
+        class="content-section"
+      >
+        <h2 class="section-heading">Acteurs</h2>
+        <div class="cast-grid">
+          <div v-for="actor in (detail as any).cast" :key="actor.name" class="cast-card">
+            <img v-if="actor.photo" :src="actor.photo" :alt="actor.name" class="cast-photo" loading="lazy" />
+            <div v-else class="cast-photo-placeholder">👤</div>
+            <div class="cast-info">
+              <span class="cast-name">{{ actor.name }}</span>
+              <span v-if="actor.character" class="cast-character">{{ actor.character }}</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1168,6 +1194,41 @@ async function sendChatMessage() {
   flex-shrink: 0;
 }
 .ep-tag.recap { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+
+/* ── Cast ── */
+.cast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.75rem;
+}
+.cast-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+.cast-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+}
+.cast-photo-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+.cast-info { display: flex; flex-direction: column; gap: 0.1rem; }
+.cast-name { font-size: 0.78rem; font-weight: 600; color: var(--text); }
+.cast-character { font-size: 0.72rem; color: var(--text-muted); font-style: italic; }
 
 /* ── Screenshots ── */
 .screenshots-grid {
