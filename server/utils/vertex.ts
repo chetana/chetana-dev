@@ -35,6 +35,14 @@ export async function getAccessToken(): Promise<string> {
 
 const GEMINI_MODELS = ['gemini-3.1-flash-lite', 'gemini-2.5-flash'] as const
 
+// Gemini 3.x models use the global endpoint, older models use regional
+function geminiEndpoint(project: string, model: string, regionalLocation: string): string {
+  if (model.startsWith('gemini-3')) {
+    return `https://aiplatform.googleapis.com/v1/projects/${project}/locations/global/publishers/google/models/${model}:generateContent`
+  }
+  return `https://${regionalLocation}-aiplatform.googleapis.com/v1/projects/${project}/locations/${regionalLocation}/publishers/google/models/${model}:generateContent`
+}
+
 async function geminiRequest(parts: object[], maxTokens = 300): Promise<string> {
   const token = await getAccessToken()
   const project = process.env.VERTEX_PROJECT_ID ?? 'cykt-399216'
@@ -43,7 +51,7 @@ async function geminiRequest(parts: object[], maxTokens = 300): Promise<string> 
   let lastError: Error | null = null
   for (const model of GEMINI_MODELS) {
     const res = await fetch(
-      `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/publishers/google/models/${model}:generateContent`,
+      geminiEndpoint(project, model, location),
       {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -210,6 +218,7 @@ export async function geminiChatWithSearch(
   const token = await getAccessToken()
   const project = process.env.VERTEX_PROJECT_ID ?? 'cykt-399216'
   const location = process.env.VERTEX_LOCATION ?? 'us-central1'
+  // Google Search grounding requires gemini-2.5-flash (not available on 3.x yet)
   const model = 'gemini-2.5-flash'
 
   const contents = messages.map(m => ({ role: m.role, parts: [{ text: m.content }] }))
@@ -221,7 +230,7 @@ export async function geminiChatWithSearch(
     generationConfig: { temperature: 0.7, maxOutputTokens: 1024, thinkingConfig: { thinkingBudget: 0 } },
   })
 
-  const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/publishers/google/models/${model}:generateContent`
+  const endpoint = geminiEndpoint(project, model, location)
 
   for (const withSearch of [true, false]) {
     const res = await fetch(endpoint, {
