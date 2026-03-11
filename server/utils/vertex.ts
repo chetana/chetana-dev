@@ -67,6 +67,7 @@ async function geminiRequest(parts: object[], maxTokens = 300): Promise<string> 
       lastError = new Error(`Gemini ${res.status}: ${data?.error?.message ?? 'unknown'}`)
       continue
     }
+    console.log(`[vertex] using: ${model}`)
     if (model !== GEMINI_MODELS[0]) {
       console.warn(`[vertex] fallback used: ${model}`)
     }
