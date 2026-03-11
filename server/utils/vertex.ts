@@ -33,7 +33,7 @@ export async function getAccessToken(): Promise<string> {
   return data.access_token
 }
 
-const GEMINI_MODELS = ['gemini-3.1-flash-lite', 'gemini-2.5-flash'] as const
+const GEMINI_MODELS = ['gemini-3-flash-preview', 'gemini-2.5-flash'] as const
 
 // Gemini 3.x models use the global endpoint, older models use regional
 function geminiEndpoint(project: string, model: string, regionalLocation: string): string {
@@ -67,7 +67,6 @@ async function geminiRequest(parts: object[], maxTokens = 300): Promise<string> 
       lastError = new Error(`Gemini ${res.status}: ${data?.error?.message ?? 'unknown'}`)
       continue
     }
-    console.log(`[vertex] using: ${model}`)
     if (model !== GEMINI_MODELS[0]) {
       console.warn(`[vertex] fallback used: ${model}`)
     }
