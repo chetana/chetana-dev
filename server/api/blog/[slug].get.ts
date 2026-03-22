@@ -1,22 +1,10 @@
-import { getDB } from '../../utils/db'
-import { blogPosts } from '../../db/schema'
-import { eq, and } from 'drizzle-orm'
+const API = 'https://api.chetana.dev'
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
-  if (!slug) {
-    throw createError({ statusCode: 400, message: 'Slug is required' })
-  }
+  if (!slug) throw createError({ statusCode: 400, message: 'Slug is required' })
 
-  const db = getDB()
-  const result = await db.select()
-    .from(blogPosts)
-    .where(and(eq(blogPosts.slug, slug), eq(blogPosts.published, true)))
-    .limit(1)
-
-  if (!result.length) {
-    throw createError({ statusCode: 404, message: 'Post not found' })
-  }
-
-  return result[0]
+  return await $fetch(`${API}/blog/${slug}`).catch((e) => {
+    throw createError({ statusCode: e.statusCode ?? 500, message: e.data?.error ?? 'Not found' })
+  })
 })

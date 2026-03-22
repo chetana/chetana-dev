@@ -1,6 +1,4 @@
-import { getDB } from '../../utils/db'
-import { comments } from '../../db/schema'
-import { eq, and, desc } from 'drizzle-orm'
+const API = 'https://api.chetana.dev'
 
 export default defineEventHandler(async (event) => {
   const postId = getRouterParam(event, 'postId')
@@ -8,9 +6,5 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Valid postId is required' })
   }
 
-  const db = getDB()
-  return await db.select()
-    .from(comments)
-    .where(and(eq(comments.postId, Number(postId)), eq(comments.approved, true)))
-    .orderBy(desc(comments.createdAt))
+  return await $fetch(`${API}/comments/${postId}`)
 })

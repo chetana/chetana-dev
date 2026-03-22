@@ -1,8 +1,5 @@
-import { getDB } from '../utils/db'
-import { experiences } from '../db/schema'
-import { asc } from 'drizzle-orm'
+const API = 'https://api.chetana.dev'
 
 export default defineEventHandler(async () => {
-  const db = getDB()
-  return await db.select().from(experiences).orderBy(asc(experiences.sortOrder))
+  return await $fetch(`${API}/experiences`)
 })
