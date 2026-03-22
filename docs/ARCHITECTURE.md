@@ -134,17 +134,15 @@ chetana-dev/
 
 ## Schema de base de donnees
 
-9 tables principales :
+Les tables Neon gérées par chetana-dev (Drizzle) sont uniquement celles liées aux fonctionnalités protégées :
 
 - **users** — Utilisateurs Google OAuth (email, name, picture, googleId)
 - **health_entries** — Suivi quotidien de pushups (scoped par userId, contrainte unique userId+date)
-- **projects** — Projets personnels (trilingue FR/EN/KM)
-- **blog_posts** — Articles de blog (trilingue, Markdown)
 - **comments** — Commentaires sur les articles (moderes)
 - **messages** — Messages de contact (formulaire)
-- **experiences** — Experiences CV (trilingue)
-- **skills** — Competences techniques (groupees par categorie)
 - **push_subscriptions** — Abonnements push web
+
+> Les données portfolio (blog_posts, projects, experiences, skills, media_entries) sont gérées par **chetaku-rs** (`api.chetana.dev`) et ne passent plus par Drizzle dans chetana-dev.
 
 > Voir [DATABASE.md](DATABASE.md) pour le schema detaille, les routes API et les scripts de seed.
 
@@ -185,10 +183,11 @@ Le client principal est une app Android native. Les sessions/cookies sont pensee
 ## Flux de donnees
 
 1. **SSR** : Nuxt effectue le rendu cote serveur. Les pages appellent `useFetch()` qui hit les API routes.
-2. **API Routes publiques** : Chaque route utilise `getDB()` qui cree une connexion Drizzle → Neon.
-3. **API Routes protegees** : Les endpoints health appellent `requireAuth(event)` en debut de handler, puis filtrent avec `eq(healthEntries.userId, user.id)`.
-4. **Neon** : Connexion HTTP (pas de pool TCP), ideal pour serverless.
-5. **i18n** : Le composable `useI18n()` expose un `useState('locale')` reactif.
+2. **API Routes portfolio** (`/api/blog`, `/api/projects`, `/api/experiences`, `/api/skills`) : Ces routes proxient vers `api.chetana.dev` (chetaku-rs) via `$fetch`. Les réponses snake_case sont converties en camelCase pour les composants Vue (ex : `date_start → dateStart`, `role_fr → roleFr`).
+3. **API Routes publiques directes** (`/api/comments`, `/api/messages`) : Utilisent `getDB()` → Drizzle → Neon.
+4. **API Routes protegees** : Les endpoints health appellent `requireAuth(event)` en debut de handler, puis filtrent avec `eq(healthEntries.userId, user.id)`.
+5. **Neon** : Connexion HTTP (pas de pool TCP), ideal pour serverless.
+6. **i18n** : Le composable `useI18n()` expose un `useState('locale')` reactif.
 
 ## Chat chet_lys
 
@@ -350,14 +349,16 @@ Deux niveaux :
 
 ### chetaku-rs (Rust/Axum — Cloud Run)
 
-Service dédié à la médiathèque et aux activités sportives Strava, hébergé sur Cloud Run (`europe-west1`).
+Service dédié au portfolio, à la médiathèque et aux activités sportives Strava, hébergé sur Cloud Run (`europe-west1`). Exposé publiquement via le domaine `api.chetana.dev`.
 
-- **URL** : `https://chetaku-rs-267131866578.europe-west1.run.app`
+- **URL** : `https://chetaku-rs-267131866578.europe-west1.run.app` (alias `api.chetana.dev`)
 - **Auth** : header `x-api-key` sur les endpoints d'écriture
-- **DB** : tables `media_entries`, `strava_activities`, `stats_cache` dans Neon PostgreSQL
+- **DB** : tables `blog_posts`, `projects`, `experiences`, `skills`, `media_entries`, `strava_activities`, `stats_cache` dans Neon PostgreSQL
 - **Sources** : Jikan (MyAnimeList), RAWG (jeux), TMDB (films/séries), Strava API v3
 
-**Endpoints médiathèque** : Nuxt appelle via proxies `server/api/medialist/` — l'API key n'est jamais exposée au client.
+**Endpoints portfolio** (`/blog`, `/projects`, `/experiences`, `/skills`) : Nuxt proxie ces endpoints via `server/api/`. Les réponses snake_case sont mappées en camelCase avant d'être retournées au client.
+
+**Endpoints médiathèque** : Nuxt appelle via proxies `server/api/medialist/` — l'API key n'est jamais exposée au client. La page `/passions/medialist` est **en lecture seule** ; la gestion (ajout/édition/suppression) se fait via `admin.chetana.dev`.
 
 **Endpoints Strava** (`/strava/activities`, `/strava/stats`) : publics — appelés directement depuis les pages velo/natation/course sans proxy Nuxt.
 
