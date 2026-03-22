@@ -20,7 +20,7 @@ Portfolio dynamique, blog technique et projets personnels de **Chetana YIN** —
 |---|---|
 | `/` | Homepage — hero, stats, about, experience timeline, skills, education, contact |
 | `/projects` | Liste des projets personnels |
-| `/projects/health` | Suivi quotidien de pompes (streak, calendrier, validation) |
+| `/projects/health` | ↗ Redirect 301 vers [pushup.chetana.dev](https://pushup.chetana.dev) |
 | `/projects/imagichet` | Génération et édition d'images avec Vertex AI Imagen 3 |
 | `/passions` | Section Passions — 5 cartes TCG interactives (Médiathèque, Vélo, Natation, Course, Voyage) |
 | `/passions/medialist` | Médiathèque — animés, jeux, films et séries avec stats pondérées par note |
@@ -59,7 +59,6 @@ Toutes les pages sont optimisees pour mobile (320px+) :
 
 - Grids CSS avec `minmax(280px, 1fr)` pour le collapse automatique
 - Breakpoints `@media (max-width: 768px)` pour les layouts principaux
-- Breakpoint `@media (max-width: 480px)` pour le calendrier health
 - `overflow-x: hidden` et `word-break: break-word` sur les contenus longs
 - Navigation mobile avec hamburger menu et overlay
 
@@ -76,11 +75,10 @@ Toutes les pages sont optimisees pour mobile (320px+) :
 │              Nuxt 4 / Nitro (Vercel)                 │
 │                                                       │
 │  Public:                 Protected (OAuth 🔒):       │
-│  /api/projects           /api/health/*               │
-│  /api/blog               /api/coffre/*               │
-│  /api/comments           /api/chat/*                 │
-│  /api/messages           /api/medialist/*            │
-│                          /api/imagenie/*             │
+│  /api/projects           /api/coffre/*               │
+│  /api/blog               /api/chat/*                 │
+│  /api/comments           /api/medialist/*            │
+│  /api/messages           /api/imagenie/*             │
 │                                                       │
 │  medialist: search, add, update, delete, detail       │
 │                                                       │
@@ -91,7 +89,7 @@ Toutes les pages sont optimisees pour mobile (320px+) :
 ┌──────────────┐       ┌──────────────────────┐
 │    Neon      │       │     chetaku-rs        │
 │  PostgreSQL  │       │  (Axum / Cloud Run)   │
-│  (9 tables)  │       │  media_entries table  │
+│  (7 tables)  │       │  media_entries table  │
 └──────────────┘       └──────────┬────────────┘
                                   │
                     ┌─────────────┴──────────────────────┐
@@ -132,9 +130,6 @@ npm run dev
 |---|---|
 | `DATABASE_URL` | URL de connexion Neon PostgreSQL |
 | `GOOGLE_CLIENT_ID` | OAuth Web Client ID (Google Cloud Console) |
-| `VAPID_PRIVATE_KEY` | Cle privee pour les push notifications |
-| `VAPID_PUBLIC_KEY` | Cle publique pour les push notifications |
-| `CRON_SECRET` | Secret pour les endpoints cron |
 | `GCS_BUCKET_NAME` | Nom du bucket Google Cloud Storage (coffre chet_lys) |
 | `GCS_SERVICE_ACCOUNT_JSON` | JSON stringifie du service account GCS (Storage Object Admin) |
 | `RAWG_API_KEY` | Clé API rawg.io (medialist — sync jeux) |
@@ -155,7 +150,6 @@ npm run dev
 | `npm run db:generate` | Generer les migrations SQL |
 | `npm run db:push` | Pousser le schema vers la DB |
 | `npm run db:seed` | Alimenter la DB (experiences, skills, projects, blog) |
-| `npm run db:seed-health` | Seed des donnees health tracker + projet |
 | `npm run db:seed-blog-light` | Seed de l'article "Dark theme to light theme" |
 | `npm run db:studio` | Ouvrir Drizzle Studio (GUI) |
 
@@ -170,7 +164,6 @@ app/
     index.vue            # Homepage
     blog/                # Liste + detail articles
     projects/
-      health.vue         # Health tracker (pompes)
       imagichet.vue      # Génération d'images Imagen 3
     passions/
       index.vue          # Section Passions — 5 cartes TCG interactives
@@ -183,7 +176,6 @@ app/
       voyage/index.vue   # Carte monde Leaflet + GeoJSON + cards voyages
 server/
   api/                   # Routes REST
-    health/              # Endpoints proteges (Google OAuth) — daily pushup tracker
     coffre/              # Endpoints proteges (Google OAuth) — coffre a souvenirs chet_lys
     chat/                # Chat chet_lys (messages GCS + traductions Gemini)
     medialist/
@@ -213,19 +205,15 @@ docs/                    # Architecture, Database, Medialist, ADRs
 
 ## Base de donnees
 
-9 tables PostgreSQL sur Neon :
+Tables Neon utilisées par chetana.dev :
 
 | Table | Description | Auth |
 |---|---|---|
 | `users` | Utilisateurs Google OAuth (email, name, picture, googleId) | — |
-| `health_entries` | Suivi quotidien pompes (scoped par userId) | Google OAuth |
-| `projects` | Projets perso avec tags, GitHub/demo URLs | Public |
-| `blog_posts` | Articles trilingues FR/EN/KM avec tags | Public |
 | `comments` | Commentaires sur les articles (moderation) | Public |
 | `messages` | Messages du formulaire contact | Public |
-| `experiences` | CV : postes, entreprises, bullets trilingues | Public |
-| `skills` | Competences par categorie avec couleur | Public |
-| `push_subscriptions` | Abonnements push web | Public |
+
+> Les données portfolio (blog_posts, projects, experiences, skills, media_entries, strava_activities) sont gérées par **chetaku-rs** (`api.chetana.dev`). Le suivi de pompes (health_entries, push_subscriptions) est géré par **pushup-tracker** (`pushup.chetana.dev`).
 
 ## API
 
@@ -249,9 +237,6 @@ Requierent `Authorization: Bearer <google_id_token>` :
 
 | Endpoint | Methode | Description |
 |---|---|---|
-| `/api/health/stats` | GET | Stats pompes de l'utilisateur (streak, total, today) |
-| `/api/health/entries` | GET | Historique des jours de l'utilisateur |
-| `/api/health/validate` | POST | Valider le jour courant pour l'utilisateur |
 | `/api/coffre/list?prefix=` | GET | Liste les objets GCS avec delimiter `/` |
 | `/api/coffre/sign-upload` | POST | Genere un signed URL PUT v4 (15 min) |
 | `/api/coffre/sign-download?path=` | GET | Genere un signed URL GET v4 (1h) |
@@ -349,15 +334,12 @@ interface ChatMessage {
 
 > ⚠️ `gemini-2.5-flash` active le thinking par defaut — toujours ajouter `thinkingConfig: { thinkingBudget: 0 }` dans `generationConfig`.
 
-## Android Companion App
+## Pushup Tracker
 
-L'application Android native ([repo](https://github.com/chetana/dailypushup)) consomme les endpoints health :
+Le suivi de pompes a été extrait vers un service dédié : **[pushup.chetana.dev](https://pushup.chetana.dev)** (repo `pushup-tracker`, Cloud Run europe-west1).
 
-- **Kotlin** / MVVM / Room (cache offline) / Retrofit 2
-- **Google Sign-In** via Credential Manager → Bearer token
-- **Widget home screen** avec streak 🔥 et validation one-tap ✅
-- **WorkManager** sync toutes les 30 minutes
-- **Light mode** avec le meme style beige/or que le portfolio
+- `/projects/health` redirige en 301 vers `https://pushup.chetana.dev`
+- Le service possède ses propres endpoints health + push notifications + cron job Cloud Scheduler
 
 ## SEO
 

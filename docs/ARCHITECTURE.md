@@ -31,7 +31,6 @@
 │  │  │             │     │  /api/messages               │   │  │
 │  │  │             │     │                             │   │  │
 │  │  │             │     │  Protected (Google OAuth):   │   │  │
-│  │  │             │     │  /api/health/*        🔒     │   │  │
 │  │  │             │     │  /api/coffre/*        🔒     │   │  │
 │  │  │             │     │  /api/chat/*          🔒     │   │  │
 │  │  │             │     │  /api/medialist/*     🔒     │   │  │
@@ -58,7 +57,7 @@
        ┌───────────────┐  ┌──────────────────┐  ┌──────────────────┐
        │ Neon          │  │   chetaku-rs     │  │ Google Cloud     │
        │ PostgreSQL    │  │   (Axum/Cloud    │  │ Storage (GCS)    │
-       │ (9 tables)    │  │   Run, Rust)     │  │ chat/, coffre/,  │
+       │ (3 tables)    │  │   Run, Rust)     │  │ chat/, coffre/,  │
        └───────────────┘  │   media_entries  │  │ gallery.json     │
                           └────────┬─────────┘  └──────────────────┘
                                    │
@@ -93,7 +92,6 @@ chetana-dev/
 │   │   ├── index.vue
 │   │   ├── blog/
 │   │   ├── projects/
-│   │   │   ├── health.vue
 │   │   │   └── imagichet.vue   # Génération images Imagen 3
 │   │   ├── passions/
 │   │   │   ├── index.vue       # Cartes TCG interactives (Médiathèque, Vélo, Voyage)
@@ -106,7 +104,6 @@ chetana-dev/
 │   └── assets/css/             # CSS global
 ├── server/
 │   ├── api/                    # Nitro API routes
-│   │   ├── health/             # Protected — pushup tracker
 │   │   ├── coffre/             # Protected — GCS file manager
 │   │   ├── chat/               # Protected — chat chet_lys (GCS + Gemini)
 │   │   ├── medialist/          # Protected — proxy chetaku-rs + enrichissement TMDB
@@ -134,15 +131,13 @@ chetana-dev/
 
 ## Schema de base de donnees
 
-Les tables Neon gérées par chetana-dev (Drizzle) sont uniquement celles liées aux fonctionnalités protégées :
+Les tables Neon gérées par chetana-dev (Drizzle) :
 
 - **users** — Utilisateurs Google OAuth (email, name, picture, googleId)
-- **health_entries** — Suivi quotidien de pushups (scoped par userId, contrainte unique userId+date)
 - **comments** — Commentaires sur les articles (moderes)
 - **messages** — Messages de contact (formulaire)
-- **push_subscriptions** — Abonnements push web
 
-> Les données portfolio (blog_posts, projects, experiences, skills, media_entries) sont gérées par **chetaku-rs** (`api.chetana.dev`) et ne passent plus par Drizzle dans chetana-dev.
+> Les données portfolio (blog_posts, projects, experiences, skills, media_entries) sont gérées par **chetaku-rs** (`api.chetana.dev`). Le suivi de pompes (health_entries, push_subscriptions) est géré par **pushup-tracker** (`pushup.chetana.dev`).
 
 > Voir [DATABASE.md](DATABASE.md) pour le schema detaille, les routes API et les scripts de seed.
 
@@ -151,17 +146,17 @@ Les tables Neon gérées par chetana-dev (Drizzle) sont uniquement celles liées
 ### Flow
 
 ```
-Android App                              Backend Nuxt/Nitro
+Web Browser / App                        Backend Nuxt/Nitro
   │                                          │
-  │── Google Sign-In (Credential Manager)    │
+  │── Google Sign-In (GIS / Credential Mgr)  │
   │   → obtient Google ID Token              │
   │                                          │
-  │── GET /api/health/stats                  │
+  │── GET /api/coffre/list                   │
   │   Authorization: Bearer <idToken>  ────► │
   │                                          │── verifyIdToken() via google-auth-library
   │                                          │── upsert user dans table users
-  │                                          │── query scopee au userId
-  │◄──────────────────────────────────────── │── retourne les donnees
+  │                                          │── retourne les donnees
+  │◄──────────────────────────────────────── │
 ```
 
 ### Pourquoi pas de sessions ?
@@ -185,7 +180,7 @@ Le client principal est une app Android native. Les sessions/cookies sont pensee
 1. **SSR** : Nuxt effectue le rendu cote serveur. Les pages appellent `useFetch()` qui hit les API routes.
 2. **API Routes portfolio** (`/api/blog`, `/api/projects`, `/api/experiences`, `/api/skills`) : Ces routes proxient vers `api.chetana.dev` (chetaku-rs) via `$fetch`. Les réponses snake_case sont converties en camelCase pour les composants Vue (ex : `date_start → dateStart`, `role_fr → roleFr`).
 3. **API Routes publiques directes** (`/api/comments`, `/api/messages`) : Utilisent `getDB()` → Drizzle → Neon.
-4. **API Routes protegees** : Les endpoints health appellent `requireAuth(event)` en debut de handler, puis filtrent avec `eq(healthEntries.userId, user.id)`.
+4. **API Routes protegees** : Les endpoints coffre/chat/medialist/imagenie appellent `requireAuth(event)` en debut de handler.
 5. **Neon** : Connexion HTTP (pas de pool TCP), ideal pour serverless.
 6. **i18n** : Le composable `useI18n()` expose un `useState('locale')` reactif.
 
@@ -347,6 +342,17 @@ Deux niveaux :
 
 ## Services externes
 
+### pushup-tracker (Nuxt — Cloud Run)
+
+Suivi quotidien de pompes extrait dans un service dédié. Exposé via `pushup.chetana.dev`.
+
+- **URL** : `https://pushup.chetana.dev` (alias de `pushup-tracker-267131866578.europe-west1.run.app`)
+- **Repo** : `pushup-tracker` — Nuxt 3, node-server preset, Cloud Run europe-west1
+- **DB** : tables `users`, `health_entries`, `push_subscriptions` dans le même Neon PostgreSQL
+- **Auth** : Google OAuth (même flow Bearer token)
+- **Notifications push** : web-push + Cloud Scheduler (4x/jour)
+- **Redirect** : `chetana.dev/projects/health` → 301 vers `pushup.chetana.dev`
+
 ### chetaku-rs (Rust/Axum — Cloud Run)
 
 Service dédié au portfolio, à la médiathèque et aux activités sportives Strava, hébergé sur Cloud Run (`europe-west1`). Exposé publiquement via le domaine `api.chetana.dev`.
@@ -385,7 +391,7 @@ Bucket GCS pour :
 
 ## Securite
 
-- **Google OAuth** sur tous les endpoints proteges (health + coffre) — Bearer token verifie
+- **Google OAuth** sur tous les endpoints proteges (coffre, chat, medialist, imagenie) — Bearer token verifie
 - Validation des inputs sur toutes les routes POST
 - Honeypot anti-spam sur le formulaire de contact
 - Moderation des commentaires (approved = false par defaut)
