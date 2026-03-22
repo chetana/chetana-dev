@@ -113,7 +113,7 @@ const translations: Record<string, Record<string, string>> = {
   'projects.subtitle': { fr: 'Mes projets personnels et expérimentations', en: 'My personal projects and experiments', km: 'គម្រោងផ្ទាល់ខ្លួន និងការពិសោធន៍របស់ខ្ញុំ' },
   'projects.view': { fr: 'Voir le projet', en: 'View project', km: 'មើលគម្រោង' },
   'projects.github': { fr: 'Code source', en: 'Source code', km: 'កូដប្រភព' },
-  'projects.demo': { fr: 'Démo live', en: 'Live demo', km: 'បង្ហាញផ្ទាល់' },
+  'projects.demo': { fr: 'App', en: 'App', km: 'App' },
 
   // Blog page
   'blog.title': { fr: 'Blog', en: 'Blog', km: 'ប្លុក' },
@@ -127,22 +127,6 @@ const translations: Record<string, Record<string, string>> = {
   'comments.submit': { fr: 'Publier', en: 'Submit', km: 'បញ្ជូន' },
   'comments.pending': { fr: 'Votre commentaire est en attente de modération.', en: 'Your comment is pending moderation.', km: 'មតិយោបល់របស់អ្នកកំពុងរង់ចាំការត្រួតពិនិត្យ។' },
   'comments.empty': { fr: 'Aucun commentaire pour le moment.', en: 'No comments yet.', km: 'មិនទាន់មានមតិយោបល់ទេ។' },
-
-  // Health tracker
-  'health.title': { fr: 'Suivi pompes quotidien', en: 'Daily Pushup Tracker', km: 'តាមដានកិច្ចការរាំងដៃប្រចាំថ្ងៃ' },
-  'health.subtitle': { fr: 'Chaque jour compte. Pas d\'excuse.', en: 'Every day counts. No excuses.', km: 'រាល់ថ្ងៃសំខាន់។ គ្មានលេស។' },
-  'health.streak': { fr: 'Streak actuel', en: 'Current Streak', km: 'ថ្ងៃជាប់គ្នា' },
-  'health.total': { fr: 'Total pompes', en: 'Total Pushups', km: 'រាំងដៃសរុប' },
-  'health.days': { fr: 'Jours validés', en: 'Days Completed', km: 'ថ្ងៃបានបំពេញ' },
-  'health.best': { fr: 'Meilleur streak', en: 'Best Streak', km: 'ថ្ងៃជាប់គ្នាល្អបំផុត' },
-  'health.today': { fr: 'Aujourd\'hui', en: 'Today', km: 'ថ្ងៃនេះ' },
-  'health.target': { fr: 'Objectif', en: 'Target', km: 'គោលដៅ' },
-  'health.validate': { fr: 'Validé !', en: 'Done!', km: 'រួចរាល់!' },
-  'health.done': { fr: 'Fait', en: 'Done', km: 'រួច' },
-  'health.calendar': { fr: 'Calendrier', en: 'Calendar', km: 'ប្រតិទិន' },
-  'health.notif.enable': { fr: 'Activer les rappels', en: 'Enable reminders', km: 'បើកការរំលឹក' },
-  'health.notif.enabled': { fr: 'Rappels activés', en: 'Reminders on', km: 'ការរំលឹកបើក' },
-  'health.notif.denied': { fr: 'Notifications bloquées', en: 'Notifications blocked', km: 'ការជូនដំណឹងត្រូវបានរារាំង' },
 
   // Footer
   'footer.text': { fr: 'Chetana YIN', en: 'Chetana YIN', km: 'Chetana YIN' }

@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     manifest: {
       name: 'Chetana YIN',
       short_name: 'Chetana',
-      start_url: '/projects/health',
+      start_url: '/',
       display: 'standalone',
       theme_color: '#c4963c',
       background_color: '#f5f2ec',
@@ -74,7 +74,8 @@ export default defineNuxtConfig({
     }
   },
   routeRules: {
-    '/cv': { robots: false }
+    '/cv': { robots: false },
+    '/projects/health': { redirect: { to: 'https://pushup.chetana.dev', statusCode: 301 } }
   },
   nitro: {
     preset: 'vercel',
