@@ -14,6 +14,7 @@ interface GalleryEntry {
 }
 
 export default defineEventHandler(async (event) => {
+  throw createError({ statusCode: 503, message: 'Imagenie is currently disabled' })
   const user = await requireAuth(event)
 
   const body = await readBody(event) as {
