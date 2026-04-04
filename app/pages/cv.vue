@@ -8,11 +8,13 @@
 
       <div class="cv-header">
         <h1>Chetana YIN</h1>
-        <div class="cv-subtitle">Engineering Manager (ex Lead Software Engineer)</div>
+        <div class="cv-subtitle">Engineering Manager</div>
         <div class="cv-contact">
           77144 Montevrain | +33 6 51 25 35 80<br>
           chetana.yin@gmail.com<br>
-          LinkedIn : <a href="https://www.linkedin.com/in/chetana-yin-79b36754/">linkedin.com/in/chetana-yin</a>
+          LinkedIn : <a href="https://www.linkedin.com/in/chetana-yin-79b36754/">linkedin.com/in/chetana-yin</a> |
+          Portfolio : <a href="https://chetana.dev">chetana.dev</a> |
+          Admin : <a href="https://admin.chetana.dev">admin.chetana.dev</a>
         </div>
       </div>
 
@@ -20,8 +22,8 @@
       <div class="cv-section">
         <div class="cv-section-title">{{ locale === 'fr' ? 'Profil' : 'Profile' }}</div>
         <p class="cv-profil">{{ locale === 'fr'
-          ? "Engineering Manager hands-on avec 13 ans d'expérience en développement logiciel, dont 4+ années à concevoir et scaler une plateforme e-commerce B2B SaaS. Spécialisé dans l'Order Management System (OMS), les paiements multi-PSP (Adyen, Mangopay, Lemonway) et l'architecture modulaire Java/Spring Boot. Je combine leadership technique et management d'équipe (5 personnes : devs + QA) pour livrer des produits fiables à grande échelle. Pionnier dans l'intégration de l'IA générative dans les workflows d'équipe (Claude Code, MCP) et les produits (Vertex AI / Gemini : traduction, correction, transcription audio)."
-          : "Hands-on Engineering Manager with 13 years of software development experience, including 4+ years designing and scaling a B2B SaaS e-commerce platform. Specialized in Order Management System (OMS), multi-PSP payments (Adyen, Mangopay, Lemonway), and modular Java/Spring Boot architecture. I combine technical leadership and team management (5 people: devs + QA) to deliver reliable products at scale. Pioneer in integrating generative AI into team workflows (Claude Code, MCP) and products (Vertex AI / Gemini: translation, correction, audio transcription)."
+          ? "Engineering Manager hands-on avec 13 ans d'expérience en développement logiciel, dont 4+ années à concevoir et scaler une plateforme e-commerce B2B SaaS multi-tenant. Spécialisé dans l'Order Management System (OMS), les paiements multi-PSP (Adyen, Mangopay, Lemonway), la performance engineering (load testing k6/Grafana, optimisation N+1, batch processing) et l'architecture modulaire Java/Spring Boot. Je combine leadership technique, people management (5 personnes : devs + QA, 1:1, performance reviews) et incident management pour livrer des produits fiables à grande échelle. Pionnier dans l'intégration de l'IA générative (AI-augmented development) dans les workflows d'équipe (Claude Code, MCP — Model Context Protocol, 13 serveurs MCP intégrés) et les produits (Vertex AI / Gemini)."
+          : "Hands-on Engineering Manager with 13 years of software development experience, including 4+ years designing and scaling a multi-tenant B2B SaaS e-commerce platform. Specialized in Order Management System (OMS), multi-PSP payments (Adyen, Mangopay, Lemonway), performance engineering (k6/Grafana load testing, N+1 query resolution, batch processing) and modular Java/Spring Boot architecture. I combine technical leadership, people management (5 people: devs + QA, 1:1s, performance reviews) and incident management to deliver reliable products at scale. Pioneer in AI-augmented development, integrating generative AI into team workflows (Claude Code, MCP — Model Context Protocol, 13 MCP servers integrated) and products (Vertex AI / Gemini)."
         }}</p>
       </div>
 
@@ -29,12 +31,14 @@
       <div class="cv-section">
         <div class="cv-section-title">{{ locale === 'fr' ? 'Compétences' : 'Skills' }}</div>
         <ul class="cv-skills">
-          <li><strong>Backend & Architecture :</strong> Java 17+, Spring Boot, Spring Security, JPA/Hibernate, REST API, GraphQL, OpenAPI/Swagger, Maven, Node.js.</li>
-          <li><strong>Data & Infrastructure :</strong> PostgreSQL, Elasticsearch, MongoDB, Redis, Docker, Kubernetes, GCP, AWS (SQS, S3), GitLab CI/CD, Jenkins, Ansible, Keycloak.</li>
-          <li><strong>{{ locale === 'fr' ? 'Domaine métier' : 'Business Domain' }} :</strong> Order Management (OMS), Payments (Adyen, Mangopay, Lemonway, Thunes), Cart & Checkout, E-commerce B2B SaaS.</li>
-          <li><strong>Management :</strong> Team Lead (5 : devs + QA), {{ locale === 'fr' ? 'Recrutement' : 'Hiring' }}, People Review, Agile/Scrum, SAFe, Kanban, Incident Management.</li>
-          <li><strong>Frontend & Mobile :</strong> Nuxt 4/Vue.js, SvelteKit/Svelte 5, TypeScript, Android (Kotlin/Java), iOS (Swift).</li>
-          <li><strong>AI-Augmented Dev :</strong> Claude Code, Vertex AI/Gemini, MCP Servers, Custom AI Skills, Automated Reviews.</li>
+          <li><strong>Backend & Architecture :</strong> Java 17, Spring Boot, Spring Security, JPA/Hibernate, REST API, GraphQL, OpenAPI/Swagger, API-first design, Maven, Node.js, Rust/Axum.</li>
+          <li><strong>Cloud & Serverless :</strong> GCP (Cloud Run, Cloud Build, gcloud CLI), AWS (SQS, S3), Docker multi-stage builds, Kubernetes, serverless containers, 12-factor app.</li>
+          <li><strong>Data & Infrastructure :</strong> PostgreSQL, Elasticsearch, MongoDB, Redis, GitLab CI/CD, Jenkins, Ansible, Keycloak, k6, Grafana.</li>
+          <li><strong>{{ locale === 'fr' ? 'Domaine métier' : 'Business Domain' }} :</strong> Order Management (OMS), Payments (Adyen, Mangopay, Lemonway, Thunes), Cart & Checkout, E-commerce B2B SaaS, multi-tenant SaaS.</li>
+          <li><strong>Management :</strong> Team Lead (5 : devs + QA), {{ locale === 'fr' ? 'Recrutement' : 'Hiring' }}, People Review, 1:1, Performance Review, Agile/Scrum, SAFe, Kanban, Incident Management, Root Cause Analysis, Production Support.</li>
+          <li><strong>Frontend :</strong> Nuxt 3, Nuxt 4, Vue.js, SvelteKit/Svelte 5, TypeScript strict, Vite, pnpm, SSR, Core Web Vitals, Lighthouse audit.</li>
+          <li><strong>Mobile :</strong> Android (Kotlin/Java), iOS (Swift).</li>
+          <li><strong>AI-Augmented Dev :</strong> Claude Code (43 slash commands, 9 sous-agents, 4 hooks), MCP (Model Context Protocol — 13 servers : Jira, Notion, Slack, Grafana, PostgreSQL, Adyen), Vertex AI/Gemini, LLM integration, workspace AI versionné sur GitHub.</li>
         </ul>
       </div>
 
