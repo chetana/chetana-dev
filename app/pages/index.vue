@@ -55,10 +55,12 @@
       <h2 class="section-title">{{ t('skills.title') }}</h2>
       <div class="skills-grid">
         <SkillCard title="Backend" icon="⚙" :skills="skillsByCategory['Backend'] || []" />
+        <SkillCard title="Cloud & Serverless" icon="☁" :skills="skillsByCategory['Cloud & Serverless'] || []" />
         <SkillCard title="Data & Infra" icon="🗃" :skills="skillsByCategory['Data & Infra'] || []" />
         <SkillCard :title="t('skills.business')" icon="💰" :skills="skillsByCategory['Domaine métier'] || []" />
         <SkillCard title="Management" icon="👥" :skills="skillsByCategory['Management'] || []" />
-        <SkillCard title="Frontend & Mobile" icon="🌐" :skills="skillsByCategory['Frontend & Mobile'] || []" />
+        <SkillCard title="Frontend" icon="🌐" :skills="skillsByCategory['Frontend'] || []" />
+        <SkillCard title="Mobile" icon="📱" :skills="skillsByCategory['Mobile'] || []" />
         <SkillCard title="AI-Augmented Dev" icon="🤖" :skills="skillsByCategory['AI-Augmented Dev'] || []" />
       </div>
 
