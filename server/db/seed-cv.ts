@@ -203,15 +203,15 @@ async function seedCV() {
   }
   console.log(`✅ Skills: ${skillInserted} inserted, ${skillUpdated} updated`)
 
-  // --- Cleanup: remove skills with old categories no longer in the data ---
-  const validCategories = [...new Set(skillsData.map(s => s.category))]
+  // --- Cleanup: remove skills NOT in the source data ---
+  const validKeys = new Set(skillsData.map(s => `${s.category}::${s.name}`))
   const allSkills = await db.select().from(skills)
-  const orphans = allSkills.filter(s => !validCategories.includes(s.category))
+  const orphans = allSkills.filter(s => !validKeys.has(`${s.category}::${s.name}`))
   if (orphans.length > 0) {
     for (const o of orphans) {
       await db.delete(skills).where(eq(skills.id, o.id))
     }
-    console.log(`🗑️  Removed ${orphans.length} orphan skills from old categories`)
+    console.log(`🗑️  Removed ${orphans.length} obsolete skills: ${orphans.map(o => o.name).join(', ')}`)
   }
 
   console.log('🎉 Done! (blog_posts, comments, projects, users untouched)')
