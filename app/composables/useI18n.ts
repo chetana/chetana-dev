@@ -80,17 +80,19 @@ const translations: Record<string, Record<string, string>> = {
 
   // AI Section
   'ai.p1': {
-    fr: "Pionnier dans l'adoption de l'IA comme outil de développement au quotidien. J'ai construit un écosystème complet d'automatisations avec Claude Code : 25+ skills personnalisés, hooks intelligents, mémoire persistante, intégration Slack/Jira/Notion/GitLab.",
-    en: "Pioneer in adopting AI as a daily development tool. I built a complete automation ecosystem with Claude Code: 25+ custom skills, smart hooks, persistent memory, Slack/Jira/Notion/GitLab integration.",
-    km: "អ្នកត្រួសត្រាយក្នុងការប្រើ AI ជាឧបករណ៍អភិវឌ្ឍន៍ប្រចាំថ្ងៃ។ ខ្ញុំបានបង្កើតប្រព័ន្ធស្វ័យប្រវត្តិពេញលេញជាមួយ Claude Code៖ 25+ skills ផ្ទាល់ខ្លួន hooks ឆ្លាតវៃ មេម៉ូរីអចិន្ត្រៃយ៍ ការរួមបញ្ចូល Slack/Jira/Notion/GitLab។"
+    fr: "Pas juste utilisatrice d'outils IA — je conçois et déploie une stack IA locale, souveraine et intégrée dans chaque étape du cycle de dev. 63 custom skills Claude Code, 15 MCP servers, 9 agents spécialisés, 11 hooks — le tout versionné sur GitHub. Toute la stack tourne on-device sur GPU/NPU AMD : aucune donnée propriétaire ne sort de la machine.",
+    en: "Not just an AI tool user — I design and deploy a sovereign, local AI stack integrated into every stage of the dev cycle. 63 custom Claude Code skills, 15 MCP servers, 9 specialized agents, 11 hooks — all versioned on GitHub. The entire stack runs on-device on AMD GPU/NPU: zero proprietary data leaves the machine.",
+    km: "មិនមែនគ្រាន់តែប្រើឧបករណ៍ AI ទេ — ខ្ញុំរចនា និងដាក់ពង្រាយ stack AI មូលដ្ឋាន អធិបតេយ្យ និងរួមបញ្ចូលក្នុងរាល់ដំណាក់កាលនៃវដ្តអភិវឌ្ឍន៍។ 63 custom skills 15 MCP servers 9 agents 11 hooks — ទាំងអស់ versioned នៅ GitHub។ Stack ទាំងមូលដំណើរការនៅលើ GPU/NPU AMD៖ សូន្យទិន្នន័យចេញពីម៉ាស៊ីន។"
   },
   'ai.p2': {
-    fr: "Mon équipe utilise désormais l'IA pour les code reviews, la génération de tests E2E, les briefings de déploiement, et l'analyse d'incidents. Ce n'est pas du gadget : c'est un multiplicateur de force concret sur la productivité et la qualité.",
-    en: "My team now uses AI for code reviews, E2E test generation, deployment briefings, and incident analysis. This isn't a gimmick: it's a concrete force multiplier for productivity and quality.",
-    km: "ក្រុមរបស់ខ្ញុំឥឡូវប្រើ AI សម្រាប់ code reviews ការបង្កើត tests E2E ការប្រជុំ deployment និងការវិភាគ incidents។ នេះមិនមែនជារឿងលេងទេ៖ វាជាកម្លាំងពង្រីកជាក់ស្តែងលើផលិតភាព និងគុណភាព។"
+    fr: "Prévention (contexte Mempalace injecté avant de coder), détection (quality gate post-commit en < 5s), review (pré-analyse LLM avant code review humain). Mon équipe de 6 utilise désormais l'IA au quotidien : code reviews, tests E2E, briefings MEP, analyse d'incidents — +40% productivité mesurée.",
+    en: "Prevention (Mempalace context injected before coding), detection (post-commit quality gate in < 5s), review (LLM pre-analysis before human code review). My team of 6 now uses AI daily: code reviews, E2E tests, deployment briefings, incident analysis — +40% measured productivity.",
+    km: "ការបង្ការ (Mempalace context មុនសរសេរកូដ) ការរកឃើញ (quality gate post-commit ក្នុង < 5s) review (ការវិភាគ LLM មុន code review មនុស្ស)។ ក្រុម ៦ នាក់របស់ខ្ញុំប្រើ AI ប្រចាំថ្ងៃ៖ code reviews tests E2E briefings MEP ការវិភាគ incidents — +40% ផលិតភាព។"
   },
   'ai.m2': { fr: 'MCP servers intégrés', en: 'Integrated MCP servers', km: 'MCP servers រួមបញ្ចូល' },
   'ai.m3': { fr: "Devs de l'équipe formés", en: 'Team devs trained', km: 'Devs ក្នុងក្រុមបានបណ្តុះបណ្តាល' },
+  'ai.m4': { fr: 'Inference 100% on-device', en: '100% on-device inference', km: 'Inference 100% នៅលើម៉ាស៊ីន' },
+  'ai.m5': { fr: 'Drawers indexés (Mempalace)', en: 'Indexed drawers (Mempalace)', km: 'Drawers បានដាក់សន្ទស្សន៍ (Mempalace)' },
 
   // Education
   'edu.label': { fr: 'Formation', en: 'Education', km: 'ការអប់រំ' },

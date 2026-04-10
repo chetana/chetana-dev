@@ -62,20 +62,21 @@
         <SkillCard title="Frontend" icon="🌐" :skills="skillsByCategory['Frontend'] || []" />
         <SkillCard title="Mobile" icon="📱" :skills="skillsByCategory['Mobile'] || []" />
         <SkillCard title="AI-Augmented Dev" icon="🤖" :skills="skillsByCategory['AI-Augmented Dev'] || []" />
+        <SkillCard title="Local AI Infrastructure" icon="🧠" :skills="skillsByCategory['Local AI Infrastructure'] || []" />
       </div>
 
       <!-- AI Section -->
       <div class="ai-section">
-        <h3>AI-Augmented Engineering</h3>
+        <h3>AI Infrastructure Engineer</h3>
         <p>{{ t('ai.p1') }}</p>
         <p>{{ t('ai.p2') }}</p>
         <div class="ai-metrics">
           <div class="ai-metric">
-            <div class="ai-metric-value">25+</div>
+            <div class="ai-metric-value">63</div>
             <div class="ai-metric-label">Custom AI skills</div>
           </div>
           <div class="ai-metric">
-            <div class="ai-metric-value">13</div>
+            <div class="ai-metric-value">15</div>
             <div class="ai-metric-label">{{ t('ai.m2') }}</div>
           </div>
           <div class="ai-metric">
@@ -83,8 +84,12 @@
             <div class="ai-metric-label">{{ t('ai.m3') }}</div>
           </div>
           <div class="ai-metric">
-            <div class="ai-metric-value">TDD</div>
-            <div class="ai-metric-label">AI-assisted workflow</div>
+            <div class="ai-metric-value">10k+</div>
+            <div class="ai-metric-label">{{ t('ai.m5') }}</div>
+          </div>
+          <div class="ai-metric">
+            <div class="ai-metric-value">0</div>
+            <div class="ai-metric-label">{{ t('ai.m4') }}</div>
           </div>
         </div>
       </div>
