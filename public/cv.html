@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chetana YIN — Tech Lead IA & Engineering Manager</title>
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-card: #1a1a1a;
+            --bg-card-hover: #222;
+            --accent: #6c63ff;
+            --accent-light: #8b83ff;
+            --text: #e8e8e8;
+            --text-muted: #888;
+            --text-dim: #555;
+            --border: #2a2a2a;
+            --gradient: linear-gradient(135deg, #6c63ff 0%, #48c6ef 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        ::selection { background: var(--accent); color: #fff; }
+
+        /* === NAV === */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            background: rgba(15, 15, 15, 0.8);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        nav .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav .links { display: flex; gap: 2rem; align-items: center; }
+
+        nav .links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        nav .links a:hover { color: var(--text); }
+
+        .lang-toggle {
+            background: transparent;
+            color: var(--accent-light);
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            padding: 0.3rem 0.7rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .lang-toggle:hover { background: var(--accent); color: #fff; }
+
+        /* === HERO === */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 2rem 4rem;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(108, 99, 255, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, rgba(72, 198, 239, 0.05) 0%, transparent 50%);
+            animation: drift 20s ease-in-out infinite;
+        }
+
+        @keyframes drift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-2%, 2%); }
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.4rem 1.2rem;
+            border: 1px solid var(--accent);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--accent-light);
+            margin-bottom: 2rem;
+            letter-spacing: 0.05em;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 .gradient {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: #fff;
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108, 99, 255, 0.3); }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover { border-color: var(--accent); color: var(--accent-light); }
+
+        /* === SECTIONS === */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+        }
+
+        /* === STATS === */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+            padding: 0 2rem;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.3rem; }
+
+        /* === ABOUT === */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .about-text p { color: var(--text-muted); margin-bottom: 1.2rem; }
+        .about-text p strong { color: var(--text); }
+
+        .about-highlights {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .highlight {
+            padding: 1.2rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .highlight:hover { border-color: var(--accent); transform: translateX(4px); }
+        .highlight-title { font-weight: 600; margin-bottom: 0.2rem; }
+        .highlight-desc { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* === EXPERIENCE === */
+        .timeline { position: relative; }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 3px solid var(--bg);
+        }
+
+        .timeline-item.current::before {
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.3);
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            color: var(--accent-light);
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-company {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-role {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .timeline-desc ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .timeline-desc li {
+            position: relative;
+            padding-left: 1.2rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .timeline-desc li::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        /* === SKILLS === */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .skill-card {
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .skill-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+
+        .skill-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .skill-card-title .icon { font-size: 1.3rem; }
+
+        .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+        .tag {
+            padding: 0.3rem 0.8rem;
+            background: rgba(108, 99, 255, 0.1);
+            border: 1px solid rgba(108, 99, 255, 0.2);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--accent-light);
+        }
+
+        .tag.green {
+            background: rgba(72, 198, 139, 0.1);
+            border-color: rgba(72, 198, 139, 0.2);
+            color: #48c68b;
+        }
+
+        .tag.blue {
+            background: rgba(72, 198, 239, 0.1);
+            border-color: rgba(72, 198, 239, 0.2);
+            color: #48c6ef;
+        }
+
+        .tag.orange {
+            background: rgba(239, 168, 72, 0.1);
+            border-color: rgba(239, 168, 72, 0.2);
+            color: #efa848;
+        }
+
+        /* === EDUCATION === */
+        .edu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .edu-card {
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .edu-school { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.3rem; }
+        .edu-degree { color: var(--text-muted); font-size: 0.9rem; }
+        .edu-year { color: var(--text-dim); font-size: 0.85rem; margin-top: 0.5rem; }
+
+        /* === AI SECTION === */
+        .ai-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 3rem;
+            margin-top: 2rem;
+        }
+
+        .ai-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .ai-section p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .ai-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .ai-metric {
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .ai-metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-light);
+        }
+
+        .ai-metric-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* === CONTACT === */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s;
+        }
+
+        .contact-item:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .contact-icon { font-size: 1.5rem; }
+        .contact-label { font-size: 0.8rem; color: var(--text-muted); }
+        .contact-value { font-size: 0.95rem; }
+
+        /* === FOOTER === */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .about-grid, .edu-grid { grid-template-columns: 1fr; }
+            nav .links { display: none; }
+            .lang-toggle-mobile { display: block !important; }
+            section { padding: 4rem 1.5rem; }
+            .stats { padding: 0 1.5rem; }
+        }
+
+        .lang-toggle-mobile {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 100;
+        }
+
+        /* === ANIMATIONS === */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <div class="logo">CY</div>
+    <div class="links">
+        <a href="#about" data-i18n="nav-about">A propos</a>
+        <a href="#experience" data-i18n="nav-exp">Experience</a>
+        <a href="#skills" data-i18n="nav-skills">Competences</a>
+        <a href="#education" data-i18n="nav-edu">Formation</a>
+        <a href="#contact">Contact</a>
+        <button class="lang-toggle" onclick="toggleLang()">EN</button>
+    </div>
+</nav>
+
+<!-- Mobile lang toggle -->
+<div class="lang-toggle-mobile">
+    <button class="lang-toggle" onclick="toggleLang()">EN</button>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge" data-i18n="badge">Ouvert aux opportunites</div>
+        <h1>Chetana <span class="gradient">YIN</span></h1>
+        <p data-i18n="hero-desc">Engineering Manager & Tech Lead IA avec 13 ans d'experience.
+           Je construis des plateformes e-commerce B2B a l'echelle et des produits IA (LLM pipelines, Sales Copilot, multi-tenant).</p>
+        <div class="hero-cta">
+            <a href="#contact" class="btn btn-primary" data-i18n="hero-cta1">Me contacter</a>
+            <a href="#experience" class="btn btn-outline" data-i18n="hero-cta2">Mon parcours</a>
+            <a href="/cv-ats.html" class="btn btn-outline" data-i18n="hero-cta3">CV format ATS</a>
+        </div>
+    </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+    <div class="stat fade-in">
+        <div class="stat-number">13+</div>
+        <div class="stat-label" data-i18n="stat1">Annees d'experience</div>
+    </div>
+    <div class="stat fade-in">
+        <div class="stat-number">6</div>
+        <div class="stat-label" data-i18n="stat2">Ingenieurs manages</div>
+    </div>
+    <div class="stat fade-in">
+        <div class="stat-number">4+</div>
+        <div class="stat-label" data-i18n="stat3">Annees sur la plateforme DJUST</div>
+    </div>
+    <div class="stat fade-in">
+        <div class="stat-number">B2B</div>
+        <div class="stat-label">E-commerce at scale</div>
+    </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+    <div class="section-label" data-i18n="sl-about">A propos</div>
+    <h2 class="section-title" data-i18n="st-about">Tech Lead IA & Engineering Manager qui code</h2>
+    <div class="about-grid">
+        <div class="about-text fade-in">
+            <p data-i18n="about-p1">
+                <strong>Je ne suis pas le manager qui regarde des dashboards.</strong> Je suis dans le code,
+                dans les reviews, dans les incidents. Quand un bug critique tombe en prod un vendredi soir,
+                je suis celui qui ouvre le terminal.
+            </p>
+            <p data-i18n="about-p2">
+                Depuis mai 2026, je suis <strong>Tech Lead IA</strong> chez <strong>DJUST</strong> sur le produit
+                djust-sales : une plateforme d'automatisation commerciale B2B pilotee par l'IA (Sales Copilot,
+                import commandes/devis, catalogue). J'architecture et developpe full-stack en Python/FastAPI,
+                LangGraph, PostgreSQL RLS, Nuxt 3 — avec une obsession pour l'observabilite LLM et la securite
+                multi-tenant.
+            </p>
+            <p data-i18n="about-p3">
+                Avant le management, j'ai passe 10 ans les mains dans le code : mobile chez miLibris,
+                applications bancaires chez BNP Paribas, tunnel d'achat chez Galeries Lafayette.
+                Mon parcours technique est mon plus grand atout de manager : je comprends les problemes
+                de mes devs parce que je les vis avec eux.
+            </p>
+        </div>
+        <div class="about-highlights fade-in">
+            <div class="highlight">
+                <div class="highlight-title" data-i18n="hl1-t">Plateforme e-commerce B2B</div>
+                <div class="highlight-desc" data-i18n="hl1-d">Architecture modulaire (15+ modules), multi-tenant, multi-PSP,
+                    gerant des millions de transactions pour des clients comme Franprix, Procity, VEJA</div>
+            </div>
+            <div class="highlight">
+                <div class="highlight-title" data-i18n="hl2-t">Pionnier IA en equipe</div>
+                <div class="highlight-desc" data-i18n="hl2-d">Premier a integrer Claude Code dans le workflow quotidien de l'equipe :
+                    code reviews automatisees, generation de tests E2E, briefings MEP, analyse de bugs</div>
+            </div>
+            <div class="highlight">
+                <div class="highlight-title" data-i18n="hl3-t">People & delivery</div>
+                <div class="highlight-desc" data-i18n="hl3-d">Evaluations, 1:1, recrutement, et en meme temps : MEP hebdomadaires,
+                    gestion d'incidents prod, coordination cross-equipes</div>
+            </div>
+            <div class="highlight">
+                <div class="highlight-title" data-i18n="hl4-t">International</div>
+                <div class="highlight-desc" data-i18n="hl4-d">Epitech Paris + Master a Beijing (Jiaotong University).
+                    Franco-cambodgien, je parle anglais, mandarin et espagnol</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+    <div class="section-label" data-i18n="sl-exp">Parcours</div>
+    <h2 class="section-title" data-i18n="st-exp">Experience professionnelle</h2>
+    <div class="timeline">
+
+        <div class="timeline-item current fade-in">
+            <div class="timeline-date" data-i18n="t0-date">Mai 2026 - Present</div>
+            <div class="timeline-company">DJUST - Paris</div>
+            <div class="timeline-role" data-i18n="t0-role">Tech Lead IA</div>
+            <div class="timeline-desc">
+                <ul>
+                    <li data-i18n="t0-1">Lead technique du produit djust-sales : plateforme IA d'automatisation commerciale B2B (Sales Copilot, import commandes/devis, catalogue)</li>
+                    <li data-i18n="t0-2">Architecture full-stack : Python (FastAPI, LangGraph, SQLAlchemy), PostgreSQL avec RLS, Nuxt 3/Vue, SSE streaming</li>
+                    <li data-i18n="t0-3">Pipelines LLM multi-etapes avec HITL, email pipeline, recherche vectorielle (pgvector)</li>
+                    <li data-i18n="t0-4">Observabilite LLM : Langfuse + OpenTelemetry — tracking tokens, couts et sessions sur toutes les surfaces IA</li>
+                    <li data-i18n="t0-5">Securite multi-tenant : PostgreSQL RLS — audit complet, tests de regression d'isolation garantie par tenant</li>
+                    <li data-i18n="t0-6">Auth : Logto (multi-org, webhooks, provisioning, scope OAuth2)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="timeline-item fade-in">
+            <div class="timeline-date" data-i18n="t1-date">Nov 2023 - Mai 2026</div>
+            <div class="timeline-company">DJUST - Paris</div>
+            <div class="timeline-role">Engineering Manager</div>
+            <div class="timeline-desc">
+                <ul>
+                    <li data-i18n="t1-1">Management de l'equipe OMS (6 ingenieurs) : recrutement, evaluations, montee en competences</li>
+                    <li data-i18n="t1-2">Responsable du perimetre Order Management, Payments, Cart sur une plateforme B2B SaaS</li>
+                    <li data-i18n="t1-3">Lead technique : architecture des modules, code reviews, decisions techniques structurantes</li>
+                    <li data-i18n="t1-4">Pilotage des MEP hebdomadaires, gestion des incidents prod, coordination avec les equipes Catalog, Infra et Integration</li>
+                    <li data-i18n="t1-5">Integration de l'IA (Claude Code) dans le workflow de l'equipe : +40% de productivite sur les taches repetitives</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="timeline-item fade-in">
+            <div class="timeline-date">Oct 2021 - Nov 2023</div>
+            <div class="timeline-company">DJUST (via Takima) - Paris</div>
+            <div class="timeline-role">Lead Software Engineer</div>
+            <div class="timeline-desc">
+                <ul>
+                    <li data-i18n="t2-1">Conception et developpement de la plateforme e-commerce B2B from scratch</li>
+                    <li data-i18n="t2-2">Architecture multi-tenant, multi-PSP (Adyen, Mangopay, Lemonway, Thunes)</li>
+                    <li>Stack : Java 17, Spring Boot, PostgreSQL, Elasticsearch, Keycloak, Docker, GCP</li>
+                    <li data-i18n="t2-4">Mise en place du CI/CD GitLab, des tests E2E, et des conventions de code</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="timeline-item fade-in">
+            <div class="timeline-date" data-i18n="t3-date">Jun 2018 - Sep 2021</div>
+            <div class="timeline-company">Galeries Lafayette (via Takima) - Paris</div>
+            <div class="timeline-role" data-i18n="t3-role">Ingenieur Full Stack Java</div>
+            <div class="timeline-desc">
+                <ul>
+                    <li data-i18n="t3-1"><strong>Gestion de production & Referent technique</strong> (2019-2021) : responsable de la production du tunnel d'achat, referent technique equipe, gestion du monolithe Hybris (Java 7) et des API Java 8, deploiements Jenkins/Ansible, methodologie SAFe</li>
+                    <li data-i18n="t3-2"><strong>Produit / Recherche / E-merchandising</strong> (2019) : migration moteur de recherche Hybris vers Algolia, conception d'une API GraphQL, architecture hexagonale, practice Example Mapping</li>
+                    <li data-i18n="t3-3"><strong>Tunnel d'achat</strong> (2018) : developpement du checkout flow e-commerce a fort trafic (panier, livraison, paiement, marketplace, carte cadeau, refonte UX)</li>
+                    <li>Stack : Java 7/8, Spring Boot, Hybris, Algolia, GraphQL, Thymeleaf, Jenkins, Ansible, Apache</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="timeline-item fade-in">
+            <div class="timeline-date" data-i18n="t4-date">Jun 2016 - Apr 2018</div>
+            <div class="timeline-company" data-i18n="t4-co">INFOTEL (pour Groupe Burrus / DiOT) - Paris</div>
+            <div class="timeline-role" data-i18n="t4-role">Ingenieur logiciels Java</div>
+            <div class="timeline-desc">
+                <ul>
+                    <li data-i18n="t4-1"><strong>Projet SAFE</strong> : application de gestion de flottes (EDF, Fnac-Darty) et plateforme assurance DARVA</li>
+                    <li data-i18n="t4-2">Conception et developpement avec BPMN 2.0 (Activiti), moteur de regles Drools, SOAP</li>
+                    <li>Stack : Java, Spring, Hibernate, PostgreSQL, Vaadin, Activiti, Drools</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="timeline-item fade-in">
+            <div class="timeline-date">Oct 2015 - Jun 2016</div>
+            <div class="timeline-company" data-i18n="t5-co">INFOTEL (pour BNP Paribas) - Bagnolet</div>
+            <div class="timeline-role" data-i18n="t5-role">Ingenieur mobile</div>
+            <div class="timeline-desc">
+                <ul>
+                    <li data-i18n="t5-1">Maintenance et evolution de l'application bancaire "Mes comptes" (Android Java)</li>
+                    <li data-i18n="t5-2">POC application hybride multi-plateforme (Android/iOS/Windows)</li>
+                    <li data-i18n="t5-3">Formation iOS/Swift dispensee par Apple</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="timeline-item fade-in">
+            <div class="timeline-date">Oct 2012 - Jun 2015</div>
+            <div class="timeline-company">miLibris - Paris</div>
+            <div class="timeline-role" data-i18n="t6-role">Ingenieur R&D</div>
+            <div class="timeline-desc">
+                <ul>
+                    <li data-i18n="t6-1"><strong>Applications Android natives</strong> : developpement complet pour des clients presse exigeants, de l'expression du besoin a la publication Play Store</li>
+                    <li data-i18n="t6-2"><strong>Framework hybride iOS/Android</strong> : liseuse numerique avec achats in-app, gestion de bibliotheque, reader interactif</li>
+                    <li data-i18n="t6-3">Startup de presse numerique — autonomie totale sur le cycle de vie mobile</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+    <div class="section-label" data-i18n="sl-skills">Competences</div>
+    <h2 class="section-title" data-i18n="st-skills">Stack technique</h2>
+    <div class="skills-grid">
+
+        <div class="skill-card fade-in">
+            <div class="skill-card-title"><span class="icon">&#9881;</span> Backend</div>
+            <div class="tags">
+                <span class="tag">Java 17+</span>
+                <span class="tag">Spring Boot</span>
+                <span class="tag">Spring Security</span>
+                <span class="tag">JPA / Hibernate</span>
+                <span class="tag">Maven</span>
+                <span class="tag">REST API</span>
+                <span class="tag">GraphQL</span>
+                <span class="tag">OpenAPI / Swagger</span>
+                <span class="tag">Node.js</span>
+                <span class="tag">Python</span>
+                <span class="tag">FastAPI</span>
+                <span class="tag">LangGraph</span>
+                <span class="tag">SQLAlchemy (async)</span>
+            </div>
+        </div>
+
+        <div class="skill-card fade-in">
+            <div class="skill-card-title"><span class="icon">&#128451;</span> Data & Infra</div>
+            <div class="tags">
+                <span class="tag blue">PostgreSQL</span>
+                <span class="tag blue">Elasticsearch</span>
+                <span class="tag blue">MongoDB</span>
+                <span class="tag blue">Redis</span>
+                <span class="tag blue">Docker</span>
+                <span class="tag blue">Kubernetes</span>
+                <span class="tag blue">GCP</span>
+                <span class="tag blue">GitLab CI/CD</span>
+                <span class="tag blue">Jenkins / Ansible</span>
+                <span class="tag blue">AWS SQS / S3</span>
+            </div>
+        </div>
+
+        <div class="skill-card fade-in">
+            <div class="skill-card-title"><span class="icon">&#128176;</span> <span data-i18n="sk-biz">Domaine metier</span></div>
+            <div class="tags">
+                <span class="tag green">Order Management</span>
+                <span class="tag green">Payments (Adyen, Mangopay)</span>
+                <span class="tag green">Cart & Checkout</span>
+                <span class="tag green">Multi-tenant SaaS</span>
+                <span class="tag green">E-commerce B2B</span>
+                <span class="tag green">Keycloak / Auth</span>
+            </div>
+        </div>
+
+        <div class="skill-card fade-in">
+            <div class="skill-card-title"><span class="icon">&#128101;</span> Management</div>
+            <div class="tags">
+                <span class="tag orange">Team Lead (6 devs)</span>
+                <span class="tag orange">Code Reviews</span>
+                <span class="tag orange" data-i18n="sk-recruit">Recrutement</span>
+                <span class="tag orange">People Review</span>
+                <span class="tag orange">Agile / Scrum</span>
+                <span class="tag orange">SAFe</span>
+                <span class="tag orange">Kanban</span>
+                <span class="tag orange">Incident Management</span>
+            </div>
+        </div>
+
+        <div class="skill-card fade-in">
+            <div class="skill-card-title"><span class="icon">&#127760;</span> Frontend & Mobile</div>
+            <div class="tags">
+                <span class="tag">Nuxt 4 / Vue</span>
+                <span class="tag">TypeScript</span>
+                <span class="tag">Android (Java)</span>
+                <span class="tag">iOS (Swift)</span>
+            </div>
+        </div>
+
+        <div class="skill-card fade-in">
+            <div class="skill-card-title"><span class="icon">&#129302;</span> AI-Augmented Dev</div>
+            <div class="tags">
+                <span class="tag">Claude Code</span>
+                <span class="tag">MCP Servers</span>
+                <span class="tag">Custom AI Skills</span>
+                <span class="tag">Automated Reviews</span>
+                <span class="tag">AI-Assisted Testing</span>
+                <span class="tag">LLM Pipelines</span>
+                <span class="tag">Langfuse</span>
+                <span class="tag">OpenTelemetry</span>
+                <span class="tag">pgvector</span>
+                <span class="tag">Logto</span>
+                <span class="tag">HITL</span>
+                <span class="tag">SSE streaming</span>
+                <span class="tag">PostHog</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- AI Section -->
+    <div class="ai-section fade-in">
+        <h3>AI-Augmented Engineering</h3>
+        <p data-i18n="ai-p1">
+            Pionnier dans l'adoption de l'IA comme outil de developpement au quotidien.
+            J'ai construit un ecosysteme complet d'automatisations avec Claude Code :
+            25+ skills personnalises, hooks intelligents, memoire persistante, integration Slack/Jira/Notion/GitLab.
+        </p>
+        <p data-i18n="ai-p2">
+            Mon equipe utilise desormais l'IA pour les code reviews, la generation de tests E2E,
+            les briefings de deploiement, et l'analyse d'incidents. Ce n'est pas du gadget :
+            c'est un multiplicateur de force concret sur la productivite et la qualite.
+        </p>
+        <div class="ai-metrics">
+            <div class="ai-metric">
+                <div class="ai-metric-value">25+</div>
+                <div class="ai-metric-label">Custom AI skills</div>
+            </div>
+            <div class="ai-metric">
+                <div class="ai-metric-value">13</div>
+                <div class="ai-metric-label" data-i18n="ai-m2">MCP servers integres</div>
+            </div>
+            <div class="ai-metric">
+                <div class="ai-metric-value">6/6</div>
+                <div class="ai-metric-label" data-i18n="ai-m3">Devs de l'equipe formes</div>
+            </div>
+            <div class="ai-metric">
+                <div class="ai-metric-value">TDD</div>
+                <div class="ai-metric-label">AI-assisted workflow</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+    <div class="section-label" data-i18n="sl-edu">Formation</div>
+    <h2 class="section-title">Education</h2>
+    <div class="edu-grid">
+        <div class="edu-card fade-in">
+            <div class="edu-school">EPITECH</div>
+            <div class="edu-degree" data-i18n="edu1-deg">Expert en Technologies de l'Information (BAC+5)</div>
+            <div class="edu-year">2008 - 2013 | Paris</div>
+        </div>
+        <div class="edu-card fade-in">
+            <div class="edu-school">Beijing Jiaotong University</div>
+            <div class="edu-degree">Master's degree, Computer Software Engineering</div>
+            <div class="edu-year" data-i18n="edu2-yr">2011 - 2012 | Beijing, Chine</div>
+        </div>
+    </div>
+    <div style="margin-top: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="edu-card fade-in">
+            <div class="edu-school">Takima Academy</div>
+            <div class="edu-degree">Java, Angular, Spring, Hibernate, Docker, Ansible, Jenkins</div>
+            <div class="edu-year">2018</div>
+        </div>
+        <div class="edu-card fade-in">
+            <div class="edu-school">Oracle Certified Associate</div>
+            <div class="edu-degree">Java SE 8 Programmer</div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+    <div class="section-label">Contact</div>
+    <h2 class="section-title" data-i18n="st-contact">Echangeons</h2>
+    <div class="contact-grid">
+        <a href="mailto:chetana.yin@gmail.com" class="contact-item fade-in">
+            <span class="contact-icon">&#9993;</span>
+            <div>
+                <div class="contact-label">Email</div>
+                <div class="contact-value">chetana.yin@gmail.com</div>
+            </div>
+        </a>
+        <a href="https://www.linkedin.com/in/chetana-yin-79b36754/" target="_blank" class="contact-item fade-in">
+            <span class="contact-icon">&#128279;</span>
+            <div>
+                <div class="contact-label">LinkedIn</div>
+                <div class="contact-value">linkedin.com/in/chetana-yin</div>
+            </div>
+        </a>
+        <a href="tel:+33651253580" class="contact-item fade-in">
+            <span class="contact-icon">&#128222;</span>
+            <div>
+                <div class="contact-label" data-i18n="ct-phone">Telephone</div>
+                <div class="contact-value">06 51 25 35 80</div>
+            </div>
+        </a>
+        <div class="contact-item fade-in">
+            <span class="contact-icon">&#128205;</span>
+            <div>
+                <div class="contact-label" data-i18n="ct-loc">Localisation</div>
+                <div class="contact-value" data-i18n="ct-loc-v">Paris et peripherie</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    Chetana YIN &mdash; 2026
+</footer>
+
+<script>
+    // Intersection Observer for fade-in animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // i18n
+    const T = {
+      en: {
+        "nav-about": "About",
+        "nav-exp": "Experience",
+        "nav-skills": "Skills",
+        "nav-edu": "Education",
+        "badge": "Open to opportunities",
+        "hero-desc": "Engineering Manager & AI Tech Lead with 13 years of experience. I build B2B e-commerce platforms at scale and AI products (LLM pipelines, Sales Copilot, multi-tenant).",
+        "hero-cta1": "Contact me",
+        "hero-cta2": "My journey",
+        "hero-cta3": "ATS Resume",
+        "stat1": "Years of experience",
+        "stat2": "Engineers managed",
+        "stat3": "Years on the DJUST platform",
+        "sl-about": "About",
+        "st-about": "AI Tech Lead & Engineering Manager who codes",
+        "about-p1": "<strong>I'm not the manager who stares at dashboards.</strong> I'm in the code, in the reviews, in the incidents. When a critical bug hits production on a Friday night, I'm the one who opens the terminal.",
+        "about-p2": "Since May 2026, I am <strong>AI Tech Lead</strong> at <strong>DJUST</strong> on the djust-sales product: a B2B AI-driven commercial automation platform (Sales Copilot, order/quote import, catalogue). I architect and develop full-stack in Python/FastAPI, LangGraph, PostgreSQL RLS, Nuxt 3 — with a focus on LLM observability and multi-tenant security.",
+        "about-p3": "Before management, I spent 10 years hands-on in code: mobile at miLibris, banking apps at BNP Paribas, checkout flow at Galeries Lafayette. My technical background is my greatest asset as a manager: I understand my devs' problems because I live them with them.",
+        "hl1-t": "B2B E-commerce Platform",
+        "hl1-d": "Modular architecture (15+ modules), multi-tenant, multi-PSP, handling millions of transactions for clients like Franprix, Procity, VEJA",
+        "hl2-t": "AI Pioneer in team",
+        "hl2-d": "First to integrate Claude Code into the team's daily workflow: automated code reviews, E2E test generation, deployment briefings, bug analysis",
+        "hl3-t": "People & delivery",
+        "hl3-d": "Performance reviews, 1:1s, hiring, and at the same time: weekly releases, production incident management, cross-team coordination",
+        "hl4-t": "International",
+        "hl4-d": "Epitech Paris + Master's at Beijing (Jiaotong University). French-Cambodian, I speak English, Mandarin and Spanish",
+        "sl-exp": "Journey",
+        "st-exp": "Professional Experience",
+        "t0-date": "May 2026 - Present",
+        "t0-role": "AI Tech Lead",
+        "t0-1": "Technical lead of the djust-sales product: B2B AI commercial automation platform (Sales Copilot, order/quote import, catalogue)",
+        "t0-2": "Full-stack architecture: Python (FastAPI, LangGraph, SQLAlchemy), PostgreSQL with RLS, Nuxt 3/Vue, SSE streaming",
+        "t0-3": "Multi-step LLM pipelines with HITL, email pipeline, vector search (pgvector)",
+        "t0-4": "LLM observability: Langfuse + OpenTelemetry — token, cost and session tracking across all AI surfaces",
+        "t0-5": "Multi-tenant security: PostgreSQL RLS — full audit, regression tests, guaranteed per-tenant isolation",
+        "t0-6": "Auth: Logto (multi-org, webhooks, provisioning, OAuth2 scopes)",
+        "t1-date": "Nov 2023 - May 2026",
+        "t1-1": "Managing the OMS team (6 engineers): hiring, performance reviews, skill development",
+        "t1-2": "Responsible for Order Management, Payments, Cart on a B2B SaaS platform",
+        "t1-3": "Technical lead: module architecture, code reviews, key technical decisions",
+        "t1-4": "Weekly production releases, production incident management, coordination with Catalog, Infra and Integration teams",
+        "t1-5": "Integrated AI (Claude Code) into the team's workflow: +40% productivity on repetitive tasks",
+        "t2-1": "Designed and built the B2B e-commerce platform from scratch",
+        "t2-2": "Multi-tenant, multi-PSP architecture (Adyen, Mangopay, Lemonway, Thunes)",
+        "t2-4": "Set up GitLab CI/CD, E2E tests, and coding conventions",
+        "t3-date": "Jun 2018 - Sep 2021",
+        "t3-role": "Full Stack Java Engineer",
+        "t3-1": "<strong>Production Management & Tech Lead</strong> (2019-2021): responsible for checkout production, team technical referent, managed Hybris monolith (Java 7) and Java 8 APIs, Jenkins/Ansible deployments, SAFe methodology",
+        "t3-2": "<strong>Product / Search / E-merchandising</strong> (2019): migrated search engine from Hybris to Algolia, designed a GraphQL API, hexagonal architecture, Example Mapping practice",
+        "t3-3": "<strong>Checkout flow</strong> (2018): developed high-traffic e-commerce checkout (cart, shipping, payment, marketplace, gift cards, UX redesign)",
+        "t4-date": "Jun 2016 - Apr 2018",
+        "t4-co": "INFOTEL (for Groupe Burrus / DiOT) - Paris",
+        "t4-role": "Java Software Engineer",
+        "t4-1": "<strong>SAFE Project</strong>: fleet management application (EDF, Fnac-Darty) and DARVA insurance platform",
+        "t4-2": "Design and development with BPMN 2.0 (Activiti), Drools rules engine, SOAP",
+        "t5-co": "INFOTEL (for BNP Paribas) - Bagnolet",
+        "t5-role": "Mobile Engineer",
+        "t5-1": "Maintenance and development of the \"Mes comptes\" banking app (Android Java)",
+        "t5-2": "Hybrid multi-platform application POC (Android/iOS/Windows)",
+        "t5-3": "iOS/Swift training by Apple",
+        "t6-role": "R&D Engineer",
+        "t6-1": "<strong>Native Android Apps</strong>: end-to-end development for demanding press clients, from requirements to Play Store publication",
+        "t6-2": "<strong>Hybrid iOS/Android Framework</strong>: digital reader with in-app purchases, library management, interactive reader",
+        "t6-3": "Digital press startup — full ownership of the mobile lifecycle",
+        "sl-skills": "Skills",
+        "st-skills": "Tech Stack",
+        "sk-biz": "Business Domain",
+        "sk-recruit": "Hiring",
+        "ai-p1": "Pioneer in adopting AI as a daily development tool. I built a complete automation ecosystem with Claude Code: 25+ custom skills, smart hooks, persistent memory, Slack/Jira/Notion/GitLab integration.",
+        "ai-p2": "My team now uses AI for code reviews, E2E test generation, deployment briefings, and incident analysis. This isn't a gimmick: it's a concrete force multiplier for productivity and quality.",
+        "ai-m2": "Integrated MCP servers",
+        "ai-m3": "Team devs trained",
+        "sl-edu": "Education",
+        "edu1-deg": "IT Expert Degree (Master's level)",
+        "edu2-yr": "2011 - 2012 | Beijing, China",
+        "st-contact": "Let's talk",
+        "ct-phone": "Phone",
+        "ct-loc": "Location",
+        "ct-loc-v": "Paris area"
+      }
+    };
+
+    let currentLang = 'fr';
+    const frCache = {};
+
+    function toggleLang() {
+        const btns = document.querySelectorAll('.lang-toggle');
+        if (currentLang === 'fr') {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                frCache[key] = el.innerHTML;
+                if (T.en[key]) el.innerHTML = T.en[key];
+            });
+            document.documentElement.lang = 'en';
+            btns.forEach(b => b.textContent = 'FR');
+            currentLang = 'en';
+        } else {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (frCache[key]) el.innerHTML = frCache[key];
+            });
+            document.documentElement.lang = 'fr';
+            btns.forEach(b => b.textContent = 'EN');
+            currentLang = 'fr';
+        }
+    }
+</script>
+
+</body>
+</html>

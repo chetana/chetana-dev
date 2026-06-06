@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Chetana YIN - Tech Lead IA & Engineering Manager</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.5;
+            color: #1a1a1a;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 15mm 18mm;
+            background: #fff;
+        }
+
+        /* Header */
+        .header h1 {
+            font-size: 22pt;
+            font-weight: 700;
+            margin-bottom: 2px;
+            color: #000;
+        }
+
+        .header .subtitle {
+            font-size: 12pt;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .header .contact {
+            font-size: 9.5pt;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        .header .contact a {
+            color: #1a0dab;
+            text-decoration: underline;
+        }
+
+        /* Sections */
+        .section {
+            margin-top: 16px;
+        }
+
+        .section-title {
+            font-size: 11.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #000;
+            border-bottom: 1.5px solid #000;
+            padding-bottom: 3px;
+            margin-bottom: 10px;
+        }
+
+        /* Profil */
+        .profil {
+            font-size: 10.5pt;
+            color: #333;
+            text-align: justify;
+        }
+
+        /* Competences */
+        .competences ul {
+            list-style: disc;
+            padding-left: 18px;
+        }
+
+        .competences li {
+            margin-bottom: 3px;
+        }
+
+        .competences li strong {
+            color: #000;
+        }
+
+        /* Experience */
+        .exp-item {
+            margin-bottom: 14px;
+        }
+
+        .exp-role {
+            font-size: 11pt;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .exp-company {
+            font-size: 10pt;
+            color: #444;
+            margin-bottom: 4px;
+        }
+
+        .exp-bullets {
+            list-style: disc;
+            padding-left: 18px;
+        }
+
+        .exp-bullets li {
+            margin-bottom: 2px;
+            text-align: justify;
+        }
+
+        .exp-bullets li strong {
+            color: #000;
+        }
+
+        /* Formation */
+        .formation-item {
+            margin-bottom: 8px;
+        }
+
+        .formation-item strong {
+            color: #000;
+        }
+
+        .formation-school {
+            color: #444;
+            font-size: 10pt;
+        }
+
+        /* Langues */
+        .langues p {
+            margin-bottom: 2px;
+        }
+
+        /* Header buttons */
+        .header-actions {
+            float: right;
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .header-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #1a1a1a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 10pt;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+
+        .header-btn:hover { background: #333; }
+
+        .lang-toggle {
+            background: #fff;
+            color: #1a1a1a;
+            border: 1.5px solid #1a1a1a;
+            font-weight: 700;
+        }
+
+        .lang-toggle:hover { background: #f0f0f0; }
+
+        /* Print */
+        @media print {
+            body {
+                padding: 10mm 15mm;
+                font-size: 10pt;
+            }
+            .section { margin-top: 12px; }
+            .exp-item { margin-bottom: 10px; }
+            .header-actions { display: none; }
+        }
+
+        @page {
+            size: A4;
+            margin: 10mm 15mm;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-actions">
+        <button class="header-btn lang-toggle" onclick="toggleLang()">EN</button>
+        <button class="header-btn" onclick="window.print()">&#128196; <span data-i18n="btn-pdf">Telecharger PDF</span></button>
+    </div>
+    <h1>Chetana YIN</h1>
+    <div class="subtitle">Tech Lead IA | Engineering Manager (ex Lead Software Engineer)</div>
+    <div class="contact">
+        77144 Montevrain | +33 6 51 25 35 80<br>
+        chetana.yin@gmail.com<br>
+        LinkedIn : <a href="https://www.linkedin.com/in/chetana-yin-79b36754/">linkedin.com/in/chetana-yin</a>
+    </div>
+</div>
+
+<!-- PROFIL -->
+<div class="section">
+    <div class="section-title" data-i18n="s-profil">Profil</div>
+    <p class="profil" data-i18n="profil">
+        Tech Lead IA et Engineering Manager avec 13 ans d'experience en developpement logiciel, dont 5+ annees
+        sur la plateforme B2B SaaS DJUST. Depuis mai 2026, lead technique du produit djust-sales : plateforme IA
+        d'automatisation commerciale B2B (Sales Copilot, LLM pipelines, pgvector, HITL) avec une stack Python/FastAPI,
+        LangGraph, SQLAlchemy async, PostgreSQL RLS et Nuxt 3. Expertise en observabilite LLM (Langfuse/OpenTelemetry),
+        securite multi-tenant et auth (Logto). Precedemment Engineering Manager de l'equipe OMS (6 ingenieurs),
+        specialise paiements multi-PSP et architecture Java/Spring Boot. Pionnier de l'IA generative (Claude Code)
+        dans les workflows d'equipe.
+    </p>
+</div>
+
+<!-- COMPETENCES -->
+<div class="section competences">
+    <div class="section-title" data-i18n="s-comp">Competences</div>
+    <ul>
+        <li data-i18n="c1"><strong>Backend &amp; Architecture :</strong> Java 17+, Spring Boot, Spring Security, JPA/Hibernate, REST API, GraphQL, OpenAPI/Swagger, Python, FastAPI, LangGraph, SQLAlchemy (async), Architecture modulaire multi-tenant, Maven, Node.js.</li>
+        <li data-i18n="c2"><strong>Data &amp; Infrastructure :</strong> PostgreSQL (RLS), Elasticsearch, MongoDB, Redis, pgvector, Docker, Kubernetes, ArgoCD, Google Cloud Platform (GCP), AWS (SQS, S3), GitLab CI/CD, Jenkins, Ansible.</li>
+        <li data-i18n="c3"><strong>Domaine metier :</strong> Order Management (OMS), Paiements (Adyen, Mangopay, Lemonway, Thunes), Cart &amp; Checkout, E-commerce B2B SaaS, Multi-tenant, Marketplace, Assurance.</li>
+        <li data-i18n="c4"><strong>Management :</strong> Team Lead (6 devs), Recrutement, People Review, Agile/Scrum, SAFe, Kanban, Incident Management, Coordination cross-equipes, MEP hebdomadaires.</li>
+        <li data-i18n="c5"><strong>Frontend &amp; Mobile :</strong> Nuxt 3/Vue.js, TypeScript, Android (Java), iOS (Swift), Thymeleaf.</li>
+        <li data-i18n="c6"><strong>IA &amp; Observabilite :</strong> LLM Pipelines, Langfuse, OpenTelemetry, HITL, SSE streaming, pgvector, Logto (multi-org, OAuth2), PostHog, Claude Code, MCP Servers, Custom AI Skills, Code Reviews automatisees.</li>
+    </ul>
+</div>
+
+<!-- EXPERIENCES -->
+<div class="section">
+    <div class="section-title" data-i18n="s-exp">Experiences professionnelles</div>
+
+    <div class="exp-item">
+        <div class="exp-role" data-i18n="e0-role">Tech Lead IA</div>
+        <div class="exp-company" data-i18n="e0-co">DJUST (E-Commerce B2B SaaS) - Mai 2026 - Present</div>
+        <ul class="exp-bullets">
+            <li data-i18n="e0-1"><strong>Lead technique djust-sales :</strong> Plateforme IA d'automatisation commerciale B2B (Sales Copilot, import commandes/devis, catalogue) — architecture et developpement full-stack.</li>
+            <li data-i18n="e0-2"><strong>Stack full-stack IA :</strong> Python (FastAPI, LangGraph, SQLAlchemy async), PostgreSQL avec RLS multi-tenant, Nuxt 3/Vue, SSE streaming, Kubernetes/ArgoCD.</li>
+            <li data-i18n="e0-3"><strong>Pipelines LLM :</strong> Import multi-requetes en SSE streaming, email pipeline (Sales Copilot), HITL (Human-in-the-Loop), recherche vectorielle pgvector.</li>
+            <li data-i18n="e0-4"><strong>Observabilite LLM :</strong> Integration Langfuse + OpenTelemetry — tracking tokens, couts et sessions sur toutes les surfaces IA.</li>
+            <li data-i18n="e0-5"><strong>Securite multi-tenant :</strong> PostgreSQL RLS — audit complet, correction et tests de regression d'isolation garantie par tenant.</li>
+            <li data-i18n="e0-6"><strong>Auth :</strong> Integration Logto complete (webhooks, multi-org, provisioning, scope OAuth2, refresh token).</li>
+        </ul>
+    </div>
+
+    <div class="exp-item">
+        <div class="exp-role">Engineering Manager</div>
+        <div class="exp-company" data-i18n="e1-co">DJUST (E-Commerce B2B SaaS) - Novembre 2023 - Mai 2026</div>
+        <ul class="exp-bullets">
+            <li data-i18n="e1-1"><strong>Management d'equipe :</strong> Encadrement de 6 ingenieurs backend et QA (recrutement, evaluations, montee en competences, 1:1 hebdomadaires).</li>
+            <li data-i18n="e1-2"><strong>Ownership OMS &amp; Paiements :</strong> Responsable des modules Order Management, Payments multi-PSP (Adyen, Mangopay, Lemonway), Cart sur une plateforme B2B SaaS multi-tenant servant des clients comme Franprix, Procity et VEJA.</li>
+            <li data-i18n="e1-3"><strong>Lead technique :</strong> Architecture des modules (15+ modules Spring Boot), code reviews, decisions techniques structurantes, gestion des incidents production.</li>
+            <li data-i18n="e1-4"><strong>Delivery :</strong> Pilotage des mises en production hebdomadaires, coordination avec les equipes Catalog, Infrastructure et Integration.</li>
+            <li data-i18n="e1-5"><strong>Innovation IA :</strong> Integration de Claude Code dans le workflow quotidien de l'equipe : 25+ skills personnalises, code reviews automatisees, tests E2E assistes, briefings de deploiement generes par IA.</li>
+        </ul>
+    </div>
+
+    <div class="exp-item">
+        <div class="exp-role">Lead Software Engineer</div>
+        <div class="exp-company" data-i18n="e2-co">DJUST (via Takima) - Octobre 2021 - Novembre 2023</div>
+        <ul class="exp-bullets">
+            <li data-i18n="e2-1"><strong>Architecture from scratch :</strong> Conception et developpement d'une plateforme e-commerce B2B modulaire (15+ modules Java 17/Spring Boot, PostgreSQL, Elasticsearch).</li>
+            <li data-i18n="e2-2"><strong>Paiements multi-PSP :</strong> Integration Adyen, Mangopay, Lemonway, Thunes avec gestion des webhooks, captures, refunds et reconciliation.</li>
+            <li data-i18n="e2-3"><strong>Infrastructure :</strong> Mise en place du CI/CD GitLab, Keycloak (authentification), Docker, GCP, tests E2E (JUnit 5, AssertJ, Testcontainers).</li>
+            <li data-i18n="e2-4"><strong>Qualite :</strong> Definition des conventions de code, code reviews systematiques, Spotless, suites de tests automatises.</li>
+        </ul>
+    </div>
+
+    <div class="exp-item">
+        <div class="exp-role" data-i18n="e3-role">Ingenieur Full Stack Java (Mission Galeries Lafayette)</div>
+        <div class="exp-company" data-i18n="e3-co">Takima - Juin 2018 - Septembre 2021</div>
+        <ul class="exp-bullets">
+            <li data-i18n="e3-1"><strong>Gestion de production &amp; Referent technique (2019-2021) :</strong> Responsable de la production du tunnel d'achat, referent technique equipe. Gestion du monolithe Hybris (Java 7) et des API Java 8. Deploiements Jenkins/Ansible. Methodologie SAFe.</li>
+            <li data-i18n="e3-2"><strong>Produit / Recherche / E-merchandising (2019) :</strong> Migration moteur de recherche Hybris vers Algolia. Conception d'une API GraphQL. Architecture hexagonale. Practice Example Mapping.</li>
+            <li data-i18n="e3-3"><strong>Tunnel d'achat (2018) :</strong> Developpement du checkout flow e-commerce a fort trafic (panier, livraison, paiement, marketplace, carte cadeau, refonte UX).</li>
+            <li><strong>Stack :</strong> Java 7/8, Spring Boot, Hybris, Algolia, GraphQL, Thymeleaf, Jenkins, Ansible, Apache.</li>
+        </ul>
+    </div>
+
+    <div class="exp-item">
+        <div class="exp-role" data-i18n="e4-role">Ingenieur logiciels Java (Mission Groupe Burrus / DiOT)</div>
+        <div class="exp-company" data-i18n="e4-co">INFOTEL - Juin 2016 - Avril 2018</div>
+        <ul class="exp-bullets">
+            <li data-i18n="e4-1"><strong>Projet SAFE :</strong> Application de gestion de flottes pour EDF et Fnac-Darty. Plateforme assurance DARVA.</li>
+            <li data-i18n="e4-2"><strong>Conception :</strong> Workflows BPMN 2.0 (Activiti), moteur de regles Drools, services SOAP.</li>
+            <li><strong>Stack :</strong> Java, Spring, Hibernate, PostgreSQL, Vaadin, Activiti, Drools.</li>
+        </ul>
+    </div>
+
+    <div class="exp-item">
+        <div class="exp-role" data-i18n="e5-role">Ingenieur mobile (Mission BNP Paribas)</div>
+        <div class="exp-company" data-i18n="e5-co">INFOTEL - Octobre 2015 - Juin 2016</div>
+        <ul class="exp-bullets">
+            <li data-i18n="e5-1"><strong>Application "Mes comptes" :</strong> Maintenance et evolution de l'application bancaire Android Java pour BNP Paribas.</li>
+            <li data-i18n="e5-2"><strong>POC hybride :</strong> Developpement d'une application multi-plateforme (Android/iOS/Windows). Formation iOS/Swift dispensee par Apple.</li>
+        </ul>
+    </div>
+
+    <div class="exp-item">
+        <div class="exp-role" data-i18n="e6-role">Ingenieur Recherche et Developpement</div>
+        <div class="exp-company" data-i18n="e6-co">miLibris - Octobre 2012 - Juin 2015</div>
+        <ul class="exp-bullets">
+            <li data-i18n="e6-1"><strong>Applications Android natives :</strong> Developpement complet pour des clients presse exigeants, de l'expression du besoin a la publication Play Store.</li>
+            <li data-i18n="e6-2"><strong>Framework hybride iOS/Android :</strong> Liseuse numerique avec achats in-app, gestion de bibliotheque, reader interactif.</li>
+            <li data-i18n="e6-3"><strong>Autonomie :</strong> Startup — responsabilite totale sur le cycle de vie mobile.</li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- FORMATION -->
+<div class="section">
+    <div class="section-title" data-i18n="s-edu">Formation</div>
+
+    <div class="formation-item">
+        <strong data-i18n="edu1">2008 - 2013 : Expert en Technologies de l'Information (BAC+5)</strong><br>
+        <span class="formation-school" data-i18n="edu1-s">EPITECH - European Institute of Technology, Paris</span>
+    </div>
+
+    <div class="formation-item">
+        <strong>2011 - 2012 : Master's degree, Computer Software Engineering</strong><br>
+        <span class="formation-school" data-i18n="edu2-s">Beijing Jiaotong University, Pekin (Chine) - 4e annee internationale</span>
+    </div>
+
+    <div class="formation-item">
+        <strong>2018 : Takima Academy</strong><br>
+        <span class="formation-school">Java, Angular, Spring, Hibernate, Docker, Ansible, Jenkins</span>
+    </div>
+
+    <div class="formation-item">
+        <strong data-i18n="edu-cert">Certification : Oracle Certified Associate, Java SE 8 Programmer</strong>
+    </div>
+</div>
+
+<!-- LANGUES -->
+<div class="section langues">
+    <div class="section-title" data-i18n="s-lang">Langues &amp; Interets</div>
+    <p data-i18n="langues"><strong>Langues :</strong> Francais (natif), Cambodgien (langue maternelle), Anglais (professionnel - TOEIC), Chinois mandarin (scolaire), Espagnol (scolaire).</p>
+</div>
+
+<script>
+const T = {
+  en: {
+    "btn-pdf": "Download PDF",
+    "s-profil": "Profile",
+    "profil": "AI Tech Lead and Engineering Manager with 13 years of software development experience, including 5+ years on the DJUST B2B SaaS platform. Since May 2026, technical lead of the djust-sales product: B2B AI commercial automation platform (Sales Copilot, LLM pipelines, pgvector, HITL) with a Python/FastAPI, LangGraph, SQLAlchemy async, PostgreSQL RLS and Nuxt 3 stack. Expertise in LLM observability (Langfuse/OpenTelemetry), multi-tenant security and authentication (Logto). Previously Engineering Manager of the OMS team (6 engineers), specialized in multi-PSP payments and Java/Spring Boot architecture. Pioneer of generative AI (Claude Code) in team workflows.",
+    "s-comp": "Skills",
+    "c1": "<strong>Backend & Architecture:</strong> Java 17+, Spring Boot, Spring Security, JPA/Hibernate, REST API, GraphQL, OpenAPI/Swagger, Python, FastAPI, LangGraph, SQLAlchemy (async), Modular multi-tenant architecture, Maven, Node.js.",
+    "c2": "<strong>Data & Infrastructure:</strong> PostgreSQL (RLS), Elasticsearch, MongoDB, Redis, pgvector, Docker, Kubernetes, ArgoCD, Google Cloud Platform (GCP), AWS (SQS, S3), GitLab CI/CD, Jenkins, Ansible.",
+    "c3": "<strong>Business Domain:</strong> Order Management (OMS), Payments (Adyen, Mangopay, Lemonway, Thunes), Cart & Checkout, B2B SaaS E-commerce, Multi-tenant, Marketplace, Insurance.",
+    "c4": "<strong>Management:</strong> Team Lead (6 devs), Hiring, Performance Reviews, Agile/Scrum, SAFe, Kanban, Incident Management, Cross-team coordination, Weekly releases.",
+    "c5": "<strong>Frontend & Mobile:</strong> Nuxt 3/Vue.js, TypeScript, Android (Java), iOS (Swift), Thymeleaf.",
+    "c6": "<strong>AI & Observability:</strong> LLM Pipelines, Langfuse, OpenTelemetry, HITL, SSE streaming, pgvector, Logto (multi-org, OAuth2), PostHog, Claude Code, MCP Servers, Custom AI Skills, Automated Code Reviews.",
+    "s-exp": "Professional Experience",
+    "e0-role": "AI Tech Lead",
+    "e0-co": "DJUST (B2B E-Commerce SaaS) - May 2026 - Present",
+    "e0-1": "<strong>djust-sales technical lead:</strong> B2B AI commercial automation platform (Sales Copilot, order/quote import, catalogue) — full-stack architecture and development.",
+    "e0-2": "<strong>Full-stack AI stack:</strong> Python (FastAPI, LangGraph, SQLAlchemy async), PostgreSQL with multi-tenant RLS, Nuxt 3/Vue, SSE streaming, Kubernetes/ArgoCD.",
+    "e0-3": "<strong>LLM Pipelines:</strong> Multi-request SSE streaming import, email pipeline (Sales Copilot), HITL (Human-in-the-Loop), pgvector vector search.",
+    "e0-4": "<strong>LLM Observability:</strong> Langfuse + OpenTelemetry integration — token, cost and session tracking across all AI surfaces.",
+    "e0-5": "<strong>Multi-tenant security:</strong> PostgreSQL RLS — full audit, fixes and regression tests for guaranteed per-tenant isolation.",
+    "e0-6": "<strong>Auth:</strong> Full Logto integration (webhooks, multi-org, provisioning, OAuth2 scopes, refresh token).",
+    "e1-co": "DJUST (B2B E-Commerce SaaS) - November 2023 - May 2026",
+    "e1-1": "<strong>Team Management:</strong> Leading 6 backend and QA engineers (hiring, performance reviews, skill development, weekly 1:1s).",
+    "e1-2": "<strong>OMS & Payments Ownership:</strong> Responsible for Order Management, multi-PSP Payments (Adyen, Mangopay, Lemonway), Cart modules on a multi-tenant B2B SaaS platform serving clients like Franprix, Procity, and VEJA.",
+    "e1-3": "<strong>Technical Lead:</strong> Module architecture (15+ Spring Boot modules), code reviews, key technical decisions, production incident management.",
+    "e1-4": "<strong>Delivery:</strong> Weekly production releases, coordination with Catalog, Infrastructure, and Integration teams.",
+    "e1-5": "<strong>AI Innovation:</strong> Integrated Claude Code into the team's daily workflow: 25+ custom skills, automated code reviews, AI-assisted E2E tests, AI-generated deployment briefings.",
+    "e2-co": "DJUST (via Takima) - October 2021 - November 2023",
+    "e2-1": "<strong>Architecture from scratch:</strong> Designed and built a modular B2B e-commerce platform (15+ Java 17/Spring Boot modules, PostgreSQL, Elasticsearch).",
+    "e2-2": "<strong>Multi-PSP Payments:</strong> Integrated Adyen, Mangopay, Lemonway, Thunes with webhook handling, captures, refunds, and reconciliation.",
+    "e2-3": "<strong>Infrastructure:</strong> Set up GitLab CI/CD, Keycloak (authentication), Docker, GCP, E2E tests (JUnit 5, AssertJ, Testcontainers).",
+    "e2-4": "<strong>Quality:</strong> Defined coding conventions, systematic code reviews, Spotless, automated test suites.",
+    "e3-role": "Full Stack Java Engineer (Galeries Lafayette)",
+    "e3-co": "Takima - June 2018 - September 2021",
+    "e3-1": "<strong>Production Management & Tech Lead (2019-2021):</strong> Responsible for checkout production, team technical referent. Managed Hybris monolith (Java 7) and Java 8 APIs. Jenkins/Ansible deployments. SAFe methodology.",
+    "e3-2": "<strong>Product / Search / E-merchandising (2019):</strong> Migrated search engine from Hybris to Algolia. Designed a GraphQL API. Hexagonal architecture. Example Mapping practice.",
+    "e3-3": "<strong>Checkout flow (2018):</strong> Developed high-traffic e-commerce checkout (cart, shipping, payment, marketplace, gift cards, UX redesign).",
+    "e4-role": "Java Software Engineer (Groupe Burrus / DiOT)",
+    "e4-co": "INFOTEL - June 2016 - April 2018",
+    "e4-1": "<strong>SAFE Project:</strong> Fleet management application for EDF and Fnac-Darty. DARVA insurance platform.",
+    "e4-2": "<strong>Design:</strong> BPMN 2.0 workflows (Activiti), Drools rules engine, SOAP services.",
+    "e5-role": "Mobile Engineer (BNP Paribas)",
+    "e5-co": "INFOTEL - October 2015 - June 2016",
+    "e5-1": "<strong>\"Mes comptes\" App:</strong> Maintenance and development of the BNP Paribas Android Java banking application.",
+    "e5-2": "<strong>Hybrid POC:</strong> Multi-platform application development (Android/iOS/Windows). iOS/Swift training by Apple.",
+    "e6-role": "R&D Engineer",
+    "e6-co": "miLibris - October 2012 - June 2015",
+    "e6-1": "<strong>Native Android Apps:</strong> End-to-end development for demanding press clients, from requirements to Play Store publication.",
+    "e6-2": "<strong>Hybrid iOS/Android Framework:</strong> Digital reader with in-app purchases, library management, interactive reader.",
+    "e6-3": "<strong>Autonomy:</strong> Startup — full ownership of the mobile lifecycle.",
+    "s-edu": "Education",
+    "edu1": "2008 - 2013: IT Expert Degree (Master's level)",
+    "edu1-s": "EPITECH - European Institute of Technology, Paris",
+    "edu2-s": "Beijing Jiaotong University, Beijing (China) - International year",
+    "edu-cert": "Certification: Oracle Certified Associate, Java SE 8 Programmer",
+    "s-lang": "Languages & Interests",
+    "langues": "<strong>Languages:</strong> French (native), Cambodian (mother tongue), English (professional - TOEIC), Mandarin Chinese (academic), Spanish (academic)."
+  }
+};
+
+let currentLang = 'fr';
+const frCache = {};
+
+function toggleLang() {
+    const btn = document.querySelector('.lang-toggle');
+    if (currentLang === 'fr') {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            frCache[key] = el.innerHTML;
+            if (T.en[key]) el.innerHTML = T.en[key];
+        });
+        document.documentElement.lang = 'en';
+        btn.textContent = 'FR';
+        currentLang = 'en';
+    } else {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (frCache[key]) el.innerHTML = frCache[key];
+        });
+        document.documentElement.lang = 'fr';
+        btn.textContent = 'EN';
+        currentLang = 'fr';
+    }
+}
+</script>
+
+</body>
+</html>
