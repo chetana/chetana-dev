@@ -78,7 +78,8 @@ export default defineNuxtConfig({
     '/projects/health': { redirect: { to: 'https://pushup.chetana.dev', statusCode: 301 } }
   },
   nitro: {
-    preset: 'node-server',
+    // Scaleway (container) = node-server ; Vercel (transition/redirect) = vercel
+    preset: process.env.VERCEL ? 'vercel' : 'node-server',
     externals: {
       external: ['@google-cloud/storage', 'google-auth-library']
     },
