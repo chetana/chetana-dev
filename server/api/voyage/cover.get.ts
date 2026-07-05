@@ -11,5 +11,5 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'path is required' })
   }
 
-  return { url: signedGetUrl(path) }
+  return { url: await signedGetUrl(path) }
 })

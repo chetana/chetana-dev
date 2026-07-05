@@ -1,62 +1,77 @@
-import { Storage } from '@google-cloud/storage'
-import { createHash, createSign } from 'crypto'
+// Stockage objet — Scaleway Object Storage (S3-compatible).
+// Migré depuis @google-cloud/storage : adaptateur imitant l'API Bucket GCS
+// (file().save/download/delete/exists, getFiles→CommonPrefixes) + presigned URLs SigV4.
+import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, HeadObjectCommand } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
-function getCredentials() {
-  const raw = process.env.GCS_SERVICE_ACCOUNT_JSON!.trim()
-  const creds = JSON.parse(raw)
-  // Normalize \n escape sequences to real newlines (Vercel env var quirk)
-  creds.private_key = (creds.private_key as string).replace(/\\n/g, '\n').trim() + '\n'
-  creds.client_email = (creds.client_email as string).trim()
-  return creds
+const BUCKET = () => (process.env.GCS_BUCKET_NAME ?? '').replace(/\\n/g, '').trim()
+
+function s3() {
+  return new S3Client({
+    region: (process.env.S3_REGION ?? 'fr-par').trim(),
+    endpoint: (process.env.S3_ENDPOINT ?? 'https://s3.fr-par.scw.cloud').trim(),
+    forcePathStyle: true,
+    credentials: {
+      accessKeyId: (process.env.S3_ACCESS_KEY ?? '').trim(),
+      secretAccessKey: (process.env.S3_SECRET_KEY ?? '').trim(),
+    },
+  })
+}
+
+async function toBuffer(body: any): Promise<Buffer> {
+  const chunks: Buffer[] = []
+  for await (const c of body as AsyncIterable<Uint8Array>) chunks.push(Buffer.from(c))
+  return Buffer.concat(chunks)
+}
+
+function map404(e: any): never {
+  if (e?.$metadata?.httpStatusCode === 404 || e?.name === 'NoSuchKey' || e?.name === 'NotFound') {
+    const err: any = new Error('Not Found'); err.code = 404; throw err
+  }
+  throw e
 }
 
 export function getGcsBucket() {
-  const creds = getCredentials()
-  return new Storage({ credentials: creds }).bucket(process.env.GCS_BUCKET_NAME!)
-}
-
-// Pure Node.js crypto v4 signed URL — bypasses @google-cloud/storage signing
-function buildSignedUrl(
-  path: string,
-  method: 'PUT' | 'GET',
-  expiresSeconds: number,
-  contentType?: string
-): string {
-  const creds = getCredentials()
-  const bucket = process.env.GCS_BUCKET_NAME!.trim()
-  const now = new Date()
-
-  const pad = (n: number) => n.toString().padStart(2, '0')
-  const date = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}`
-  const datetime = `${date}T${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}Z`
-
-  const serviceAccount: string = creds.client_email
-  const scope = `${date}/auto/storage/goog4_request`
-  const credential = `${serviceAccount}/${scope}`
-
-  const signedHeaders = method === 'PUT' ? 'content-type;host' : 'host'
-  const canonicalHeaders = method === 'PUT'
-    ? `content-type:${contentType}\nhost:storage.googleapis.com\n`
-    : `host:storage.googleapis.com\n`
-
-  const qs = [
-    'X-Goog-Algorithm=GOOG4-RSA-SHA256',
-    `X-Goog-Credential=${encodeURIComponent(credential)}`,
-    `X-Goog-Date=${datetime}`,
-    `X-Goog-Expires=${expiresSeconds}`,
-    `X-Goog-SignedHeaders=${encodeURIComponent(signedHeaders)}`,
-  ].join('&')
-
-  const canonicalRequest = [method, `/${bucket}/${path}`, qs, canonicalHeaders, signedHeaders, 'UNSIGNED-PAYLOAD'].join('\n')
-  const hash = createHash('sha256').update(canonicalRequest).digest('hex')
-  const stringToSign = `GOOG4-RSA-SHA256\n${datetime}\n${scope}\n${hash}`
-  const signature = createSign('RSA-SHA256').update(stringToSign).sign(creds.private_key, 'hex')
-
-  return `https://storage.googleapis.com/${bucket}/${path}?${qs}&X-Goog-Signature=${signature}`
+  const client = s3()
+  const Bucket = BUCKET()
+  const file = (name: string) => ({
+    name,
+    async save(data: string | Buffer | Uint8Array, opts?: { contentType?: string; metadata?: { contentType?: string } }) {
+      const ContentType = opts?.contentType ?? opts?.metadata?.contentType
+      await client.send(new PutObjectCommand({ Bucket, Key: name, Body: data as any, ContentType }))
+    },
+    async download(): Promise<[Buffer]> {
+      try {
+        const r = await client.send(new GetObjectCommand({ Bucket, Key: name }))
+        return [await toBuffer(r.Body)]
+      } catch (e) { map404(e) }
+    },
+    async delete() {
+      try { await client.send(new DeleteObjectCommand({ Bucket, Key: name })) }
+      catch (e) { map404(e) }
+    },
+    async exists(): Promise<[boolean]> {
+      try { await client.send(new HeadObjectCommand({ Bucket, Key: name })); return [true] }
+      catch { return [false] }
+    },
+  })
+  return {
+    file,
+    // Émule bucket.getFiles GCS : [files, nextQuery, apiResponse{prefixes}] (prefixes = CommonPrefixes S3).
+    async getFiles(opts?: { prefix?: string; delimiter?: string; autoPaginate?: boolean }) {
+      const out = await client.send(new ListObjectsV2Command({ Bucket, Prefix: opts?.prefix, Delimiter: opts?.delimiter }))
+      const files = (out.Contents ?? []).map(o =>
+        Object.assign(file(o.Key as string), {
+          metadata: { size: Number(o.Size ?? 0), contentType: '', updated: o.LastModified ? new Date(o.LastModified).toISOString() : '' },
+        }))
+      const prefixes = (out.CommonPrefixes ?? []).map(p => p.Prefix as string)
+      return [files, null, { prefixes }] as const
+    },
+  }
 }
 
 export const signedPutUrl = (path: string, contentType: string) =>
-  buildSignedUrl(path, 'PUT', 900, contentType)
+  getSignedUrl(s3(), new PutObjectCommand({ Bucket: BUCKET(), Key: path, ContentType: contentType }), { expiresIn: 900 })
 
 export const signedGetUrl = (path: string) =>
-  buildSignedUrl(path, 'GET', 3600)
+  getSignedUrl(s3(), new GetObjectCommand({ Bucket: BUCKET(), Key: path }), { expiresIn: 3600 })

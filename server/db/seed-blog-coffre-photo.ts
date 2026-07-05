@@ -294,7 +294,7 @@ export default defineEventHandler(async (event) => {
   const { path, w } = getQuery(event)
   const width = parseInt(w) || 1200  // 1200 pour social, 300 pour thumbnails
 
-  const gcsUrl = signedGetUrl(path)
+  const gcsUrl = await signedGetUrl(path)
   const response = await fetch(gcsUrl)
   const buffer = Buffer.from(await response.arrayBuffer())
 

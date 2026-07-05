@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const url = signedPutUrl(path, contentType)
+    const url = await signedPutUrl(path, contentType)
     return { url }
   } catch (e: any) {
     throw createError({ statusCode: 500, statusMessage: e?.message ?? String(e) })

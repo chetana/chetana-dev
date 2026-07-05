@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Génère une signed URL GCS fraîche pour ce fichier
-  const gcsUrl = signedGetUrl(path)
+  const gcsUrl = await signedGetUrl(path)
 
   // Télécharge l'image depuis GCS
   const response = await fetch(gcsUrl)
