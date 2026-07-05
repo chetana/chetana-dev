@@ -78,7 +78,7 @@ export default defineNuxtConfig({
     '/projects/health': { redirect: { to: 'https://pushup.chetana.dev', statusCode: 301 } }
   },
   nitro: {
-    preset: 'vercel',
+    preset: 'node-server',
     externals: {
       external: ['@google-cloud/storage', 'google-auth-library']
     },
@@ -100,7 +100,7 @@ export default defineNuxtConfig({
     medialistOwnerEmail: process.env.MEDIALIST_OWNER_EMAIL || '',
     public: {
       vapidPublicKey: process.env.VAPID_PUBLIC_KEY || '',
-      commitSha: (process.env.VERCEL_GIT_COMMIT_SHA || 'local').slice(0, 7),
+      commitSha: (process.env.COMMIT_SHA || process.env.VERCEL_GIT_COMMIT_SHA || 'local').slice(0, 7),
       googleClientId: process.env.GOOGLE_CLIENT_ID || '',
       medialistOwnerEmail: process.env.MEDIALIST_OWNER_EMAIL || ''
     }
