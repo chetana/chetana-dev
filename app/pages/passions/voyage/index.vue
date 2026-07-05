@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-const API_BASE = 'https://chetaku-rs-267131866578.europe-west1.run.app'
+const API_BASE = 'https://chetaku.chetana.fr'
 
 interface YearCount { year: number; trips: number }
 interface VoyageStats {

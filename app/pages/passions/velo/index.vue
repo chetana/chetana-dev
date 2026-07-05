@@ -179,7 +179,7 @@
 <script setup lang="ts">
 useHead({ title: 'Vélo — Chetana YIN' })
 
-const API_BASE = 'https://chetaku-rs-267131866578.europe-west1.run.app'
+const API_BASE = 'https://chetaku.chetana.fr'
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface MonthlyTotal { month: string; km: number; elevation_m: number; rides: number }

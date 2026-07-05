@@ -59,7 +59,7 @@ interface Stats {
   top_series_creators: CreatorStat[]
 }
 
-const API_BASE = 'https://chetaku-rs-267131866578.europe-west1.run.app'
+const API_BASE = 'https://chetaku.chetana.fr'
 
 // ── List & filters ──────────────────────────────────────────────────────────
 const typeFilter = ref<'' | 'anime' | 'game' | 'movie' | 'series'>('')

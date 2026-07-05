@@ -176,7 +176,7 @@
 <script setup lang="ts">
 useHead({ title: 'Course — Chetana YIN' })
 
-const API_BASE = 'https://chetaku-rs-267131866578.europe-west1.run.app'
+const API_BASE = 'https://chetaku.chetana.fr'
 
 interface MonthlyTotal { month: string; km: number; elevation_m: number; rides: number }
 interface SportTypeStat { sport_type: string; count: number; km: number }
