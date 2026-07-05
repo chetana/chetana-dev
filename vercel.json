@@ -1,5 +1,6 @@
 {
   "redirects": [
+    { "source": "/", "destination": "https://chetana.fr/", "permanent": true },
     { "source": "/:path*", "destination": "https://chetana.fr/:path*", "permanent": true }
   ]
 }
