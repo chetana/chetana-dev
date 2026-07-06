@@ -2,7 +2,7 @@
 
 Portfolio dynamique, blog technique et projets personnels de **Chetana YIN** — Engineering Manager.
 
-**Live** : [https://chetana.dev](https://chetana.dev)
+**Live** : [https://chetana.fr](https://chetana.fr)
 
 ## Stack
 
@@ -20,7 +20,7 @@ Portfolio dynamique, blog technique et projets personnels de **Chetana YIN** —
 |---|---|
 | `/` | Homepage — hero, stats, about, experience timeline, skills, education, contact |
 | `/projects` | Liste des projets personnels |
-| `/projects/health` | ↗ Redirect 301 vers [pushup.chetana.dev](https://pushup.chetana.dev) |
+| `/projects/health` | ↗ Redirect 301 vers [pushup.chetana.fr](https://pushup.chetana.fr) |
 | `/projects/imagichet` | Génération et édition d'images avec Vertex AI Imagen 3 |
 | `/passions` | Section Passions — 5 cartes TCG interactives (Médiathèque, Vélo, Natation, Course, Voyage) |
 | `/passions/medialist` | Médiathèque — animés, jeux, films et séries avec stats pondérées par note |
@@ -134,7 +134,7 @@ npm run dev
 | `GCS_SERVICE_ACCOUNT_JSON` | JSON stringifie du service account GCS (Storage Object Admin) |
 | `RAWG_API_KEY` | Clé API rawg.io (medialist — sync jeux) |
 | `TMDB_API_KEY` | Clé API themoviedb.org (medialist — sync films/séries) |
-| `CHETAKU_API_URL` | URL de chetaku-rs (défaut: `https://chetaku-rs-267131866578.europe-west1.run.app`) |
+| `CHETAKU_API_URL` | URL de chetaku-rs (défaut: `https://chetaku.chetana.fr`) |
 | `CHETAKU_API_KEY` | Clé secrète partagée avec chetaku-rs |
 | `MEDIALIST_OWNER_EMAIL` | Email du propriétaire (seul autorisé à ajouter/éditer) |
 | `VERTEX_PROJECT_ID` | Projet GCP pour Vertex AI Imagen (imagichet) |
@@ -213,7 +213,7 @@ Tables Neon utilisées par chetana.dev :
 | `comments` | Commentaires sur les articles (moderation) | Public |
 | `messages` | Messages du formulaire contact | Public |
 
-> Les données portfolio (blog_posts, projects, experiences, skills, media_entries, strava_activities) sont gérées par **chetaku-rs** (`api.chetana.dev`). Le suivi de pompes (health_entries, push_subscriptions) est géré par **pushup-tracker** (`pushup.chetana.dev`).
+> Les données portfolio (blog_posts, projects, experiences, skills, media_entries, strava_activities) sont gérées par **chetaku-rs** (`chetaku.chetana.fr`). Le suivi de pompes (health_entries, push_subscriptions) est géré par **pushup-tracker** (`pushup.chetana.fr`).
 
 ## API
 
@@ -336,9 +336,9 @@ interface ChatMessage {
 
 ## Pushup Tracker
 
-Le suivi de pompes a été extrait vers un service dédié : **[pushup.chetana.dev](https://pushup.chetana.dev)** (repo `pushup-tracker`, Cloud Run europe-west1).
+Le suivi de pompes a été extrait vers un service dédié : **[pushup.chetana.fr](https://pushup.chetana.fr)** (repo `pushup-tracker`, Cloud Run europe-west1).
 
-- `/projects/health` redirige en 301 vers `https://pushup.chetana.dev`
+- `/projects/health` redirige en 301 vers `https://pushup.chetana.fr`
 - Le service possède ses propres endpoints health + push notifications + cron job Cloud Scheduler
 
 ## SEO

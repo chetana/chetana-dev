@@ -8,7 +8,7 @@ Ton app est une **Progressive Web App (PWA)** grâce à la config dans `nuxt.con
 ### Comment installer sur Android
 
 #### Étape 1 : Ouvrir dans Chrome/Edge/Samsung Browser
-1. Va sur https://chetana.dev/projects/health
+1. Va sur https://chetana.fr/projects/health
 2. Attends 2-3 secondes (le service worker se charge)
 
 #### Étape 2 : Installer l'app

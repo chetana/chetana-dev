@@ -166,7 +166,7 @@ Vercel build l'app (npm run build)
     ↓
 Vercel injecte les env variables
     ↓
-App déployée à https://chetana.dev/
+App déployée à https://chetana.fr/
     ↓
 Footer affiche v1.0.0 • d861bab • 21 févr
 ```
@@ -233,7 +233,7 @@ Après chaque `git push` :
 - [ ] Attendre ~2-3 min
 - [ ] Lancer `npm run deploy:status`
 - [ ] Vérifier que le status = READY
-- [ ] Aller sur https://chetana.dev/
+- [ ] Aller sur https://chetana.fr/
 - [ ] Vérifier le footer (v1.0.0 • XXXXXXX • date)
 - [ ] Vérifier que les changements sont visibles
 
@@ -246,7 +246,7 @@ Après chaque `git push` :
 ### "Je n'ais pas le bouton installer l'app sur Android"
 
 **Solution** :
-1. Va sur https://chetana.dev/projects/health
+1. Va sur https://chetana.fr/projects/health
 2. Attends 5-10 secondes (service worker charge)
 3. Menu 3 points → **"Installer l'app"**
 

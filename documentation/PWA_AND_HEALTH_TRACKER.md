@@ -52,7 +52,7 @@ Une **Progressive Web App** est une application web qui :
 **Étape 1 : Ouvrir l'app**
 
 ```
-1. Ouvre https://chetana.dev/ dans ton navigateur
+1. Ouvre https://chetana.fr/ dans ton navigateur
 2. Clique sur le projet "Health" (cards avec les 4 cartes)
 3. La page se charge → tu vois le tracker de pompes
 ```
@@ -106,7 +106,7 @@ Android Chrome :
 
 ```
 1. Ouvre Safari (pas Chrome)
-2. Va sur https://chetana.dev/
+2. Va sur https://chetana.fr/
 3. Clique sur le projet "Health"
 4. Attends 5-10 secondes (service worker)
 ```
@@ -838,7 +838,7 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close()
 
   if (event.action === 'open') {
-    clients.openWindow('https://chetana.dev/projects/health')
+    clients.openWindow('https://chetana.fr/projects/health')
   }
 })
 ```
@@ -1062,7 +1062,7 @@ const handlePushToggle = async () => {
 3. **HTTPS requis**
    ```bash
    # La PWA ne fonctionne qu'en HTTPS
-   https://chetana.dev/  ✅
+   https://chetana.fr/  ✅
    http://localhost:3000 ✅ (localhost autorisé)
    ```
 

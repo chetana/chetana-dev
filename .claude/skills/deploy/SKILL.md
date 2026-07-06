@@ -27,8 +27,8 @@ Deploy the Nuxt application to Vercel.
    - ⚠️ NEVER use `--prebuilt`: external node_modules not uploaded correctly → 500 on all auth endpoints
 
 4. **Post-deploy verification**
-   - Fetch `https://chetana.dev` and verify it loads
-   - Check `https://chetana.dev/api/experiences` returns 200
+   - Fetch `https://chetana.fr` and verify it loads
+   - Check `https://chetana.fr/api/experiences` returns 200
    - If errors, check runtime logs with `mcp__vercel__get_runtime_logs`
    - Project ID: `prj_BrYuLeLY4ghfWvEvoTGyu6PRK6b7`
    - Team ID: `team_P2gbZVxXm3tykn0fOxxIhYXN`
@@ -37,6 +37,6 @@ Deploy the Nuxt application to Vercel.
 
 ## Important
 - Always use nvm node: `export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"`
-- Site URL: https://chetana.dev
+- Site URL: https://chetana.fr
 - GitHub repo: chetana/chetana-dev
 - NO auto-deploy on push — `npx vercel deploy --prod` is always required after pushing

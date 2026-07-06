@@ -142,7 +142,7 @@ v1.0.0 • d861bab • 21 févr 26
 - Cursor : help (hover affiche le full commit)
 
 **Vérifier** :
-1. Va sur https://chetana.dev/
+1. Va sur https://chetana.fr/
 2. Scroll en bas du footer
 3. Tu vois `v1.0.0 • XXXXXXX • XX mois YY`
 
@@ -198,7 +198,7 @@ npm run deploy:status
 📝 Commit: d861bab
 ⏰ Created: 21/02/2026 11:29:01
 
-✅ Deployment successful! Site is live at https://chetana.dev/
+✅ Deployment successful! Site is live at https://chetana.fr/
 ```
 
 **Exit codes** :
@@ -258,7 +258,7 @@ Fichier simple, pas de changement majeur. Nuxt s'occupe du reste.
 
 ### Installation PWA sur Android
 
-1. Va sur https://chetana.dev/projects/health
+1. Va sur https://chetana.fr/projects/health
 2. Attends 5-10 secondes (service worker charge)
 3. Menu 3 points → **"Installer l'app"** ou **"Ajouter à l'écran d'accueil"**
 4. L'app s'ajoute comme app native (fullscreen, sans URL bar)
@@ -375,7 +375,7 @@ INSERT INTO skills (category, name, color, sort_order) VALUES
 ### Vérifier l'ajout
 
 **Sur le site** :
-1. Va sur https://chetana.dev/
+1. Va sur https://chetana.fr/
 2. Scroll vers section "Skills"
 3. Les 5 nouvelles catégories doivent apparaître
 
@@ -393,7 +393,7 @@ psql $DATABASE_URL -c "SELECT category, name FROM skills ORDER BY category;"
 ### Version checking
 
 **Où voir la version** :
-1. **Footer du site** : https://chetana.dev/ (bas de page)
+1. **Footer du site** : https://chetana.fr/ (bas de page)
 2. **package.json** : version: "1.0.0"
 3. **GitHub** : releases tag (si on utilise git tag)
 
@@ -436,7 +436,7 @@ npm run deploy:status
 npm run deploy:status
 
 # Ou vérifier le site
-curl -s https://chetana.dev/ | grep "v1.0.0"
+curl -s https://chetana.fr/ | grep "v1.0.0"
 ```
 
 ---
@@ -464,10 +464,10 @@ npm run deploy:status
 # ~2 minutes
 
 # 4. Vérifier le site live
-curl -s https://chetana.dev/ | grep -i "v1.0.0"
+curl -s https://chetana.fr/ | grep -i "v1.0.0"
 
 # 5. Vérifier le footer
-# Va sur https://chetana.dev/ et regarde en bas
+# Va sur https://chetana.fr/ et regarde en bas
 ```
 
 ### ✅ Version bump
@@ -557,7 +557,7 @@ npm run build
     ↓
 Deploy en production
     ↓
-Site live à https://chetana.dev/
+Site live à https://chetana.fr/
 ```
 
 ### Runtime config (Nuxt)

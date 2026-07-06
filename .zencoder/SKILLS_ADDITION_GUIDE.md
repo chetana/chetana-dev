@@ -117,7 +117,7 @@ INSERT INTO skills (category, name, color, sort_order) VALUES
 ## ✅ Vérifier que les skills sont ajoutés
 
 ### Dans l'app
-1. Va sur https://chetana.dev/
+1. Va sur https://chetana.fr/
 2. Scroll vers **"Skills"** section
 3. Les nouvelles catégories doivent apparaître
 4. Les skills groupés par couleur
@@ -190,7 +190,7 @@ npm run db:studio
 ```
 
 ### Court terme
-- Actualiser la page d'accueil https://chetana.dev/
+- Actualiser la page d'accueil https://chetana.fr/
 - Vérifier que les skills s'affichent correctement
 - Tester sur mobile (voir PWA_HEALTH_TRACKER_GUIDE.md)
 

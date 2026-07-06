@@ -468,7 +468,7 @@ Frontend Advanced   | Workbox Caching               | blue
 
 Après déploiement :
 
-1. Va sur https://chetana.dev/
+1. Va sur https://chetana.fr/
 2. Scroll vers la section "Skills"
 3. Tu devrais voir :
    - ✅ 5 catégories avancées (Frontend Advanced, Backend Advanced, Architecture, DevOps)
@@ -512,7 +512,7 @@ DevOps
 ### Option 4 : API endpoint
 
 ```bash
-curl https://chetana.dev/api/skills | jq .
+curl https://chetana.fr/api/skills | jq .
 ```
 
 **Response** :
@@ -715,7 +715,7 @@ grep DATABASE_URL .env.local | head -c 50
 - [ ] Catégories sont les bonnes
 - [ ] `npm run build` réussit
 - [ ] Push to main → Vercel build starts
-- [ ] Vérifier https://chetana.dev/ après ~2-3 min
+- [ ] Vérifier https://chetana.fr/ après ~2-3 min
 - [ ] Skills visibles sur le site live
 
 ---

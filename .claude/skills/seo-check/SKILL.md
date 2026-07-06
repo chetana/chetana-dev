@@ -10,27 +10,27 @@ Run a full SEO audit on the live site.
 
 ## Checks to perform
 
-1. **Homepage** (`https://chetana.dev`)
+1. **Homepage** (`https://chetana.fr`)
    - Verify og:title, og:description, og:type present
    - Verify twitter:card, twitter:title, twitter:description
    - Verify JSON-LD: Person, WebSite, WebPage schemas
    - Verify `<html lang="fr">` (or "en")
    - Verify all content sections render (no 500 errors)
 
-2. **Blog post** (`https://chetana.dev/blog/claude-code-equipe-engineering`)
+2. **Blog post** (`https://chetana.fr/blog/claude-code-equipe-engineering`)
    - Verify og:type = "article"
    - Verify JSON-LD BlogPosting schema with datePublished, author
    - Verify dynamic title and description
 
-3. **CV page** (`https://chetana.dev/cv`)
+3. **CV page** (`https://chetana.fr/cv`)
    - Verify `<meta name="robots" content="noindex, nofollow">`
 
-4. **Sitemap** (`https://chetana.dev/sitemap.xml`)
+4. **Sitemap** (`https://chetana.fr/sitemap.xml`)
    - List all URLs
    - Verify dynamic blog/project slugs are included
    - Verify /cv is excluded or present (acceptable either way)
 
-5. **robots.txt** (`https://chetana.dev/robots.txt`)
+5. **robots.txt** (`https://chetana.fr/robots.txt`)
    - Verify it allows crawling
    - Verify it references the sitemap
 

@@ -46,7 +46,7 @@ export default defineNuxtConfig({
   },
   css: ['~/assets/css/main.css', 'leaflet/dist/leaflet.css'],
   site: {
-    url: 'https://chetana.dev',
+    url: 'https://chetana.fr',
     name: 'Chetana YIN',
     description: 'Engineering Manager & hands-on tech lead avec 13 ans d\'exp\u00e9rience. Portfolio, projets et blog technique.',
     defaultLocale: 'fr'
@@ -75,7 +75,7 @@ export default defineNuxtConfig({
   },
   routeRules: {
     '/cv': { robots: false },
-    '/projects/health': { redirect: { to: 'https://pushup.chetana.dev', statusCode: 301 } }
+    '/projects/health': { redirect: { to: 'https://pushup.chetana.fr', statusCode: 301 } }
   },
   nitro: {
     // Scaleway (container) = node-server ; Vercel (transition/redirect) = vercel
@@ -96,7 +96,7 @@ export default defineNuxtConfig({
     gcsServiceAccountJson: process.env.GCS_SERVICE_ACCOUNT_JSON || '',
     rawgApiKey: process.env.RAWG_API_KEY || '',
     tmdbApiKey: process.env.TMDB_API_KEY || '',
-    chetakuApiUrl: process.env.CHETAKU_API_URL || 'https://chetaku-rs-267131866578.europe-west1.run.app',
+    chetakuApiUrl: process.env.CHETAKU_API_URL || 'https://chetaku.chetana.fr',
     chetakuApiKey: process.env.CHETAKU_API_KEY || '',
     medialistOwnerEmail: process.env.MEDIALIST_OWNER_EMAIL || '',
     public: {

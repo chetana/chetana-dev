@@ -53,8 +53,8 @@ puis 4 en phase 2. **Ne PAS couper Vercel avant propagation DNS complète.**
 - Nuxt `^3.16`, `future.compatibilityVersion: 4`, modules `@nuxtjs/seo` + `@vite-pwa/nuxt`.
 - **Nitro preset actuel : `vercel`** (`nuxt.config.ts`).
 - PWA (`registerType: autoUpdate`, `push-sw.js`), push VAPID.
-- `site.url: 'https://chetana.dev'` (à changer → chetana.fr).
-- `routeRules` : `/projects/health` → 301 vers `https://pushup.chetana.dev` (⚠️ sous-domaine à reconsidérer).
+- `site.url: 'https://chetana.fr'` (à changer → chetana.fr).
+- `routeRules` : `/projects/health` → 301 vers `https://pushup.chetana.fr` (⚠️ sous-domaine à reconsidérer).
 
 ### Base de données — Neon
 - Driver : **`@neondatabase/serverless` + `drizzle-orm/neon-http`** (HTTP, propriétaire Neon).
@@ -251,7 +251,7 @@ scw container container create \
      })
      ```
 4. `nuxt.config.ts` → `site.url: 'https://chetana.fr'` (SEO / sitemap `/api/__sitemap__/urls` / OG).
-5. Reconsidérer `/projects/health` → `pushup.chetana.dev` (sous-domaine à re-router vers `.fr` ?).
+5. Reconsidérer `/projects/health` → `pushup.chetana.fr` (sous-domaine à re-router vers `.fr` ?).
 
 ---
 
@@ -300,7 +300,7 @@ Deux stratégies :
 - [ ] de-GCP maintenant (phase 4 en même temps) ou **phase 2** après sortie Vercel+Neon (reco) ?
 - [ ] Gemini/Imagen : passer sur **Google AI Studio API key** (garde les modèles, sort de l'infra GCP)
       ou basculer sur **Scaleway Generative APIs** (change de modèles) ?
-- [ ] Sous-domaine `pushup.chetana.dev` : re-router vers `.fr` ou garder ?
+- [ ] Sous-domaine `pushup.chetana.fr` : re-router vers `.fr` ou garder ?
 
 ---
 

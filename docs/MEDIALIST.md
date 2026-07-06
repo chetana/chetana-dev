@@ -36,7 +36,7 @@ admin.chetana.dev (React/Express)
 
 Service Rust hébergé sur Cloud Run (`europe-west1`). Voir le [README de chetaku-rs](https://github.com/chetana/chetaku-rs) et sa [documentation API](https://github.com/chetana/chetaku-rs/blob/main/docs/API.md).
 
-URL : `https://chetaku-rs-267131866578.europe-west1.run.app`
+URL : `https://chetaku.chetana.fr`
 
 ## Endpoints côté Nuxt
 
@@ -315,7 +315,7 @@ interface Stats {
 
 | Variable | Description |
 |---|---|
-| `CHETAKU_API_URL` | URL de chetaku-rs (défaut: `https://chetaku-rs-267131866578.europe-west1.run.app`) |
+| `CHETAKU_API_URL` | URL de chetaku-rs (défaut: `https://chetaku.chetana.fr`) |
 | `CHETAKU_API_KEY` | Clé secrète partagée avec chetaku-rs (`x-api-key` header) |
 | `MEDIALIST_OWNER_EMAIL` | Email Google autorisé à ajouter/supprimer des entrées |
 | `RAWG_API_KEY` | Clé API rawg.io (passée à chetaku-rs pour la sync jeux) |

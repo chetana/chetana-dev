@@ -137,7 +137,7 @@ Les tables Neon gérées par chetana-dev (Drizzle) :
 - **comments** — Commentaires sur les articles (moderes)
 - **messages** — Messages de contact (formulaire)
 
-> Les données portfolio (blog_posts, projects, experiences, skills, media_entries) sont gérées par **chetaku-rs** (`api.chetana.dev`). Le suivi de pompes (health_entries, push_subscriptions) est géré par **pushup-tracker** (`pushup.chetana.dev`).
+> Les données portfolio (blog_posts, projects, experiences, skills, media_entries) sont gérées par **chetaku-rs** (`chetaku.chetana.fr`). Le suivi de pompes (health_entries, push_subscriptions) est géré par **pushup-tracker** (`pushup.chetana.fr`).
 
 > Voir [DATABASE.md](DATABASE.md) pour le schema detaille, les routes API et les scripts de seed.
 
@@ -178,7 +178,7 @@ Le client principal est une app Android native. Les sessions/cookies sont pensee
 ## Flux de donnees
 
 1. **SSR** : Nuxt effectue le rendu cote serveur. Les pages appellent `useFetch()` qui hit les API routes.
-2. **API Routes portfolio** (`/api/blog`, `/api/projects`, `/api/experiences`, `/api/skills`) : Ces routes proxient vers `api.chetana.dev` (chetaku-rs) via `$fetch`. Les réponses snake_case sont converties en camelCase pour les composants Vue (ex : `date_start → dateStart`, `role_fr → roleFr`).
+2. **API Routes portfolio** (`/api/blog`, `/api/projects`, `/api/experiences`, `/api/skills`) : Ces routes proxient vers `chetaku.chetana.fr` (chetaku-rs) via `$fetch`. Les réponses snake_case sont converties en camelCase pour les composants Vue (ex : `date_start → dateStart`, `role_fr → roleFr`).
 3. **API Routes publiques directes** (`/api/comments`, `/api/messages`) : Utilisent `getDB()` → Drizzle → Neon.
 4. **API Routes protegees** : Les endpoints coffre/chat/medialist/imagenie appellent `requireAuth(event)` en debut de handler.
 5. **Neon** : Connexion HTTP (pas de pool TCP), ideal pour serverless.
@@ -274,7 +274,7 @@ La médiathèque a été déplacée de `/projects/medialist` vers `/passions/med
 
 - Fichiers : `app/pages/passions/medialist/index.vue` + `[slug].vue`
 - Back-links dans les pages détail pointent vers `/passions` (← Passions)
-- L'ancien slug `/projects/medialist` dans la DB pointe désormais vers `demoUrl: https://chetana.dev/passions/medialist`
+- L'ancien slug `/projects/medialist` dans la DB pointe désormais vers `demoUrl: https://chetana.fr/passions/medialist`
 - La route `/projects/[slug].vue` sert désormais le rendu d'articles projet depuis la DB
 
 ### Pages Strava (Vélo / Natation / Course)
@@ -282,7 +282,7 @@ La médiathèque a été déplacée de `/projects/medialist` vers `/passions/med
 Les pages `/passions/velo`, `/passions/natation` et `/passions/course` appellent **directement** l'API chetaku-rs depuis le client (pas de proxy Nuxt) :
 
 ```typescript
-const API_BASE = 'https://chetaku-rs-267131866578.europe-west1.run.app'
+const API_BASE = 'https://chetaku.chetana.fr'
 const { data: stats } = useFetch(`${API_BASE}/strava/stats?sport=cycling`)
 const { data: activities } = useFetch(`${API_BASE}/strava/activities?sport=cycling`)
 ```
@@ -344,20 +344,20 @@ Deux niveaux :
 
 ### pushup-tracker (Nuxt — Cloud Run)
 
-Suivi quotidien de pompes extrait dans un service dédié. Exposé via `pushup.chetana.dev`.
+Suivi quotidien de pompes extrait dans un service dédié. Exposé via `pushup.chetana.fr`.
 
-- **URL** : `https://pushup.chetana.dev` (alias de `pushup-tracker-267131866578.europe-west1.run.app`)
+- **URL** : `https://pushup.chetana.fr` (alias de `pushup-tracker-267131866578.europe-west1.run.app`)
 - **Repo** : `pushup-tracker` — Nuxt 3, node-server preset, Cloud Run europe-west1
 - **DB** : tables `users`, `health_entries`, `push_subscriptions` dans le même Neon PostgreSQL
 - **Auth** : Google OAuth (même flow Bearer token)
 - **Notifications push** : web-push + Cloud Scheduler (4x/jour)
-- **Redirect** : `chetana.dev/projects/health` → 301 vers `pushup.chetana.dev`
+- **Redirect** : `chetana.dev/projects/health` → 301 vers `pushup.chetana.fr`
 
 ### chetaku-rs (Rust/Axum — Cloud Run)
 
-Service dédié au portfolio, à la médiathèque et aux activités sportives Strava, hébergé sur Cloud Run (`europe-west1`). Exposé publiquement via le domaine `api.chetana.dev`.
+Service dédié au portfolio, à la médiathèque et aux activités sportives Strava, hébergé sur Cloud Run (`europe-west1`). Exposé publiquement via le domaine `chetaku.chetana.fr`.
 
-- **URL** : `https://chetaku-rs-267131866578.europe-west1.run.app` (alias `api.chetana.dev`)
+- **URL** : `https://chetaku.chetana.fr` (alias `chetaku.chetana.fr`)
 - **Auth** : header `x-api-key` sur les endpoints d'écriture
 - **DB** : tables `blog_posts`, `projects`, `experiences`, `skills`, `media_entries`, `strava_activities`, `stats_cache` dans Neon PostgreSQL
 - **Sources** : Jikan (MyAnimeList), RAWG (jeux), TMDB (films/séries), Strava API v3
