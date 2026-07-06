@@ -1,4 +1,4 @@
-const API = 'https://api.chetana.dev'
+const API = 'https://chetaku.chetana.fr'
 
 export default defineEventHandler(async (event) => {
   const postId = getRouterParam(event, 'postId')

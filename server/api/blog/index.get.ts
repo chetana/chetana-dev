@@ -1,4 +1,4 @@
-const API = 'https://api.chetana.dev'
+const API = 'https://chetaku.chetana.fr'
 
 type BlogRaw = {
   id: number; slug: string; title_fr: string; title_en: string; title_km?: string

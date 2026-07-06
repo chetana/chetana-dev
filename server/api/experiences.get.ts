@@ -1,4 +1,4 @@
-const API = 'https://api.chetana.dev'
+const API = 'https://chetaku.chetana.fr'
 
 type ExperienceRaw = {
   id: number; company: string; role_fr: string; role_en: string; role_km?: string

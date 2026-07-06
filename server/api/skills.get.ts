@@ -1,4 +1,4 @@
-const API = 'https://api.chetana.dev'
+const API = 'https://chetaku.chetana.fr'
 
 type Skill = { id: number; category: string; name: string; color: string | null; sort_order: number | null }
 
