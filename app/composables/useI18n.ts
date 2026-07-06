@@ -43,6 +43,11 @@ const translations: Record<string, Record<string, string>> = {
     en: "Before management, I spent 10 years hands-on in code: mobile at miLibris, banking apps at BNP Paribas, checkout flow at Galeries Lafayette. My technical background is my greatest asset as a manager: I understand my devs' problems because I live them with them.",
     km: "មុនពេលដឹកនាំ ខ្ញុំបានចំណាយ ១០ ឆ្នាំក្នុងកូដ៖ mobile នៅ miLibris កម្មវិធីធនាគារនៅ BNP Paribas លំហូរទិញនៅ Galeries Lafayette។ សាវតាបច្ចេកទេសរបស់ខ្ញុំជាទ្រព្យសម្បត្តិធំបំផុតក្នុងការដឹកនាំ៖ ខ្ញុំយល់ពីបញ្ហារបស់ devs របស់ខ្ញុំព្រោះខ្ញុំរស់ជាមួយពួកគេ។"
   },
+  'about.p4': {
+    fr: "Aujourd'hui, je suis en transition vers le lead technique d'un projet d'IA ambitieux : une plateforme d'automatisation commerciale B2B propulsée par des pipelines LLM. C'est la suite logique de mon virage AI-augmented — passer de l'outillage de l'équipe à un véritable produit d'intelligence artificielle.",
+    en: "Today, I'm transitioning toward the technical lead of an ambitious AI project: a B2B commercial automation platform powered by LLM pipelines. It's the logical next step of my AI-augmented shift — moving from tooling the team to building a real artificial-intelligence product.",
+    km: "សព្វថ្ងៃ ខ្ញុំកំពុងផ្លាស់ប្ដូរឆ្ពោះទៅជា lead technique នៃគម្រោង AI ដ៏មានមហិច្ឆតា៖ វេទិកាស្វ័យប្រវត្តិកម្មពាណិជ្ជកម្ម B2B ដំណើរការដោយ pipelines LLM។ នេះជាជំហានបន្ទាប់នៃការផ្លាស់ប្ដូរ AI-augmented របស់ខ្ញុំ។"
+  },
   'about.hl1.title': { fr: 'Plateforme e-commerce B2B', en: 'B2B E-commerce Platform', km: 'វេទិកា E-commerce B2B' },
   'about.hl1.desc': {
     fr: "Architecture modulaire (15+ modules), multi-tenant, multi-PSP, gérant des millions de transactions pour des clients comme Franprix, Eiffage (Blueon), VEJA",

@@ -32,6 +32,7 @@
           <p><strong>{{ locale === 'fr' ? 'Je ne suis pas le manager qui regarde des dashboards.' : "I'm not the manager who stares at dashboards." }}</strong> {{ t('about.p1').replace(/^[^.]+\.\s*/, '') }}</p>
           <p v-html="t('about.p2')" />
           <p>{{ t('about.p3') }}</p>
+          <p v-html="t('about.p4')" />
         </div>
         <div class="about-highlights">
           <div v-for="i in 4" :key="i" class="highlight">
