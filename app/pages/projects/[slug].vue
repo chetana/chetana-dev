@@ -2,24 +2,28 @@
   <div class="section" style="padding-top: 8rem;">
     <NuxtLink to="/projects" class="back-link">← {{ t('nav.projects') }}</NuxtLink>
 
-    <div v-if="project">
-      <h1>{{ localeField(project, 'title') }}</h1>
-
-      <div class="tags" style="margin: 1.5rem 0;">
-        <span v-for="tag in (project.tags || [])" :key="tag" class="tag">{{ tag }}</span>
-      </div>
+    <article v-if="project" class="project-detail">
+      <header class="project-head">
+        <span v-if="typeLabel" class="project-kicker">{{ typeLabel }}</span>
+        <h1>{{ localeField(project, 'title') }}</h1>
+        <div class="tags">
+          <span v-for="tag in (project.tags || [])" :key="tag" class="tag">{{ tag }}</span>
+        </div>
+      </header>
 
       <div class="project-content" v-html="renderedDescription" />
 
-      <div class="project-actions">
-        <a v-if="project.demoUrl" :href="project.demoUrl" target="_blank" class="btn btn-primary">
-          {{ t('projects.demo') }} →
-        </a>
-        <a v-if="project.githubUrl" :href="project.githubUrl" target="_blank" class="btn btn-outline">
-          {{ t('projects.github') }}
-        </a>
+      <div class="project-cta">
+        <div class="project-actions">
+          <a v-if="project.demoUrl" :href="project.demoUrl" target="_blank" rel="noopener" class="btn btn-primary">
+            {{ t('projects.demo') }} →
+          </a>
+          <a v-if="project.githubUrl" :href="project.githubUrl" target="_blank" rel="noopener" class="btn btn-outline">
+            {{ t('projects.github') }}
+          </a>
+        </div>
       </div>
-    </div>
+    </article>
 
     <div v-else class="empty">
       {{ locale === 'fr' ? 'Projet introuvable.' : 'Project not found.' }}
@@ -36,6 +40,18 @@ const { data: project } = await useFetch(`/api/projects/${route.params.slug}`)
 const projectTitle = computed(() => {
   if (!project.value) return 'Projet'
   return localeField(project.value, 'title')
+})
+
+const typeLabel = computed(() => {
+  const type = project.value?.projectType
+  if (!type) return ''
+  const labels: Record<string, { fr: string; en: string }> = {
+    'side-project': { fr: 'Projet personnel', en: 'Personal project' },
+    'pro': { fr: 'Projet professionnel', en: 'Professional project' },
+    'oss': { fr: 'Open source', en: 'Open source' }
+  }
+  const l = labels[type]
+  return l ? (locale.value === 'en' ? l.en : l.fr) : type
 })
 
 const projectDescription = computed(() => {
@@ -123,9 +139,33 @@ useSeoMeta({
   margin-bottom: 2rem;
 }
 
-h1 { font-size: 2rem; margin-bottom: 1rem; }
+.project-detail { max-width: 820px; }
 
-.project-content { color: var(--text-muted); line-height: 1.8; margin-bottom: 2rem; max-width: 800px; }
+.project-head {
+  padding-bottom: 1.75rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.project-kicker {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+  margin-bottom: 0.9rem;
+}
+h1 { font-size: 2.4rem; line-height: 1.15; margin-bottom: 1.4rem; }
+.project-head .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; }
+
+.project-content { color: var(--text-muted); line-height: 1.85; margin-bottom: 2rem; max-width: 800px; }
+/* Lead paragraph — mise en avant de l'intro */
+.project-content :deep(> p:first-child) {
+  font-size: 1.22rem;
+  line-height: 1.65;
+  color: var(--text);
+  margin-bottom: 1.75rem;
+}
 .project-content :deep(h2) { color: var(--text); font-size: 1.4rem; margin: 2rem 0 1rem; }
 .project-content :deep(h3) { color: var(--text); font-size: 1.2rem; margin: 1.5rem 0 0.8rem; }
 .project-content :deep(p) { margin-bottom: 1rem; }
@@ -179,7 +219,17 @@ h1 { font-size: 2rem; margin-bottom: 1rem; }
   font-weight: 600;
 }
 
+.project-cta {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
 .project-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
 
 .empty { color: var(--text-dim); text-align: center; padding: 4rem; }
+
+@media (max-width: 640px) {
+  h1 { font-size: 1.8rem; }
+  .project-content :deep(> p:first-child) { font-size: 1.1rem; }
+}
 </style>

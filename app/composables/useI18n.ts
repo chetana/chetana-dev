@@ -80,7 +80,7 @@ const translations: Record<string, Record<string, string>> = {
 
   // AI Section
   'ai.p1': {
-    fr: "Pas juste utilisatrice d'outils IA — je conçois et déploie une stack IA locale, souveraine et intégrée dans chaque étape du cycle de dev. 63 custom skills Claude Code, 15 MCP servers, 9 agents spécialisés, 11 hooks — le tout versionné sur GitHub. Toute la stack tourne on-device sur GPU/NPU AMD : aucune donnée propriétaire ne sort de la machine.",
+    fr: "Pas juste utilisateur d'outils IA — je conçois et déploie une stack IA locale, souveraine et intégrée dans chaque étape du cycle de dev. 63 custom skills Claude Code, 15 MCP servers, 9 agents spécialisés, 11 hooks — le tout versionné sur GitHub. Toute la stack tourne on-device sur GPU/NPU AMD : aucune donnée propriétaire ne sort de la machine.",
     en: "Not just an AI tool user — I design and deploy a sovereign, local AI stack integrated into every stage of the dev cycle. 63 custom Claude Code skills, 15 MCP servers, 9 specialized agents, 11 hooks — all versioned on GitHub. The entire stack runs on-device on AMD GPU/NPU: zero proprietary data leaves the machine.",
     km: "មិនមែនគ្រាន់តែប្រើឧបករណ៍ AI ទេ — ខ្ញុំរចនា និងដាក់ពង្រាយ stack AI មូលដ្ឋាន អធិបតេយ្យ និងរួមបញ្ចូលក្នុងរាល់ដំណាក់កាលនៃវដ្តអភិវឌ្ឍន៍។ 63 custom skills 15 MCP servers 9 agents 11 hooks — ទាំងអស់ versioned នៅ GitHub។ Stack ទាំងមូលដំណើរការនៅលើ GPU/NPU AMD៖ សូន្យទិន្នន័យចេញពីម៉ាស៊ីន។"
   },
