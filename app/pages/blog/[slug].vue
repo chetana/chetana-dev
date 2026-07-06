@@ -135,7 +135,7 @@ if (post.value) {
       dateModified: post.value.updatedAt || post.value.createdAt,
       author: {
         name: 'Chetana YIN',
-        url: 'https://chetana.dev'
+        url: 'https://chetana.fr'
       }
     })
   ])

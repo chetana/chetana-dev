@@ -21,7 +21,7 @@ useSchemaOrg([
   definePerson({
     name: 'Chetana YIN',
     jobTitle: 'Engineering Manager',
-    url: 'https://chetana.dev',
+    url: 'https://chetana.fr',
     sameAs: [
       'https://www.linkedin.com/in/chetana-yin-79b36754/'
     ]
