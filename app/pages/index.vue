@@ -85,10 +85,6 @@
             <div class="ai-metric-label">{{ t('ai.m3') }}</div>
           </div>
           <div class="ai-metric">
-            <div class="ai-metric-value">10k+</div>
-            <div class="ai-metric-label">{{ t('ai.m5') }}</div>
-          </div>
-          <div class="ai-metric">
             <div class="ai-metric-value">0</div>
             <div class="ai-metric-label">{{ t('ai.m4') }}</div>
           </div>

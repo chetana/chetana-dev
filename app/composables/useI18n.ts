@@ -90,14 +90,13 @@ const translations: Record<string, Record<string, string>> = {
     km: "មិនមែនគ្រាន់តែប្រើឧបករណ៍ AI ទេ — ខ្ញុំរចនា និងដាក់ពង្រាយ stack AI មូលដ្ឋាន អធិបតេយ្យ និងរួមបញ្ចូលក្នុងរាល់ដំណាក់កាលនៃវដ្តអភិវឌ្ឍន៍។ 63 custom skills 15 MCP servers 9 agents 11 hooks — ទាំងអស់ versioned នៅ GitHub។ Stack ទាំងមូលដំណើរការនៅលើ GPU/NPU AMD៖ សូន្យទិន្នន័យចេញពីម៉ាស៊ីន។"
   },
   'ai.p2': {
-    fr: "Prévention (contexte Mempalace injecté avant de coder), détection (quality gate post-commit en < 5s), review (pré-analyse LLM avant code review humain). Mon équipe de 6 utilise désormais l'IA au quotidien : code reviews, tests E2E, briefings MEP, analyse d'incidents — +40% productivité mesurée.",
-    en: "Prevention (Mempalace context injected before coding), detection (post-commit quality gate in < 5s), review (LLM pre-analysis before human code review). My team of 6 now uses AI daily: code reviews, E2E tests, deployment briefings, incident analysis — +40% measured productivity.",
-    km: "ការបង្ការ (Mempalace context មុនសរសេរកូដ) ការរកឃើញ (quality gate post-commit ក្នុង < 5s) review (ការវិភាគ LLM មុន code review មនុស្ស)។ ក្រុម ៦ នាក់របស់ខ្ញុំប្រើ AI ប្រចាំថ្ងៃ៖ code reviews tests E2E briefings MEP ការវិភាគ incidents — +40% ផលិតភាព។"
+    fr: "Prévention (contexte projet injecté avant de coder), détection (quality gate post-commit en < 5s), review (pré-analyse LLM avant code review humain). Mon équipe de 6 utilise désormais l'IA au quotidien : code reviews, tests E2E, briefings MEP, analyse d'incidents — +40% productivité mesurée.",
+    en: "Prevention (project context injected before coding), detection (post-commit quality gate in < 5s), review (LLM pre-analysis before human code review). My team of 6 now uses AI daily: code reviews, E2E tests, deployment briefings, incident analysis — +40% measured productivity.",
+    km: "ការបង្ការ (contexte project មុនសរសេរកូដ) ការរកឃើញ (quality gate post-commit ក្នុង < 5s) review (ការវិភាគ LLM មុន code review មនុស្ស)។ ក្រុម ៦ នាក់របស់ខ្ញុំប្រើ AI ប្រចាំថ្ងៃ៖ code reviews tests E2E briefings MEP ការវិភាគ incidents — +40% ផលិតភាព។"
   },
   'ai.m2': { fr: 'MCP servers intégrés', en: 'Integrated MCP servers', km: 'MCP servers រួមបញ្ចូល' },
   'ai.m3': { fr: "Devs de l'équipe formés", en: 'Team devs trained', km: 'Devs ក្នុងក្រុមបានបណ្តុះបណ្តាល' },
   'ai.m4': { fr: 'Inference 100% on-device', en: '100% on-device inference', km: 'Inference 100% នៅលើម៉ាស៊ីន' },
-  'ai.m5': { fr: 'Drawers indexés (Mempalace)', en: 'Indexed drawers (Mempalace)', km: 'Drawers បានដាក់សន្ទស្សន៍ (Mempalace)' },
 
   // Education
   'edu.label': { fr: 'Formation', en: 'Education', km: 'ការអប់រំ' },

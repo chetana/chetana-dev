@@ -39,8 +39,6 @@ const experiencesData = [
       "AI-augmented development : 63 custom skills Claude Code (19 perso + 43 djust + review), 9 sous-agents spécialisés, 11 hooks (4 djust + 7 perso), 15 MCP servers (Jira, Notion, Slack, Grafana, PostgreSQL, Adyen, Sentry), workspace AI versionné sur GitHub, 6/6 membres formés — +40% productivité sur reviews et tests",
       "<strong>Stack IA locale souveraine</strong> : Ollama + qwen2.5-coder:7b sur AMD Ryzen AI 9 HX PRO 370 (GPU Radeon 890M RDNA3 + NPU XDNA2) — 100% GPU inference, zéro cloud, zéro token externe, zéro latence réseau ; nomic-embed-text pour embeddings sémantiques locaux",
       "<strong>Quality gate hybride post-commit</strong> : hook multi-langage (Java, Python, JavaScript/k6) sur 10 repos — grep déterministe + LLM local (violations sémantiques) — détection en < 5s : var keyword, @Autowired, enum DTO, print() vs logging, secrets hardcodés",
-      "<strong>Mempalace</strong> — base de connaissance sémantique offline : ChromaDB + MiniLM-L6, 10 000+ drawers indexés (conversations Claude, codebase, snapshots Jira + Slack, vault Obsidian) — recherche vectorielle 100% locale, contexte injecté automatiquement avant chaque ticket",
-      "<strong>Pipeline mémoire automatisé</strong> : snapshots Jira + Slack → ChromaDB (cron hebdomadaire), daily notes enrichies (Jira en cours + mentions Slack), weekly review auto chaque vendredi 16h, Obsidian PARA intégré avec sauvegarde automatique par action",
       "<strong>Outillage CLI local basé sur LLM</strong> : gcm (commit messages depuis git diff, format DJ-XXXX auto-détecté), dlogs (pré-filtre logs Spring Boot, 62k lignes → résumé en 10s), dsql (optimiseur SQL PostgreSQL), dtest (générateur squelettes tests), Continue.dev (complétion inline VSCode sur Ollama local)"
     ],
     bulletsEn: [
@@ -55,8 +53,6 @@ const experiencesData = [
       "AI-augmented development: 63 custom Claude Code skills (19 personal + 43 djust + review), 9 specialized sub-agents, 11 hooks (4 djust + 7 personal), 15 MCP servers (Jira, Notion, Slack, Grafana, PostgreSQL, Adyen, Sentry), versioned AI workspace on GitHub, 6/6 team members trained — +40% productivity on reviews and tests",
       "<strong>Sovereign local AI stack</strong>: Ollama + qwen2.5-coder:7b on AMD Ryzen AI 9 HX PRO 370 (GPU Radeon 890M RDNA3 + NPU XDNA2) — 100% GPU inference, zero cloud, zero external tokens, zero network latency; nomic-embed-text for local semantic embeddings",
       "<strong>Hybrid post-commit quality gate</strong>: multi-language hook (Java, Python, JavaScript/k6) across 10 repos — deterministic grep + local LLM (semantic violations) — detection in < 5s: var keyword, @Autowired, enum DTO, print() vs logging, hardcoded secrets",
-      "<strong>Mempalace</strong> — offline semantic knowledge base: ChromaDB + MiniLM-L6, 10,000+ indexed drawers (Claude conversations, codebase, Jira + Slack snapshots, Obsidian vault) — 100% local vector search, context auto-injected before each ticket",
-      "<strong>Automated memory pipeline</strong>: Jira + Slack snapshots → ChromaDB (weekly cron), enriched daily notes (active Jira + Slack mentions), automated weekly review every Friday 4pm, integrated Obsidian PARA with auto-save per action",
       "<strong>LLM-powered local CLI tooling</strong>: gcm (commit messages from git diff, DJ-XXXX format auto-detected), dlogs (Spring Boot log pre-filter, 62k lines → summary in 10s), dsql (PostgreSQL SQL optimizer), dtest (test skeleton generator), Continue.dev (VSCode inline completion on local Ollama)"
     ],
     bulletsKm: [
@@ -71,8 +67,6 @@ const experiencesData = [
       "AI-augmented development៖ 63 custom skills 9 sous-agents 11 hooks 15 MCP servers workspace AI versioned នៅ GitHub 6/6 សមាជិកបានបណ្តុះបណ្តាល — +40% ផលិតភាព",
       "<strong>Stack IA មូលដ្ឋានអធិបតេយ្យ</strong>៖ Ollama + qwen2.5-coder:7b នៅលើ AMD Ryzen AI 9 — 100% GPU inference សូន្យ cloud សូន្យ token ខាងក្រៅ សូន្យ latency បណ្តាញ",
       "<strong>Quality gate កូនកាត់ post-commit</strong>៖ hook ពហុភាសា (Java Python JavaScript/k6) លើ 10 repos — grep + LLM មូលដ្ឋាន — រកឃើញក្នុង < 5s",
-      "<strong>Mempalace</strong> — មូលដ្ឋានចំណេះដឹង offline៖ ChromaDB + MiniLM-L6 ១០០០០+ drawers (Claude codebase Jira Slack Obsidian) — ស្វែងរក vectorielle 100% មូលដ្ឋាន",
-      "<strong>Pipeline មេម៉ូរីស្វ័យប្រវត្តិ</strong>៖ snapshots Jira + Slack → ChromaDB (cron ប្រចាំសប្តាហ៍) daily notes weekly review រៀងរាល់សុក្រ 16h Obsidian PARA រួមបញ្ចូល",
       "<strong>ឧបករណ៍ CLI មូលដ្ឋានផ្អែកលើ LLM</strong>៖ gcm (commit messages) dlogs (logs Spring Boot ៦២០០០ បន្ទាត់ → សង្ខេបក្នុង 10s) dsql (SQL optimizer) dtest (test generator) Continue.dev"
     ],
     sortOrder: 1
@@ -181,8 +175,7 @@ const skillsData = [
   { category: 'Local AI Infrastructure', name: 'nomic-embed-text / MiniLM-L6', color: 'cyan', sortOrder: 3 },
   { category: 'Local AI Infrastructure', name: 'Continue.dev (Ollama)', color: 'cyan', sortOrder: 4 },
   { category: 'Local AI Infrastructure', name: 'AMD NPU/GPU inference', color: 'cyan', sortOrder: 5 },
-  { category: 'Local AI Infrastructure', name: 'Mempalace (10k+ drawers)', color: 'cyan', sortOrder: 6 },
-  { category: 'Local AI Infrastructure', name: 'Quality gate hybride', color: 'cyan', sortOrder: 7 },
+  { category: 'Local AI Infrastructure', name: 'Quality gate hybride', color: 'cyan', sortOrder: 6 },
   { category: 'Local AI Infrastructure', name: 'CLI tools (gcm, dlogs, dsql, dtest)', color: 'cyan', sortOrder: 8 },
 ]
 
