@@ -74,7 +74,21 @@ export default defineNuxtConfig({
     }
   },
   routeRules: {
-    '/cv': { robots: false },
+    // Cache du contenu public (change rarement) : servi depuis le cache, ne réveille
+    // chetaku-rs + la base Serverless SQL qu'au pire ~1×/h/route au lieu d'à chaque
+    // visite/crawler. stale-while-revalidate = revalidation en arrière-plan (zéro
+    // staleness ressentie). Économie : coupe la chaîne chetana-dev→chetaku-rs→SQL.
+    '/': { swr: 3600 },
+    '/blog': { swr: 3600 },
+    '/blog/**': { swr: 3600 },
+    '/projects': { swr: 3600 },
+    '/projects/**': { swr: 3600 },
+    '/passions/**': { swr: 3600 },
+    '/cv': { robots: false, swr: 3600 },
+    '/api/blog/**': { swr: 3600 },
+    '/api/projects/**': { swr: 3600 },
+    '/api/skills': { swr: 3600 },
+    '/api/experiences': { swr: 3600 },
     '/projects/health': { redirect: { to: 'https://pushup.chetana.fr', statusCode: 301 } }
   },
   nitro: {
