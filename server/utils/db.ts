@@ -11,7 +11,7 @@ export function getDB() {
   if (!_db) {
     const config = useRuntimeConfig()
     const dbUrl = config.databaseUrl || process.env.DATABASE_URL || ''
-    _pool = new Pool({ connectionString: dbUrl, max: 3 })
+    _pool = new Pool({ connectionString: dbUrl, max: 3, idleTimeoutMillis: 5_000, allowExitOnIdle: true })
     _pool.on('connect', (client) => { client.query('SET search_path TO public') })
     _db = drizzle(_pool, { schema })
   }

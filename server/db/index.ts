@@ -9,7 +9,7 @@ let _pool: Pool | null = null
 export function useDB() {
   if (!_pool) {
     const config = useRuntimeConfig()
-    _pool = new Pool({ connectionString: config.databaseUrl, max: 3 })
+    _pool = new Pool({ connectionString: config.databaseUrl, max: 3, idleTimeoutMillis: 5_000, allowExitOnIdle: true })
     _pool.on('connect', (client) => { client.query('SET search_path TO public') })
   }
   return drizzle(_pool, { schema })
