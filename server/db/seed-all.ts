@@ -18,7 +18,6 @@ const seeds = [
 
   // 2. Projets additionnels
   // ⚠️  seed-health.ts est EXCLU intentionnellement — il efface les vraies données utilisateur
-  'seed-imagenie.ts',
   'seed-babelduo.ts',
 
   // 3. Articles de blog (remplacent les stubs ou en ajoutent de nouveaux)
