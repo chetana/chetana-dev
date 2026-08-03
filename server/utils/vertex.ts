@@ -214,12 +214,13 @@ export interface ChatResult {
 export async function geminiChatWithSearch(
   messages: ChatMessage[],
   systemInstruction: string,
+  opts: { enableSearch?: boolean; maxOutputTokens?: number } = {},
 ): Promise<ChatResult> {
+  const enableSearch = opts.enableSearch ?? true
+  const maxOutputTokens = opts.maxOutputTokens ?? 1024
   const token = await getAccessToken()
   const project = process.env.VERTEX_PROJECT_ID ?? 'cykt-399216'
   const location = process.env.VERTEX_LOCATION ?? 'us-central1'
-  // Google Search grounding requires gemini-2.5-flash (not available on 3.x yet)
-  const model = 'gemini-2.5-flash'
 
   const contents = messages.map(m => ({ role: m.role, parts: [{ text: m.content }] }))
 
@@ -227,13 +228,19 @@ export async function geminiChatWithSearch(
     systemInstruction: { parts: [{ text: systemInstruction }] },
     contents,
     ...(withSearch ? { tools: [{ googleSearch: {} }] } : {}),
-    generationConfig: { temperature: 0.7, maxOutputTokens: 1024, thinkingConfig: { thinkingBudget: 0 } },
+    generationConfig: { temperature: 0.7, maxOutputTokens, thinkingConfig: { thinkingBudget: 0 } },
   })
 
-  const endpoint = geminiEndpoint(project, model, location)
+  // Search grounding => gemini-2.5-flash (le lite ne supporte pas googleSearch).
+  // Sans search => lite d'abord (moins cher), fallback flash s'il est indispo sur la région.
+  const attempts: { model: string; withSearch: boolean }[] = enableSearch
+    ? [{ model: 'gemini-2.5-flash', withSearch: true }, { model: 'gemini-2.5-flash', withSearch: false }]
+    : [{ model: 'gemini-2.5-flash-lite', withSearch: false }, { model: 'gemini-2.5-flash', withSearch: false }]
 
-  for (const withSearch of [true, false]) {
-    const res = await fetch(endpoint, {
+  for (let i = 0; i < attempts.length; i++) {
+    const { model, withSearch } = attempts[i]
+    const isLast = i === attempts.length - 1
+    const res = await fetch(geminiEndpoint(project, model, location), {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(makeBody(withSearch)),
@@ -241,8 +248,8 @@ export async function geminiChatWithSearch(
     const data = await res.json() as any
 
     if (!res.ok) {
-      if (withSearch) {
-        console.warn(`[geminiChat] search failed (${res.status}), retrying without`)
+      if (!isLast) {
+        console.warn(`[geminiChat] ${model} (search=${withSearch}) failed (${res.status}), fallback`)
         continue
       }
       throw new Error(`Gemini ${res.status}: ${data?.error?.message}`)
@@ -251,8 +258,8 @@ export async function geminiChatWithSearch(
     const parts: any[] = data?.candidates?.[0]?.content?.parts ?? []
     const reply = parts.filter(p => !p.thought).map(p => p.text ?? '').join('').trim()
 
-    if (!reply && withSearch) {
-      console.warn('[geminiChat] empty reply with search, retrying without')
+    if (!reply && !isLast) {
+      console.warn(`[geminiChat] ${model} empty reply, fallback`)
       continue
     }
 
