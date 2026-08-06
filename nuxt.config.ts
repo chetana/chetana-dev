@@ -89,6 +89,7 @@ export default defineNuxtConfig({
     '/api/projects/**': { swr: 3600 },
     '/api/skills': { swr: 3600 },
     '/api/experiences': { swr: 3600 },
+    '/api/__sitemap__/**': { swr: 86400 }, // sitemap = seul accès DB public direct → cache 24h
     '/projects/health': { redirect: { to: 'https://pushup.chetana.fr', statusCode: 301 } }
   },
   nitro: {
