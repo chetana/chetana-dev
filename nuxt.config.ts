@@ -83,7 +83,6 @@ export default defineNuxtConfig({
     '/blog/**': { swr: 3600 },
     '/projects': { swr: 3600 },
     '/projects/**': { swr: 3600 },
-    '/passions/**': { swr: 3600 },
     '/cv': { robots: false, swr: 3600 },
     '/api/blog/**': { swr: 3600 },
     '/api/projects/**': { swr: 3600 },
