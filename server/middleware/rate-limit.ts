@@ -1,12 +1,18 @@
-// Rate-limit global par IP sur les routes /api (ceinture-et-bretelles anti-bot / anti-abus de coût).
+// Rate-limit global par IP (ceinture-et-bretelles anti-bot / anti-abus de coût).
 // Fenêtre glissante en mémoire (best-effort ; l'état se réinitialise au scale-to-zero).
+//
+// Couvre TOUTES les routes, pas seulement /api : un scanner qui sonde des chemins bidon
+// (/wp-admin, /.env, /admin…) tombe sur un 404 générique de Nuxt, jamais sous /api/ — un
+// filtre limité à /api/ le laissait passer intégralement et continuait à réveiller/occuper
+// le container (rafales de 404 constatées le 24-25/08 sur un autre container du même
+// projet, ignorées par ce filtre trop étroit). Seuls les assets statiques _nuxt sont exclus.
 const HITS = new Map<string, number[]>()
 const WINDOW_MS = 60_000
 const MAX = 120 // 120 req/min/IP : large pour un humain, borne un bot
 
 export default defineEventHandler((event) => {
   const path = event.path || ''
-  if (!path.startsWith('/api/')) return // pages et assets non concernés
+  if (path.startsWith('/_nuxt/')) return // assets statiques immuables, non concernés
 
   // Seules les requêtes EXTERNES (via le proxy Scaleway) portent X-Forwarded-For.
   // Les appels internes (SSR $fetch) n'en ont pas → on les laisse passer librement.
