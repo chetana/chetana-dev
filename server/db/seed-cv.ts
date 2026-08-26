@@ -92,11 +92,11 @@ const experiencesData = [
     sortOrder: 1
   },
   {
-    company: 'DJUST (via Takima)', roleFr: 'Lead Software Engineer', roleEn: 'Lead Software Engineer', roleKm: 'Lead Software Engineer',
+    company: 'DJUST (via Takima)', roleFr: 'Dev Senior → Tech Lead', roleEn: 'Senior Dev → Tech Lead', roleKm: 'Dev Senior → Tech Lead',
     dateStart: '2021-10', dateEnd: '2023-11', location: 'Paris',
-    bulletsFr: ["Conception et développement de la plateforme e-commerce B2B from scratch", "Architecture multi-tenant, multi-PSP (Adyen, Mangopay, Lemonway, Thunes)", "Stack : Java 17, Spring Boot, PostgreSQL, Elasticsearch, Keycloak, Docker, GCP", "Mise en place du CI/CD GitLab, des tests E2E, et des conventions de code"],
-    bulletsEn: ["Designed and built the B2B e-commerce platform from scratch", "Multi-tenant, multi-PSP architecture (Adyen, Mangopay, Lemonway, Thunes)", "Stack: Java 17, Spring Boot, PostgreSQL, Elasticsearch, Keycloak, Docker, GCP", "Set up GitLab CI/CD, E2E tests, and coding conventions"],
-    bulletsKm: ["រចនា និងបង្កើតវេទិកា e-commerce B2B ពីដំបូង", "ស្ថាបត្យកម្ម multi-tenant multi-PSP (Adyen, Mangopay, Lemonway, Thunes)", "Stack៖ Java 17, Spring Boot, PostgreSQL, Elasticsearch, Keycloak, Docker, GCP", "ដំឡើង GitLab CI/CD tests E2E និងស្តង់ដារកូដ"],
+    bulletsFr: ["<strong>2021 — Dev senior</strong> : arrivée pour structurer une startup naissante, conception et développement de la plateforme e-commerce B2B from scratch", "<strong>2022-2023 — Tech Lead</strong> : montée en responsabilité, architecture multi-tenant, multi-PSP (Adyen, Mangopay, Lemonway, Thunes)", "Stack : Java 17, Spring Boot, PostgreSQL, Elasticsearch, Keycloak, Docker, GCP", "Mise en place du CI/CD GitLab, des tests E2E, et des conventions de code"],
+    bulletsEn: ["<strong>2021 — Senior developer</strong>: joined to help structure an early-stage startup, designed and built the B2B e-commerce platform from scratch", "<strong>2022-2023 — Tech Lead</strong>: grew into the role, multi-tenant, multi-PSP architecture (Adyen, Mangopay, Lemonway, Thunes)", "Stack: Java 17, Spring Boot, PostgreSQL, Elasticsearch, Keycloak, Docker, GCP", "Set up GitLab CI/CD, E2E tests, and coding conventions"],
+    bulletsKm: ["<strong>2021 — Dev Senior</strong>៖ ចូលរួមរចនាសម្ព័ន្ធ startup ដំបូង រចនា និងបង្កើតវេទិកា e-commerce B2B ពីដំបូង", "<strong>2022-2023 — Tech Lead</strong>៖ ទទួលខុសត្រូវបន្ថែម ស្ថាបត្យកម្ម multi-tenant multi-PSP (Adyen, Mangopay, Lemonway, Thunes)", "Stack៖ Java 17, Spring Boot, PostgreSQL, Elasticsearch, Keycloak, Docker, GCP", "ដំឡើង GitLab CI/CD tests E2E និងស្តង់ដារកូដ"],
     sortOrder: 2
   },
   {
