@@ -11,14 +11,31 @@ const translations: Record<string, Record<string, string>> = {
 
   // Hero
   'hero.badge': { fr: 'Ouvert aux opportunités', en: 'Open to opportunities', km: 'បើកទទួលឱកាស' },
+  'hero.role1': { fr: 'Engineering Manager', en: 'Engineering Manager', km: 'Engineering Manager' },
+  'hero.role2': { fr: 'AI Tech Lead', en: 'AI Tech Lead', km: 'AI Tech Lead' },
   'hero.desc': {
-    fr: "Engineering Manager & hands-on tech lead avec 13 ans d'expérience. Après avoir structuré et fait grandir la plateforme e-commerce B2B de DJUST, je pilote aujourd'hui une équipe IA sur un copilote commercial propulsé par des LLM.",
-    en: "Engineering Manager & hands-on tech lead with 13 years of experience. After structuring and growing DJUST's B2B e-commerce platform, I now lead an AI team building an LLM-powered sales copilot.",
-    km: "Engineering Manager & hands-on tech lead ជាមួយបទពិសោធន៍ ១៣ ឆ្នាំ។ បន្ទាប់ពីរចនាសម្ព័ន្ធ និងពង្រីកវេទិកា e-commerce B2B របស់ DJUST ឥឡូវនេះខ្ញុំដឹកនាំក្រុម IA លើ copilot ពាណិជ្ជកម្មដំណើរការដោយ LLM។"
+    fr: "Engineering Manager & hands-on tech lead avec <strong>13 ans d'expérience</strong>. Après avoir structuré et fait grandir la plateforme e-commerce B2B de DJUST, je pilote aujourd'hui une équipe IA sur un <strong>copilote commercial propulsé par des LLM</strong>.",
+    en: "Engineering Manager & hands-on tech lead with <strong>13 years of experience</strong>. After structuring and growing DJUST's B2B e-commerce platform, I now lead an AI team building an <strong>LLM-powered sales copilot</strong>.",
+    km: "Engineering Manager & hands-on tech lead ជាមួយ<strong>បទពិសោធន៍ ១៣ ឆ្នាំ</strong>។ បន្ទាប់ពីរចនាសម្ព័ន្ធ និងពង្រីកវេទិកា e-commerce B2B របស់ DJUST ឥឡូវនេះខ្ញុំដឹកនាំក្រុម IA លើ <strong>copilot ពាណិជ្ជកម្មដំណើរការដោយ LLM</strong>។"
   },
   'hero.cta1': { fr: 'Me contacter', en: 'Contact me', km: 'ទាក់ទងខ្ញុំ' },
   'hero.cta2': { fr: 'Mon parcours', en: 'My journey', km: 'ដំណើរកម្មរបស់ខ្ញុំ' },
   'hero.cta3': { fr: 'CV format ATS', en: 'ATS Resume', km: 'ប្រវត្តិរូប ATS' },
+
+  // Hero — cockpit terminal mockup
+  'hero.term1': { fr: "Vérifie l'isolation RLS avant le merge de la migration multi-tenant.", en: 'Check RLS isolation before merging the multi-tenant migration.', km: 'ពិនិត្យភាពឯកជនភាព RLS មុន merge migration multi-tenant។' },
+  'hero.term2': { fr: 'agent · claude-code · session sales-copilot', en: 'agent · claude-code · sales-copilot session', km: 'agent · claude-code · session sales-copilot' },
+  'hero.term4': { fr: '3 policies trouvées, 1 sans <span class="term-key">tenant_id</span> filter', en: '3 policies found, 1 missing a <span class="term-key">tenant_id</span> filter', km: 'រកឃើញ policies ៣ មួយគ្មាន <span class="term-key">tenant_id</span> filter' },
+  'hero.term5': { fr: 'patch appliqué — RLS conforme sur <span class="term-key">&quot;accounts&quot;</span>', en: 'patch applied — RLS compliant on <span class="term-key">&quot;accounts&quot;</span>', km: 'patch អនុវត្តរួច — RLS ត្រឹមត្រូវលើ <span class="term-key">&quot;accounts&quot;</span>' },
+  'hero.term6': { fr: 'coût session · 0,14 $ · 2 outils · 41s', en: 'session cost · $0.14 · 2 tools · 41s', km: 'ថ្លៃដើម session · $0.14 · ឧបករណ៍ 2 · 41s' },
+  'hero.term7': { fr: 'Prêt pour la prochaine tâche', en: 'Ready for the next task', km: 'ត្រៀមរួចសម្រាប់ភារកិច្ចបន្ទាប់' },
+  'hero.tag1': { fr: 'Jira · GitLab · coût — inspecté en live', en: 'Jira · GitLab · cost — inspected live', km: 'Jira · GitLab · ថ្លៃដើម — ត្រួតពិនិត្យផ្ទាល់' },
+  'hero.tag2': { fr: 'Multi-tab · sessions parallèles', en: 'Multi-tab · parallel sessions', km: 'Multi-tab · sessions ស្របគ្នា' },
+  'hero.terminalAria': {
+    fr: "Aperçu de djust-cockpit, l'IDE que Chetana a conçu pour piloter ses sessions Claude Code : un prompt demandant de vérifier l'isolation multi-tenant RLS, suivi d'un appel d'outil et d'une réponse validée.",
+    en: 'Preview of djust-cockpit, the IDE Chetana built to drive his Claude Code sessions: a prompt asking to check multi-tenant RLS isolation, followed by a tool call and a validated response.',
+    km: 'ទិដ្ឋភាព djust-cockpit IDE ដែល Chetana បង្កើតសម្រាប់ដឹកនាំ sessions Claude Code។'
+  },
 
   // Stats
   'stat.years': { fr: "Années d'expérience", en: 'Years of experience', km: 'ឆ្នាំនៃបទពិសោធន៍' },

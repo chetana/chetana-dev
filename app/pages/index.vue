@@ -10,7 +10,7 @@
         <div class="stat-label">{{ t('stat.years') }}</div>
       </div>
       <div class="stat">
-        <div class="stat-number">6</div>
+        <div class="stat-number">5</div>
         <div class="stat-label">{{ t('stat.engineers') }}</div>
       </div>
       <div class="stat">
