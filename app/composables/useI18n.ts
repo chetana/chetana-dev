@@ -12,9 +12,9 @@ const translations: Record<string, Record<string, string>> = {
   // Hero
   'hero.badge': { fr: 'Ouvert aux opportunités', en: 'Open to opportunities', km: 'បើកទទួលឱកាស' },
   'hero.desc': {
-    fr: "Engineering Manager & hands-on tech lead avec 13 ans d'expérience. Je construis des plateformes e-commerce B2B à l'échelle, et je manage des équipes qui livrent.",
-    en: "Engineering Manager & hands-on tech lead with 13 years of experience. I build B2B e-commerce platforms at scale, and I manage teams that deliver.",
-    km: "Engineering Manager & hands-on tech lead ជាមួយបទពិសោធន៍ ១៣ ឆ្នាំ។ ខ្ញុំបង្កើតវេទិកា e-commerce B2B ទ្រង់ទ្រាយធំ ហើយខ្ញុំដឹកនាំក្រុមដែលផ្តល់លទ្ធផល។"
+    fr: "Engineering Manager & hands-on tech lead avec 13 ans d'expérience. Après avoir structuré et fait grandir la plateforme e-commerce B2B de DJUST, je pilote aujourd'hui une équipe IA sur un copilote commercial propulsé par des LLM.",
+    en: "Engineering Manager & hands-on tech lead with 13 years of experience. After structuring and growing DJUST's B2B e-commerce platform, I now lead an AI team building an LLM-powered sales copilot.",
+    km: "Engineering Manager & hands-on tech lead ជាមួយបទពិសោធន៍ ១៣ ឆ្នាំ។ បន្ទាប់ពីរចនាសម្ព័ន្ធ និងពង្រីកវេទិកា e-commerce B2B របស់ DJUST ឥឡូវនេះខ្ញុំដឹកនាំក្រុម IA លើ copilot ពាណិជ្ជកម្មដំណើរការដោយ LLM។"
   },
   'hero.cta1': { fr: 'Me contacter', en: 'Contact me', km: 'ទាក់ទងខ្ញុំ' },
   'hero.cta2': { fr: 'Mon parcours', en: 'My journey', km: 'ដំណើរកម្មរបស់ខ្ញុំ' },
@@ -34,9 +34,9 @@ const translations: Record<string, Record<string, string>> = {
     km: "ខ្ញុំមិនមែនជា manager ដែលមើល dashboards ទេ។ ខ្ញុំនៅក្នុងកូដ នៅក្នុង reviews នៅក្នុង incidents។ នៅពេល bug ធ្ងន់ដល់ production នៅយប់សុក្រ ខ្ញុំជាអ្នកបើក terminal។"
   },
   'about.p2': {
-    fr: "Chez DJUST, je manage l'équipe OMS (Order Management System) de 5 personnes (devs + QA) tout en restant le lead technique de la plateforme. Mon scope : gestion des commandes, paiements (Adyen, Mangopay, Lemonway), panier, intégration fournisseurs, et tout ce qui touche au flux transactionnel B2B.",
-    en: "At DJUST, I manage the OMS (Order Management System) team of 5 people (devs + QA) while remaining the platform's technical lead. My scope: order management, payments (Adyen, Mangopay, Lemonway), cart, supplier integrations, and everything related to the B2B transactional flow.",
-    km: "នៅ DJUST ខ្ញុំដឹកនាំក្រុម OMS (Order Management System) មាន ៥ នាក់ (devs + QA) ខណៈពេលដែលនៅជា lead technique នៃវេទិកា។ វិសាលភាពរបស់ខ្ញុំ៖ ការគ្រប់គ្រងការបញ្ជាទិញ ការទូទាត់ (Adyen, Mangopay, Lemonway) រទេះ ការរួមបញ្ចូលអ្នកផ្គត់ផ្គង់ និងអ្វីទាំងអស់ដែលទាក់ទងនឹងលំហូរប្រតិបត្តិការ B2B។"
+    fr: "Je suis arrivé chez DJUST en 2021 comme dev senior, pour aider à structurer une startup naissante — j'ai conçu la plateforme e-commerce B2B from scratch. Devenu tech lead, puis Engineering Manager en 2023 de l'équipe OMS (Order Management System, 5 personnes), j'ai gardé un pied dans le code à chaque étape. Depuis juin 2026, je suis toujours EM, mais d'une équipe IA plus resserrée, entièrement dédiée à un copilote commercial B2B propulsé par des LLM (djust-sales) — un retour à un rôle plus hands-on, entre architecture Python/LLM et management.",
+    en: "I joined DJUST in 2021 as a senior developer, to help structure an early-stage startup — I designed the B2B e-commerce platform from scratch. I grew into tech lead, then became Engineering Manager in 2023 of the OMS (Order Management System) team (5 people), staying hands-on in the code at every step. Since June 2026, I'm still an EM, but of a smaller AI team fully dedicated to an LLM-powered B2B sales copilot (djust-sales) — a return to a more hands-on role, split between Python/LLM architecture and management.",
+    km: "ខ្ញុំចូលរួម DJUST ក្នុងឆ្នាំ 2021 ជា dev senior ដើម្បីជួយរចនាសម្ព័ន្ធ startup ដំបូង — ខ្ញុំបានរចនាវេទិកា e-commerce B2B ពីដំបូង។ បន្ទាប់មកក្លាយជា tech lead រួចជា Engineering Manager ក្នុងឆ្នាំ 2023 នៃក្រុម OMS (៥ នាក់)។ ចាប់ពីខែមិថុនា 2026 ខ្ញុំនៅតែជា EM ប៉ុន្តែក្រុម IA តូចជាង ឧទ្ទិសទាំងស្រុងចំពោះ copilot ពាណិជ្ជកម្ម B2B ដំណើរការដោយ LLM (djust-sales) — តួនាទី hands-on ច្រើនជាងមុន។"
   },
   'about.p3': {
     fr: "Avant le management, j'ai passé 10 ans les mains dans le code : mobile chez miLibris, applications bancaires chez BNP Paribas, tunnel d'achat chez Galeries Lafayette. Mon parcours technique est mon plus grand atout de manager : je comprends les problèmes de mes devs parce que je les vis avec eux.",
@@ -44,9 +44,9 @@ const translations: Record<string, Record<string, string>> = {
     km: "មុនពេលដឹកនាំ ខ្ញុំបានចំណាយ ១០ ឆ្នាំក្នុងកូដ៖ mobile នៅ miLibris កម្មវិធីធនាគារនៅ BNP Paribas លំហូរទិញនៅ Galeries Lafayette។ សាវតាបច្ចេកទេសរបស់ខ្ញុំជាទ្រព្យសម្បត្តិធំបំផុតក្នុងការដឹកនាំ៖ ខ្ញុំយល់ពីបញ្ហារបស់ devs របស់ខ្ញុំព្រោះខ្ញុំរស់ជាមួយពួកគេ។"
   },
   'about.p4': {
-    fr: "Aujourd'hui, je suis en transition vers le lead technique d'un projet d'IA ambitieux : une plateforme d'automatisation commerciale B2B propulsée par des pipelines LLM. C'est la suite logique de mon virage AI-augmented — passer de l'outillage de l'équipe à un véritable produit d'intelligence artificielle.",
-    en: "Today, I'm transitioning toward the technical lead of an ambitious AI project: a B2B commercial automation platform powered by LLM pipelines. It's the logical next step of my AI-augmented shift — moving from tooling the team to building a real artificial-intelligence product.",
-    km: "សព្វថ្ងៃ ខ្ញុំកំពុងផ្លាស់ប្ដូរឆ្ពោះទៅជា lead technique នៃគម្រោង AI ដ៏មានមហិច្ឆតា៖ វេទិកាស្វ័យប្រវត្តិកម្មពាណិជ្ជកម្ម B2B ដំណើរការដោយ pipelines LLM។ នេះជាជំហានបន្ទាប់នៃការផ្លាស់ប្ដូរ AI-augmented របស់ខ្ញុំ។"
+    fr: "Je pousse l'AI-augmented development plus loin qu'un simple outillage d'équipe : j'ai conçu et développé <strong>djust-cockpit</strong>, un IDE Electron local pour piloter mes sessions Claude Code — terminaux multi-onglets, vue chat live, inspecteur Jira/GitLab/coûts, radar des worktrees oubliés. 70 MR livrées en quelques mois, en parallèle de mon rôle de manager.",
+    en: "I push AI-augmented development further than simple team tooling: I designed and built <strong>djust-cockpit</strong>, a local Electron IDE to drive my Claude Code sessions — multi-tab terminals, live chat view, Jira/GitLab/cost inspector, forgotten-worktree radar. 70 MRs shipped in a few months, alongside my manager role.",
+    km: "ខ្ញុំជម្រុញ AI-augmented development លើសពីឧបករណ៍ក្រុមធម្មតា៖ ខ្ញុំបានរចនា និងបង្កើត <strong>djust-cockpit</strong> ជា IDE Electron មូលដ្ឋានសម្រាប់ដឹកនាំ sessions Claude Code — terminals ច្រើន tabs, chat live, inspecteur Jira/GitLab/ថ្លៃដើម។ 70 MR ក្នុងរយៈពេលពីរបីខែ ស្របគ្នាជាមួយតួនាទីអ្នកគ្រប់គ្រងរបស់ខ្ញុំ។"
   },
   'about.hl1.title': { fr: 'Plateforme e-commerce B2B', en: 'B2B E-commerce Platform', km: 'វេទិកា E-commerce B2B' },
   'about.hl1.desc': {
@@ -56,9 +56,9 @@ const translations: Record<string, Record<string, string>> = {
   },
   'about.hl2.title': { fr: 'Pionnier IA en équipe', en: 'AI Pioneer in team', km: 'អ្នកត្រួសត្រាយ AI ក្នុងក្រុម' },
   'about.hl2.desc': {
-    fr: "Premier à intégrer Claude Code dans le workflow quotidien de l'équipe : code reviews automatisées, génération de tests E2E, briefings MEP, analyse de bugs",
-    en: "First to integrate Claude Code into the team's daily workflow: automated code reviews, E2E test generation, deployment briefings, bug analysis",
-    km: "ដំបូងគេដែលរួមបញ្ចូល Claude Code ក្នុង workflow ប្រចាំថ្ងៃរបស់ក្រុម៖ code reviews ស្វ័យប្រវត្តិ ការបង្កើត tests E2E ការប្រជុំ deployment ការវិភាគ bugs"
+    fr: "Premier à intégrer Claude Code dans le workflow quotidien de l'équipe : 63 skills custom, 9 sous-agents, 15 MCP servers, 6/6 membres formés — jusqu'à construire mon propre IDE Electron (djust-cockpit) pour piloter mes sessions IA",
+    en: "First to integrate Claude Code into the team's daily workflow: 63 custom skills, 9 sub-agents, 15 MCP servers, 6/6 team members trained — up to building my own Electron IDE (djust-cockpit) to drive my AI sessions",
+    km: "ដំបូងគេដែលរួមបញ្ចូល Claude Code ក្នុង workflow ប្រចាំថ្ងៃរបស់ក្រុម៖ 63 skills 9 sous-agents 15 MCP servers 6/6 សមាជិកបានបណ្តុះបណ្តាល — រហូតដល់បង្កើត IDE Electron ផ្ទាល់ខ្លួន (djust-cockpit)"
   },
   'about.hl3.title': { fr: 'People & delivery', en: 'People & delivery', km: 'មនុស្ស និងការផ្តល់' },
   'about.hl3.desc': {
