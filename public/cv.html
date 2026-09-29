@@ -862,6 +862,41 @@
             </div>
         </div>
     </div>
+
+    <!-- Plateforme perso -->
+    <div class="ai-section fade-in">
+        <h3 data-i18n="pp-title">Plateforme perso &amp; FinOps</h3>
+        <p data-i18n="pp-p1">
+            Mon terrain d'entrainement en dehors de DJUST : une dizaine d'applications perso
+            (portfolio, API Rust, PWA de couple trilingue FR/KH/EN, jeux, cours en ligne) que j'ai migrees de GCP/Vercel
+            vers un cloud francais, puis consolidees des containers serverless vers une VM unique
+            (Caddy, PostgreSQL, Cloudflare en edge, SSO Logto). Chasse aux couts methodique : diagnostic par les
+            metriques, cache, rate-limiting, suppression des features sans valeur.
+        </p>
+        <p data-i18n="pp-p2">
+            Cote IA : traduction FR/KH/EN sur un modele economique (GLM) protege par des garde-fous deterministes
+            et un banc d'evaluation de regression, et un agent de code auto-heberge (OpenCode) encadre par des regles
+            ecrites : branche + PR + revue humaine, secrets en lecture seule, deploiement sur feu vert explicite.
+        </p>
+        <div class="ai-metrics">
+            <div class="ai-metric">
+                <div class="ai-metric-value">109 &rarr; ~20&euro;</div>
+                <div class="ai-metric-label" data-i18n="pp-m1">Facture cloud perso / mois (juil. &rarr; regime etabli)</div>
+            </div>
+            <div class="ai-metric">
+                <div class="ai-metric-value">10 &rarr; 1</div>
+                <div class="ai-metric-label" data-i18n="pp-m2">Containers serverless &rarr; VM unique</div>
+            </div>
+            <div class="ai-metric">
+                <div class="ai-metric-value">~1%</div>
+                <div class="ai-metric-label" data-i18n="pp-m3">Traductions escaladees vers Gemini</div>
+            </div>
+            <div class="ai-metric">
+                <div class="ai-metric-value">PR-only</div>
+                <div class="ai-metric-label" data-i18n="pp-m4">Agent de code : revue humaine obligatoire</div>
+            </div>
+        </div>
+    </div>
 </section>
 
 <!-- EDUCATION -->
@@ -1019,6 +1054,13 @@
         "ai-p2": "My team now uses AI for code reviews, E2E test generation, deployment briefings, and incident analysis. This isn't a gimmick: it's a concrete force multiplier for productivity and quality.",
         "ai-m2": "Integrated MCP servers",
         "ai-m3": "Team devs trained",
+        "pp-title": "Personal platform &amp; FinOps",
+        "pp-p1": "My training ground outside DJUST: about ten personal apps (portfolio, Rust API, trilingual FR/KH/EN couple PWA, games, online courses) that I migrated from GCP/Vercel to a French cloud, then consolidated from serverless containers onto a single VM (Caddy, PostgreSQL, Cloudflare at the edge, Logto SSO). Methodical cost hunting: metrics-driven diagnosis, caching, rate-limiting, removing features with no value.",
+        "pp-p2": "On the AI side: FR/KH/EN translation on a low-cost model (GLM) protected by deterministic guardrails and a regression eval harness, and a self-hosted coding agent (OpenCode) bound by written rules: branch + PR + human review, read-only secrets, deploys only on explicit approval.",
+        "pp-m1": "Personal cloud bill / month (Jul. &rarr; steady state)",
+        "pp-m2": "Serverless containers &rarr; single VM",
+        "pp-m3": "Translations escalated to Gemini",
+        "pp-m4": "Coding agent: mandatory human review",
         "sl-edu": "Education",
         "edu1-deg": "IT Expert Degree (Master's level)",
         "edu2-yr": "2011 - 2012 | Beijing, China",

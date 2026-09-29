@@ -210,8 +210,8 @@
         lead technique du produit djust-sales : plateforme IA d'automatisation commerciale B2B (Sales Copilot,
         LLM pipelines, pgvector, HITL) avec une stack Python/FastAPI, LangGraph, SQLAlchemy async, PostgreSQL RLS
         et Nuxt 3. Expertise en observabilite LLM (Langfuse/OpenTelemetry), securite multi-tenant et auth (Logto).
-        Architecture cloud multi-fournisseurs (GCP, AWS, Scaleway), containers serverless et demarche de
-        souverainete numerique. Pionnier de l'IA generative (Claude Code) dans les workflows d'equipe, jusqu'a
+        Architecture cloud multi-fournisseurs (GCP, AWS, Scaleway), migration de 10 containers serverless vers une VM
+        unique (FinOps : facture cloud perso divisee par ~5) et demarche de souverainete numerique. Pionnier de l'IA generative (Claude Code) dans les workflows d'equipe, jusqu'a
         concevoir et developper djust-cockpit, un IDE Electron local pour piloter mes propres sessions IA.
     </p>
 </div>
@@ -221,7 +221,7 @@
     <div class="section-title" data-i18n="s-comp">Competences</div>
     <ul>
         <li data-i18n="c1"><strong>Backend &amp; Architecture :</strong> Java 17+, Spring Boot, Spring Security, JPA/Hibernate, REST API, GraphQL, OpenAPI/Swagger, Python, FastAPI, LangGraph, SQLAlchemy (async), Architecture modulaire multi-tenant, Maven, Node.js.</li>
-        <li data-i18n="c2"><strong>Data &amp; Infrastructure :</strong> PostgreSQL (RLS), Elasticsearch, MongoDB, Redis, pgvector, Docker, Kubernetes, ArgoCD, Google Cloud Platform (GCP), AWS (SQS, S3), Scaleway (Serverless Containers, Object Storage S3, Serverless SQL), scale-to-zero, GitLab CI/CD, Jenkins, Ansible.</li>
+        <li data-i18n="c2"><strong>Data &amp; Infrastructure :</strong> PostgreSQL (RLS), Elasticsearch, MongoDB, Redis, pgvector, Docker, Kubernetes, ArgoCD, Google Cloud Platform (GCP), AWS (SQS, S3), Scaleway (VM, Object Storage S3, Secret Manager, Serverless), Cloudflare, Caddy, FinOps, SSO auto-heberge (Logto/OIDC, oauth2-proxy), GitLab CI/CD, Jenkins, Ansible.</li>
         <li data-i18n="c3"><strong>Domaine metier :</strong> Order Management (OMS), Paiements (Adyen, Mangopay, Lemonway, Thunes), Cart &amp; Checkout, E-commerce B2B SaaS, Multi-tenant, Marketplace, Assurance.</li>
         <li data-i18n="c4"><strong>Management :</strong> Team Lead (5 devs + QA), Recrutement, People Review, Agile/Scrum, SAFe, Kanban, Incident Management, Coordination cross-equipes, MEP hebdomadaires.</li>
         <li data-i18n="c5"><strong>Frontend, Mobile &amp; Desktop :</strong> Nuxt 3/Vue.js, TypeScript, Android (Java), iOS (Swift), Thymeleaf, Electron (electron-vite/electron-builder, node-pty, xterm.js).</li>
@@ -310,8 +310,11 @@
 <div class="section competences">
     <div class="section-title" data-i18n="s-proj">Projets personnels</div>
     <ul>
-        <li data-i18n="proj1"><strong>Ecosysteme chetana.fr :</strong> 10+ applications perso auto-hebergees sur cloud francais (Scaleway), migrees depuis GCP/Vercel — portfolio (Nuxt), API Rust/Axum, jeux HTML5, plateforme de cours (learn.chetana.fr). Demarche de souverainete numerique + scale-to-zero (cout ~0 au repos).</li>
+        <li data-i18n="proj1"><strong>Ecosysteme chetana.fr :</strong> 10+ applications perso (portfolio Nuxt, API Rust/Axum, PWA de couple, jeux HTML5, plateforme de cours) hebergees en France (Scaleway), migrees depuis GCP/Vercel. Consolidation de 10 containers serverless sur une VM unique (Caddy, PostgreSQL local, Cloudflare en edge : proxy + rate-limiting) : facture cloud de 109 &euro; (juillet 2026) a ~20 &euro;/mois projetes (34 &euro; en septembre, mois de bascule).</li>
         <li data-i18n="proj2"><strong>Migration cloud zero-perte :</strong> adaptateur d'abstraction stockage GCS-&gt;S3, verification par checksum, CI/CD Docker, DNS/TLS automatises, authentification Logto multi-app.</li>
+        <li data-i18n="proj3"><strong>Chat de couple trilingue FR/KH/EN (PWA) :</strong> pipeline de traduction a modele economique (GLM) avec garde-fous deterministes (script khmer, glossaire, nombres, pronoms) et escalade vers Gemini (~1 % des messages) ; banc d'evaluation de regression (30+ cas reels), suite de tests et CI ajoutees a une base sans test.</li>
+        <li data-i18n="proj4"><strong>Agent de code auto-heberge (OpenCode web) :</strong> interface derriere SSO (Logto + oauth2-proxy), modele economique (GLM-5.3-Flash), garde-fous ecrits (AGENTS.md) : branche + PR + revue humaine obligatoires, secrets en lecture seule, deploiement sur feu vert explicite. Utilise sur mon infra perso pour documentation, monitoring et correctifs.</li>
+        <li data-i18n="proj5"><strong>Bot de trading algorithmique (Rust, compte demo) :</strong> strategie SMA sur EUR/USD, stop garanti calcule dynamiquement depuis les regles du courtier, etat sur S3, execution par cron ; TDD et suivi du resultat en euros — experience de mesure avant tout capital reel.</li>
     </ul>
 </div>
 
@@ -350,10 +353,10 @@ const T = {
   en: {
     "btn-pdf": "Download PDF",
     "s-profil": "Profile",
-    "profil": "Engineering Manager and AI Tech Lead with 13 years of software development experience, including 5+ years on the DJUST B2B SaaS platform. Joined in 2021 as a senior developer to help structure an early-stage startup, grew into tech lead, then became Engineering Manager in 2023 of the OMS team (5 people, multi-PSP payments, Java/Spring Boot architecture). Since June 2026, still an EM but of a smaller AI team, technical lead of the djust-sales product: B2B AI commercial automation platform (Sales Copilot, LLM pipelines, pgvector, HITL) with a Python/FastAPI, LangGraph, SQLAlchemy async, PostgreSQL RLS and Nuxt 3 stack. Expertise in LLM observability (Langfuse/OpenTelemetry), multi-tenant security and authentication (Logto). Multi-provider cloud & infrastructure architecture (GCP, AWS, Scaleway), serverless containers and a digital-sovereignty approach. Pioneer of generative AI (Claude Code) in team workflows, up to designing and building djust-cockpit, a local Electron IDE to drive my own AI sessions.",
+    "profil": "Engineering Manager and AI Tech Lead with 13 years of software development experience, including 5+ years on the DJUST B2B SaaS platform. Joined in 2021 as a senior developer to help structure an early-stage startup, grew into tech lead, then became Engineering Manager in 2023 of the OMS team (5 people, multi-PSP payments, Java/Spring Boot architecture). Since June 2026, still an EM but of a smaller AI team, technical lead of the djust-sales product: B2B AI commercial automation platform (Sales Copilot, LLM pipelines, pgvector, HITL) with a Python/FastAPI, LangGraph, SQLAlchemy async, PostgreSQL RLS and Nuxt 3 stack. Expertise in LLM observability (Langfuse/OpenTelemetry), multi-tenant security and authentication (Logto). Multi-provider cloud & infrastructure architecture (GCP, AWS, Scaleway), migration of 10 serverless containers to a single VM (FinOps: personal cloud bill cut ~5x) and a digital-sovereignty approach. Pioneer of generative AI (Claude Code) in team workflows, up to designing and building djust-cockpit, a local Electron IDE to drive my own AI sessions.",
     "s-comp": "Skills",
     "c1": "<strong>Backend & Architecture:</strong> Java 17+, Spring Boot, Spring Security, JPA/Hibernate, REST API, GraphQL, OpenAPI/Swagger, Python, FastAPI, LangGraph, SQLAlchemy (async), Modular multi-tenant architecture, Maven, Node.js.",
-    "c2": "<strong>Data & Infrastructure:</strong> PostgreSQL (RLS), Elasticsearch, MongoDB, Redis, pgvector, Docker, Kubernetes, ArgoCD, Google Cloud Platform (GCP), AWS (SQS, S3), Scaleway (Serverless Containers, Object Storage S3, Serverless SQL), scale-to-zero, GitLab CI/CD, Jenkins, Ansible.",
+    "c2": "<strong>Data & Infrastructure:</strong> PostgreSQL (RLS), Elasticsearch, MongoDB, Redis, pgvector, Docker, Kubernetes, ArgoCD, Google Cloud Platform (GCP), AWS (SQS, S3), Scaleway (VM, Object Storage S3, Secret Manager, Serverless), Cloudflare, Caddy, FinOps, SSO auto-heberge (Logto/OIDC, oauth2-proxy), GitLab CI/CD, Jenkins, Ansible.",
     "c3": "<strong>Business Domain:</strong> Order Management (OMS), Payments (Adyen, Mangopay, Lemonway, Thunes), Cart & Checkout, B2B SaaS E-commerce, Multi-tenant, Marketplace, Insurance.",
     "c4": "<strong>Management:</strong> Team Lead (5 devs + QA), Hiring, Performance Reviews, Agile/Scrum, SAFe, Kanban, Incident Management, Cross-team coordination, Weekly releases.",
     "c5": "<strong>Frontend, Mobile & Desktop:</strong> Nuxt 3/Vue.js, TypeScript, Android (Java), iOS (Swift), Thymeleaf, Electron (electron-vite/electron-builder, node-pty, xterm.js).",
@@ -399,8 +402,11 @@ const T = {
     "e6-2": "<strong>Hybrid iOS/Android Framework:</strong> Digital reader with in-app purchases, library management, interactive reader.",
     "e6-3": "<strong>Autonomy:</strong> Startup — full ownership of the mobile lifecycle.",
     "s-proj": "Personal Projects",
-    "proj1": "<strong>chetana.fr ecosystem:</strong> 10+ personal apps self-hosted on French cloud (Scaleway), migrated from GCP/Vercel — portfolio (Nuxt), Rust/Axum API, HTML5 games, learning platform (learn.chetana.fr). Digital-sovereignty approach + scale-to-zero (near-zero cost at rest).",
+    "proj1": "<strong>chetana.fr ecosystem:</strong> 10+ personal apps (Nuxt portfolio, Rust/Axum API, couple PWA, HTML5 games, learning platform) hosted in France (Scaleway), migrated from GCP/Vercel. Consolidated 10 serverless containers onto a single VM (Caddy, local PostgreSQL, Cloudflare at the edge: proxy + rate-limiting): cloud bill from €109 (July 2026) to a projected ~€20/month (€34 in September, the cut-over month).",
     "proj2": "<strong>Zero-loss cloud migration:</strong> GCS->S3 storage-abstraction adapter, checksum verification, Docker CI/CD, automated DNS/TLS, multi-app Logto authentication.",
+    "proj3": "<strong>Trilingual FR/KH/EN couple chat (PWA):</strong> cost-efficient translation pipeline (GLM) with deterministic guardrails (Khmer script, glossary, numbers, pronouns) and escalation to Gemini (~1% of messages); regression eval harness (30+ real cases), test suite and CI added to a codebase that had none.",
+    "proj4": "<strong>Self-hosted coding agent (OpenCode web):</strong> UI behind SSO (Logto + oauth2-proxy), low-cost model (GLM-5.3-Flash), written guardrails (AGENTS.md): branch + PR + mandatory human review, read-only secrets, deploys only on explicit approval. Used on my personal infra for documentation, monitoring and fixes.",
+    "proj5": "<strong>Algorithmic trading bot (Rust, demo account):</strong> SMA strategy on EUR/USD, guaranteed stop computed dynamically from the broker's rules, state on S3, cron execution; TDD and euro-denominated result tracking — measure-first before any real capital.",
     "s-edu": "Education",
     "edu1": "2008 - 2013: IT Expert Degree (Master's level)",
     "edu1-s": "EPITECH - European Institute of Technology, Paris",
