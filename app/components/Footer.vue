@@ -1,6 +1,8 @@
 <template>
   <footer>
-    <div>{{ t('footer.text') }} &mdash; {{ new Date().getFullYear() }}</div>
+    <div>{{ t('footer.text') }} &mdash; {{ new Date().getFullYear() }}
+      <NuxtLink to="/mentions-legales" class="footer-mentions">{{ t('footer.mentions') }}</NuxtLink>
+    </div>
     <div class="footer-meta">
       v{{ version }}
       <span class="separator">•</span>
@@ -56,5 +58,18 @@ footer {
 
 time {
   white-space: nowrap;
+}
+
+.footer-mentions {
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 2px;
+  transition: var(--transition);
+}
+
+.footer-mentions:hover {
+  color: var(--accent-light);
+  text-decoration-color: var(--accent);
 }
 </style>
