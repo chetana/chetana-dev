@@ -152,7 +152,23 @@ const translations: Record<string, Record<string, string>> = {
   'comments.empty': { fr: 'Aucun commentaire pour le moment.', en: 'No comments yet.', km: 'មិនទាន់មានមតិយោបល់ទេ។' },
 
   // Footer
-  'footer.text': { fr: 'Chetana YIN', en: 'Chetana YIN', km: 'Chetana YIN' }
+  'footer.text': { fr: 'Chetana YIN', en: 'Chetana YIN', km: 'Chetana YIN' },
+  'footer.mentions': { fr: 'Mentions légales', en: 'Legal notices', km: 'ពិនិត្យរូបបញ្ជាក់' },
+
+  // Mentions légales
+  'mentions.title': { fr: 'Mentions légales', en: 'Legal notices', km: 'ពិនិត្យរូបបញ្ជាក់' },
+  'mentions.responsable': { fr: 'Responsable de publication', en: 'Publisher', km: 'អ្នកបោះពុម្ពប្រតិបត្តិការ' },
+  'mentions.responsable.value': { fr: 'Chetana YIN', en: 'Chetana YIN', km: 'Chetana YIN' },
+  'mentions.donnees': { fr: 'Données collectées', en: 'Data collected', km: 'ទិន្នន័យដែលបានរូបបន្ទាប់' },
+  'mentions.donnees.body': { fr: 'Les seules données collectées sont celles du formulaire de contact (nom, email, message) et les logs techniques du serveur (adresse IP, date, requête).', en: 'The only data collected is from the contact form (name, email, message) and server technical logs (IP address, date, request).', km: 'ទិន្នន័យឯកជនបានរូបបន្ទាប់តែងតែជាទិន្នន័យពីប្រតិបត្តិការទំព័រទំនើប (ឈ្មោះ អ៊ីមែល សារ) និងលុកសេឬបរិច្ឆេទបរិស្ថាន (IP ហ្សាដ, កាលវិភាគ សាល្ត្រសំរាប់).' },
+  'mentions.finalite': { fr: 'Finalité', en: 'Purpose', km: 'គោលដៅប្រើប្រាស់ទិន្នន័យ' },
+  'mentions.finalite.body': { fr: 'Ces données servent uniquement à répondre à votre demande via le formulaire de contact. Aucune autre utilisation.', en: 'This data is used solely to answer your request via the contact form. No other use.', km: 'ទិន្នន័យក្នុងនេះប្រើស្រាប់ក្នុងការឆ្លងកាត់សាររបស់អ្នកដោយប្រតិបត្តិការទំព័រទំនើប។ អត្ថបទទេសមិនមានប្រើប្រាស់ណាមួយផោយ។' },
+  'mentions.partage': { fr: 'Partage des données', en: 'Data sharing', km: 'ការចែករំលឹតទិន្នន័យ' },
+  'mentions.partage.body': { fr: 'Vos données ne sont partagées avec aucun tiers, ni vendues, ni cédées.', en: 'Your data is not shared with any third party, nor sold nor transferred.', km: 'ទិន្នន័យរបស់អ្នកមិនត្រូវចែករំលឹតជាមនុស្សទាំងឡាយណាមួយ។ មិនលក់និងមិនផ្តល់ជូន។' },
+  'mentions.hebergement': { fr: 'Hébergement', en: 'Hosting', km: 'ការសង្កើតលើម៉ាស៊ីនប្រើរាប់' },
+  'mentions.hebergement.body': { fr: 'Le site est hébergé sur Scaleway, derrière Cloudflare.', en: 'The site is hosted on Scaleway, behind Cloudflare.', km: 'វេទិកានេះសង្កើតនៅលើ Scaleway។ ក្នុងការរើសបើក Cloudflare។' },
+  'mentions.droits': { fr: 'Droits et contact', en: 'Rights and contact', km: 'សិទ្ធិនឹងប្រើប្រាស់' },
+  'mentions.droits.body': { fr: 'Conformément à la réglementation, vous disposez d\'un droit d\'accès, de rectification et de suppression de vos données. Exercez ces droits par email : chetana.yin@gmail.com.', en: 'Under applicable law, you have the right to access, rectify and erase your data. Exercise these rights by email: chetana.yin@gmail.com.', km: 'អាចចូលទៅនឹងទិន្នន័យ កែសម្រួល និងលុបទិន្នន័យរបស់អ្នក។ ប្រើសិទ្ធិទាំងនេះតាមស្រុបអីម៉ែល : chetana.yin@gmail.com។' }
 }
 
 export function useLocale() {
